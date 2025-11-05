@@ -3,9 +3,12 @@ body {
     font-family: 'Inter', sans-serif;
 }
 
-/* Base text color for the app */
+/* * FIX 2: Added gradient background.
+ * We removed bg-slate-900 from the HTML.
+ */
 #app-container {
     color: #cbd5e1; /* slate-300 */
+    background-image: linear-gradient(to bottom, #000000, #0011FF);
 }
 
 /* Custom scrollbar */
@@ -20,25 +23,31 @@ body {
     background: #1e293b; /* slate-800 */
 }
 
-/* Page transition styles (SLIDE) */
+/* * FIX 1: Page transition and layout fix.
+ * This is the new, stable layout.
+ * All pages are 'absolute' and fill the container.
+ * 'overflow-y: auto' makes the *page* scrollable, not the container.
+ */
 .page {
     position: absolute;
     top: 0;
     left: 0;
-    right: 0;
     width: 100%;
-    min-height: 100vh;
+    height: 100%; /* Fills the app-container */
+    overflow-y: auto; /* The page itself scrolls */
     transition: transform 0.3s ease-in-out;
     transform: translateX(100%);
     visibility: hidden;
-    overflow-x: hidden; /* Prevent horizontal scrollbars during transition */
+    
+    /* We add a default background to prevent "bleed" */
+    /* This can be overridden by pages if needed */
+    background-color: transparent; 
 }
 .page.active {
     transform: translateX(0);
     visibility: visible;
     z-index: 10;
-    position: relative; /* Make active page part of the flow */
-    min-height: 100vh;
+    /* We removed position: relative and min-height */
 }
 .page.hiding-left {
     transform: translateX(-100%);
@@ -69,7 +78,7 @@ body {
     transform: translateY(0);
 }
 
-/* NEW: Onboarding Modal styles */
+/* Onboarding Modal styles */
 #onboarding-modal-backdrop {
     transition: opacity 0.3s ease-in-out;
 }
@@ -91,7 +100,7 @@ body {
     color: white;
 }
 
-/* NEW: Walkthrough page styles */
+/* Walkthrough page styles */
 .walkthrough-image {
     border: 2px solid #334155; /* border-slate-700 */
 }
@@ -128,4 +137,56 @@ body {
 .btn-gradient-blue:hover {
     opacity: 0.9;
     box-shadow: 0 6px 20px -5px rgb(59 130 246 / 0.5);
+}
+
+/* * FIX 3: New Score Pill Styles
+ */
+.score-pill {
+    border-radius: 9999px; /* rounded-full */
+    padding: 0.25rem 0.75rem; /* py-1 px-3 */
+    font-size: 0.875rem; /* text-sm */
+    font-weight: 500; /* medium */
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+}
+
+/* 49% and below */
+.score-pill.score-red {
+    background-color: #FF98A0;
+    color: #881337; /* dark-red-900 */
+}
+
+/* 50% - 89% (approx) */
+.score-pill.score-green {
+    background-color: #E9F5D2;
+    color: #365314; /* dark-lime-900 */
+}
+
+/* 90%+ */
+.score-pill.score-green-light {
+    background-color: #E9F5D2;
+    color: #365314; /* dark-lime-900 */
+}
+
+/* OTP Validation Modal styles */
+#otp-validation-modal-backdrop {
+    transition: opacity 0.3s ease-in-out;
+}
+#otp-validation-modal {
+    transform: translateY(100%);
+    transition: transform 0.3s ease-in-out;
+}
+#otp-validation-modal.visible {
+    transform: translateY(0);
+}
+
+/* Payment Promise Modal styles */
+#payment-promise-modal-backdrop {
+    transition: opacity 0.3s ease-in-out;
+}
+#payment-promise-modal {
+    transform: translateY(100%);
+    transition: transform 0.3s ease-in-out;
+}
+#payment-promise-modal.visible {
+    transform: translateY(0);
 }

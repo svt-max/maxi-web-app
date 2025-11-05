@@ -3,8 +3,15 @@
 let currentMode = 'payer';
 // This array will hold our created requests (in-memory)
 let sentRequests = [];
+// NEW: This array will hold our *received* requests (for the payer)
+let receivedRequests = [];
 // This stores the currently active page
 let currentPage = null;
+// NEW: This stores the request object the user is currently viewing
+let currentViewedRequest = null;
+// NEW: State for the "Validated Payer" flow (PRD 6.2.1)
+let isUserValidated = false; // By default, user is not validated
+let pendingPageId = null; // Stores the page user *wants* to see
 
 // --- Navigation ---
 
@@ -173,6 +180,189 @@ function finishOnboarding() {
     showCreatorDashboard();
 }
 
+// --- NEW: OTP Validation Modal (PRD 6.2.1) ---
+
+const otpBackdrop = document.getElementById('otp-validation-modal-backdrop');
+const otpModal = document.getElementById('otp-validation-modal');
+
+function showOtpModal() {
+    otpBackdrop.classList.remove('hidden');
+    otpModal.classList.remove('hidden');
+    
+    setTimeout(() => {
+        otpBackdrop.classList.remove('opacity-0');
+        otpModal.classList.add('visible');
+    }, 10);
+}
+
+function hideOtpModal() {
+    otpBackdrop.classList.add('opacity-0');
+    otpModal.classList.remove('visible');
+    
+    setTimeout(() => {
+        otpBackdrop.classList.add('hidden');
+        otpModal.classList.add('hidden');
+    }, 300);
+}
+
+/**
+ * This function intercepts navigation to secure pages.
+ * It checks if the user is validated first.
+ * (PRD 6.2.1 / 9.2)
+ * @param {string} pageId The ID of the request page to navigate to.
+ */
+function navigateToRequest(pageId) {
+    // NEW: Find the corresponding request object from our data
+    // We use the pageId as a unique key for now
+    const request = receivedRequests.find(r => r.page === pageId);
+    
+    if (request) {
+        currentViewedRequest = request;
+        console.log('Currently viewing request:', currentViewedRequest);
+    } else {
+        console.warn('Could not find a request for pageId:', pageId);
+        currentViewedRequest = null; // Clear it if no match
+    }
+
+    if (isUserValidated) {
+        // If user is already validated in this session, go straight to the page
+        showPage(pageId, 'forward');
+    } else {
+        // If not validated, store the intended page
+        pendingPageId = pageId;
+        // And show the OTP modal instead
+        showOtpModal();
+    }
+}
+
+/**
+ * Handles the "Verify" button click from the OTP modal.
+ * In a real app, this would check the code against a backend.
+ */
+function handleOtpValidation() {
+    // For this prototype, we'll just simulate a successful validation
+    const otpCode = document.getElementById('otp-code').value;
+    
+    // Simple V1 check: just see if *something* was entered
+    if (otpCode && otpCode.length > 3) {
+        console.log('OTP Validation Successful (Simulated)');
+        isUserValidated = true; // Set the validated flag for this session
+        
+        // Hide the modal
+        hideOtpModal();
+        
+        // After modal closes, show the page the user originally wanted to see
+        setTimeout(() => {
+            if (pendingPageId) {
+                showPage(pendingPageId, 'forward');
+                pendingPageId = null; // Clear the pending page
+            }
+        }, 300);
+    } else {
+        alert('Please enter a valid code.');
+    }
+}
+
+// --- NEW: Payment Promise Modal (PRD 1.4 / 3.4) ---
+
+const promiseBackdrop = document.getElementById('payment-promise-modal-backdrop');
+const promiseModal = document.getElementById('payment-promise-modal');
+
+function showPaymentPromiseModal() {
+    promiseBackdrop.classList.remove('hidden');
+    promiseModal.classList.remove('hidden');
+    
+    setTimeout(() => {
+        promiseBackdrop.classList.remove('opacity-0');
+        promiseModal.classList.add('visible');
+    }, 10);
+}
+
+function hidePaymentPromiseModal() {
+    promiseBackdrop.classList.add('opacity-0');
+    promiseModal.classList.remove('visible');
+    
+    setTimeout(() => {
+        promiseBackdrop.classList.add('hidden');
+        promiseModal.classList.add('hidden');
+    }, 300);
+}
+
+/**
+ * Handles the "Payment Promise" button click from the Hotkey modal.
+ * This closes the Hotkey modal and opens the Promise modal.
+ */
+function handlePromiseClick() {
+    closeHotKeyModal();
+    // Wait for hotkey modal to close, then open promise modal
+    setTimeout(showPaymentPromiseModal, 300); 
+}
+
+/**
+ * Confirms the promise, updates the data, and closes the modal.
+ * @param {string} promiseType - 'tomorrow', 'next_friday', etc.
+ */
+/**
+ * Confirms the promise, updates the data, and closes the modal.
+ * @param {string} promiseType - 'tomorrow', 'next_friday', etc.
+ */
+function confirmPaymentPromise(promiseType) {
+    if (!currentViewedRequest) {
+        console.error('No request is being viewed. Cannot make a promise.');
+        return;
+    }
+
+    // This is the core logic: Update the status of the request object
+    let promiseDate = new Date();
+    let promiseText = '';
+    
+    if (promiseType === 'tomorrow') {
+        promiseDate.setDate(promiseDate.getDate() + 1);
+        promiseText = 'Promised for Tomorrow';
+    } else if (promiseType === 'next_friday') {
+        // Find next Friday
+        promiseDate.setDate(promiseDate.getDate() + (5 + 7 - promiseDate.getDay()) % 7);
+        promiseText = 'Promised for Friday';
+    } else if (promiseType === 'end_of_month') {
+        // Find end of current month
+        promiseDate.setFullYear(promiseDate.getFullYear(), promiseDate.getMonth() + 1, 0);
+        promiseText = 'Promised for End of Month';
+    }
+    
+    const newStatus = promiseText;
+    const newStatusColor = 'text-yellow-400'; // A new color for "Promised"
+
+    // === THE BRIDGE ===
+    // 1. Update the Payer's "receivedRequest" object
+    currentViewedRequest.status = newStatus;
+    currentViewedRequest.promiseDate = promiseDate.toISOString().split('T')[0];
+    
+    // 2. Find and update the Creator's "sentRequest" object
+    // We use the 'id' which we've now linked in initializeDatabase
+    const linkedSentRequest = sentRequests.find(req => req.id === currentViewedRequest.id);
+    
+    if (linkedSentRequest) {
+        linkedSentRequest.status = newStatus;
+        linkedSentRequest.statusColor = newStatusColor;
+        console.log('Creator request updated:', linkedSentRequest);
+    } else {
+        console.warn('Could not find linked sentRequest to update.');
+    }
+    // === END BRIDGE ===
+    
+    console.log('Promise Confirmed! Payer request updated:', currentViewedRequest);
+
+    // Hide the modal and show a confirmation
+    hidePaymentPromiseModal();
+    
+    // Give feedback to the user
+    // We'll also navigate back to the dashboard, as the "seduction"
+    // flow would start here (PRD 6.2.2)
+    setTimeout(() => {
+        alert('Promise sent! The creator has been notified.');
+        showPage('page-payer-dashboard', 'backward');
+    }, 300);
+}
 
 /**
  * Simulates the payment and triggers the conversion flow (PRD Ch 6)
@@ -353,6 +543,69 @@ function renderSentRequests() {
     }
 }
 
+/**
+ * Populates the payer's dashboard with initial data.
+ * In a real app, this data would be "fetched" from a server.
+ */
+/**
+ * Populates our "in-memory database" with initial data.
+ * This simulates a real server, creating data for both
+ * the payer and the creator.
+ */
+function initializeDatabase() {
+    // We'll create a "master" ID to link these objects
+    const adidasMasterId = 'INV-MASTER-001';
+    const sarahMasterId = 'SPL-MASTER-001';
+
+    // 1. Payer's "Received" data
+    receivedRequests = [
+        {
+            id: adidasMasterId,
+            type: 'sme',
+            title: '98% Adidas',
+            page: 'page-sme-invoice',
+            amount: 3025.00,
+            status: 'Overdue' // This is the value we will change
+        },
+        {
+            id: sarahMasterId,
+            type: 'social',
+            title: '95% Sarah Williams',
+            page: 'page-social-split',
+            amount: 187.50,
+            status: 'Pending' // This is the value we will change
+        }
+    ];
+
+    // 2. Creator's "Sent" data (Simulating we are Sarah/Adidas)
+    // This is the data that will appear on the Creator Dashboard
+    sentRequests = [
+        {
+            id: adidasMasterId, // Note the matching ID
+            type: 'invoice',
+            title: 'Client: Kevin (You)', // What Adidas sees
+            subtitle: 'INV-000-001',
+            amount: '3025.00',
+            status: 'Overdue',
+            statusColor: 'text-red-500', // Payer's status
+            icon: 'https://placehold.co/40x40/000000/FFFFFF?text=A'
+        },
+        {
+            id: sarahMasterId, // Note the matching ID
+            type: 'split',
+            title: 'Dinner at Sakura', // What Sarah sees
+            subtitle: 'You are 1 of 8 participants',
+            amount: '187.50',
+            status: 'Pending', // Payer's status
+            statusColor: 'text-orange-400',
+            icon: 'https://placehold.co/40x40/9333ea/FFFFFF?text=SW'
+        }
+    ];
+    
+    console.log('Database initialized.');
+    // We're removing the old 'Payer data initialized' log
+}
+
 // --- App Initialization ---
 
 // Ensure the correct page is shown on load
@@ -362,6 +615,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // We remove the default 'active' class from HTML and add it here
     // to ensure currentPage is set correctly.
     currentPage.classList.add('active');
+
+    // NEW: Initialize the database with Payer and Creator data
+    initializeDatabase();
+// ...
 
     // --- Attach Event Listeners ---
     
