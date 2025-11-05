@@ -62,6 +62,12 @@ function showPage(pageId, direction = 'forward') {
 
     // Activate the new page
     newPage.classList.add('active');
+    
+    // Check if we are showing a detail page; if so, render its data
+    if (pageId === 'page-social-split' || pageId === 'page-sme-invoice') {
+        renderRequestDetails();
+    }
+    
     currentPage = newPage; // Update the current page
     
     window.scrollTo(0, 0); // Scroll to top on page change
@@ -302,10 +308,6 @@ function handlePromiseClick() {
  * Confirms the promise, updates the data, and closes the modal.
  * @param {string} promiseType - 'tomorrow', 'next_friday', etc.
  */
-/**
- * Confirms the promise, updates the data, and closes the modal.
- * @param {string} promiseType - 'tomorrow', 'next_friday', etc.
- */
 function confirmPaymentPromise(promiseType) {
     if (!currentViewedRequest) {
         console.error('No request is being viewed. Cannot make a promise.');
@@ -362,6 +364,59 @@ function confirmPaymentPromise(promiseType) {
         alert('Promise sent! The creator has been notified.');
         showPage('page-payer-dashboard', 'backward');
     }, 300);
+}
+
+/**
+ * "Paints" the data from the currentViewedRequest object onto the
+ * static HTML template. This makes the detail pages dynamic.
+ */
+function renderRequestDetails() {
+    if (!currentViewedRequest) {
+        console.warn('renderRequestDetails called, but no currentViewedRequest is set.');
+        return;
+    }
+
+    // A simple formatter for currency
+    const formatCurrency = (val) => `€ ${Number(val).toFixed(2)}`;
+
+    // Check the type of request and populate the correct page
+    if (currentViewedRequest.type === 'social') {
+        // --- Populate Social Split Page ---
+        const titleEl = document.getElementById('split-detail-title');
+        const creatorEl = document.getElementById('split-detail-creator');
+        const amountEl = document.getElementById('split-detail-amount');
+        
+        // We use 'subtitle' for the main title, 'title' for the creator
+        if (titleEl) titleEl.innerText = currentViewedRequest.subtitle || 'Social Split';
+        if (creatorEl) creatorEl.innerText = currentViewedRequest.title; // e.g., "95% Sarah Williams"
+        if (amountEl) amountEl.innerText = formatCurrency(currentViewedRequest.amount);
+
+    } else if (currentViewedRequest.type === 'sme') {
+        // --- Populate SME Invoice Page ---
+        const titleEl = document.getElementById('sme-detail-title');
+        const creatorEl = document.getElementById('sme-detail-creator');
+        const amountEl = document.getElementById('sme-detail-amount');
+        const statusEl = document.getElementById('sme-detail-status');
+
+        // We use 'subtitle' for the main title, 'title' for the creator
+        if (titleEl) titleEl.innerText = currentViewedRequest.subtitle || 'Invoice';
+        if (creatorEl) creatorEl.innerText = currentViewedRequest.title; // e.g., "98% Adidas"
+        if (amountEl) amountEl.innerText = formatCurrency(currentViewedRequest.amount);
+        
+        // Update status text and color
+        if (statusEl) {
+            statusEl.innerText = currentViewedRequest.status;
+            // Remove old colors, add new one
+            statusEl.classList.remove('text-red-500', 'text-yellow-400', 'text-slate-400');
+            if (currentViewedRequest.status.includes('Overdue')) {
+                statusEl.classList.add('text-red-500');
+            } else if (currentViewedRequest.status.includes('Promised')) {
+                statusEl.classList.add('text-yellow-400');
+            } else {
+                statusEl.classList.add('text-slate-400');
+            }
+        }
+    }
 }
 
 /**
@@ -544,10 +599,6 @@ function renderSentRequests() {
 }
 
 /**
- * Populates the payer's dashboard with initial data.
- * In a real app, this data would be "fetched" from a server.
- */
-/**
  * Populates our "in-memory database" with initial data.
  * This simulates a real server, creating data for both
  * the payer and the creator.
@@ -562,7 +613,8 @@ function initializeDatabase() {
         {
             id: adidasMasterId,
             type: 'sme',
-            title: '98% Adidas',
+            title: '98% Adidas', // Creator's info
+            subtitle: 'INV-000-001', // Request info
             page: 'page-sme-invoice',
             amount: 3025.00,
             status: 'Overdue' // This is the value we will change
@@ -570,7 +622,8 @@ function initializeDatabase() {
         {
             id: sarahMasterId,
             type: 'social',
-            title: '95% Sarah Williams',
+            title: '95% Sarah Williams', // Creator's info
+            subtitle: 'Dinner at Sakura', // Request info
             page: 'page-social-split',
             amount: 187.50,
             status: 'Pending' // This is the value we will change
@@ -603,7 +656,6 @@ function initializeDatabase() {
     ];
     
     console.log('Database initialized.');
-    // We're removing the old 'Payer data initialized' log
 }
 
 // --- App Initialization ---
@@ -618,7 +670,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // NEW: Initialize the database with Payer and Creator data
     initializeDatabase();
-// ...
 
     // --- Attach Event Listeners ---
     

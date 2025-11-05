@@ -227,14 +227,15 @@
                     <svg class="w-6 h-6" fill="none" stroke-width="2.5" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5"></path></svg>
                 </button>
                 <div class="text-center">
-                    <h1 class="text-lg font-bold text-white">Dinner at Sakura</h1>
-                    <p class="text-sm text-gray-400">95% Sarah Williams</p>
+                    <h1 id="split-detail-title" class="text-lg font-bold text-white">Dinner at Sakura</h1>
+                    <p id="split-detail-creator" class="text-sm text-gray-400">95% Sarah Williams</p>
                 </div>
-                <div class="w-6"></div> </header>
+                <div class="w-6"></div> 
+            </header>
 
-            <main class_s="pb-32">
+            <main class="pb-32">
                 <div class="h-52 bg-cover bg-center" style="background-image: url('https://placehold.co/600x400/333/999?text=Dinner+Photo')">
-                    </div>
+                </div>
                 
                 <div class="p-6 space-y-8">
                     <div class="flex justify-between items-center">
@@ -251,7 +252,7 @@
                     <div class="bg-pink-900/50 border border-pink-700 rounded-xl p-5 my-4">
                         <div class="flex justify-between items-center">
                             <span class="text-sm font-semibold text-pink-300">Your share</span>
-                            <span class="text-3xl font-bold text-pink-300">€ 187,50</span>
+                            <span id="split-detail-amount" class="text-3xl font-bold text-pink-300">€ 187,50</span>
                         </div>
                     </div>
                     
@@ -402,18 +403,19 @@
                     <svg class="w-6 h-6" fill="none" stroke-width="2.5" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5"></path></svg>
                 </button>
                 <div class="text-center">
-                    <h1 class="text-lg font-bold text-white">INV-000-001</h1>
-                    <p class="text-sm text-gray-400">98% Adidas</p>
+                    <h1 id="sme-detail-title" class="text-lg font-bold text-white">INV-000-001</h1>
+                    <p id="sme-detail-creator" class="text-sm text-gray-400">98% Adidas</p>
                 </div>
-                <div class="w-6"></div> </header>
+                <div class="w-6"></div> 
+            </header>
 
             <main class="p-6 pb-32 space-y-8">
                 <div class="bg-pink-900/50 border border-pink-700 rounded-xl p-5 my-4">
                     <div class="flex justify-between items-center">
                         <span class="text-sm font-semibold text-pink-300">You owe</span>
-                        <span class="text-3xl font-bold text-pink-300">€ 3.025</span>
+                        <span id="sme-detail-amount" class="text-3xl font-bold text-pink-300">€ 3.025</span>
                     </div>
-                    <p class="text-sm text-red-500 font-medium mt-1">4 days overdue</p>
+                    <p id="sme-detail-status" class="text-sm text-red-500 font-medium mt-1">4 days overdue</p>
                 </div>
                 
                 <div class="grid grid-cols-2 gap-4 my-4">
@@ -488,7 +490,7 @@
                         <p class="text-sm text-slate-300">
                             <span class="font-semibold text-white">Trusted sender:</span> 98% Adidas has a 98% MaxCredible score
                         </p>
-                    </div>
+                </div>
             </main>
         </div>
 
@@ -684,7 +686,8 @@
                     <svg class="w-6 h-6" fill="none" stroke-width="2.5" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5"></path></svg>
                 </button>
                 <h1 class="text-lg font-bold text-white">Start New Split</h1>
-                <div class="w-6"></div> </header>
+                <div class="w-6"></div> 
+            </header>
 
             <main class="p-6 pb-24 space-y-10">
                 <div>
@@ -816,7 +819,8 @@
             Start Walkthrough
         </button>
     </div>
-<div id="otp-validation-modal-backdrop" class="fixed inset-0 bg-black bg-opacity-70 z-30 hidden opacity-0" onclick="hideOtpModal()"></div>
+
+    <div id="otp-validation-modal-backdrop" class="fixed inset-0 bg-black bg-opacity-70 z-30 hidden opacity-0" onclick="hideOtpModal()"></div>
     <div id="otp-validation-modal" class="fixed bottom-0 left-0 right-0 z-40 bg-slate-800 rounded-t-2xl shadow-2xl p-6 max-w-md mx-auto hidden">
         <div class="w-12 h-1.5 bg-slate-600 rounded-full mx-auto mb-5"></div>
         
@@ -841,7 +845,8 @@
             </button>
         </div>
     </div>
-<div id="payment-promise-modal-backdrop" class="fixed inset-0 bg-black bg-opacity-70 z-30 hidden opacity-0" onclick="hidePaymentPromiseModal()"></div>
+
+    <div id="payment-promise-modal-backdrop" class="fixed inset-0 bg-black bg-opacity-70 z-30 hidden opacity-0" onclick="hidePaymentPromiseModal()"></div>
     <div id="payment-promise-modal" class="fixed bottom-0 left-0 right-0 z-40 bg-slate-800 rounded-t-2xl shadow-2xl p-6 max-w-md mx-auto hidden">
         <div class="w-12 h-1.5 bg-slate-600 rounded-full mx-auto mb-5"></div>
         
@@ -868,5 +873,3 @@
     <script src="script.js" defer></script>
 </body>
 </html>
-
-   
