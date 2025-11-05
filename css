@@ -1,0 +1,131 @@
+/* Base styles */
+body {
+    font-family: 'Inter', sans-serif;
+}
+
+/* Base text color for the app */
+#app-container {
+    color: #cbd5e1; /* slate-300 */
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+}
+::-webkit-scrollbar-thumb {
+    background: #475569; /* slate-600 */
+    border-radius: 3px;
+}
+::-webkit-scrollbar-track {
+    background: #1e293b; /* slate-800 */
+}
+
+/* Page transition styles (SLIDE) */
+.page {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    min-height: 100vh;
+    transition: transform 0.3s ease-in-out;
+    transform: translateX(100%);
+    visibility: hidden;
+    overflow-x: hidden; /* Prevent horizontal scrollbars during transition */
+}
+.page.active {
+    transform: translateX(0);
+    visibility: visible;
+    z-index: 10;
+    position: relative; /* Make active page part of the flow */
+    min-height: 100vh;
+}
+.page.hiding-left {
+    transform: translateX(-100%);
+    visibility: hidden;
+    z-index: 5;
+}
+.page.hiding-right {
+    transform: translateX(100%);
+    visibility: hidden;
+    z-index: 5;
+}
+/* This is the first page, so it starts at 0 */
+.page#page-welcome {
+    transform: translateX(0);
+    visibility: visible;
+}
+
+
+/* Hotkey Modal styles */
+#hotkey-modal-backdrop {
+    transition: opacity 0.3s ease-in-out;
+}
+#hotkey-modal {
+    transform: translateY(100%);
+    transition: transform 0.3s ease-in-out;
+}
+#hotkey-modal.visible {
+    transform: translateY(0);
+}
+
+/* NEW: Onboarding Modal styles */
+#onboarding-modal-backdrop {
+    transition: opacity 0.3s ease-in-out;
+}
+#onboarding-modal {
+    transform: translateY(100%);
+    transition: transform 0.3s ease-in-out;
+}
+#onboarding-modal.visible {
+    transform: translateY(0);
+}
+.step-icon {
+    flex-shrink: 0;
+    width: 3rem; /* w-12 */
+    height: 3rem; /* h-12 */
+    border-radius: 9999px; /* rounded-full */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+/* NEW: Walkthrough page styles */
+.walkthrough-image {
+    border: 2px solid #334155; /* border-slate-700 */
+}
+.dot-indicators {
+    display: flex;
+    justify-content: center;
+    gap: 0.75rem; /* gap-3 */
+}
+.dot {
+    width: 0.75rem; /* w-3 */
+    height: 0.75rem; /* h-3 */
+    border-radius: 9999px; /* rounded-full */
+    background-color: #475569; /* bg-slate-600 */
+    transition: background-color 0.3s ease;
+}
+.dot.active {
+    background-color: #a3e635; /* bg-lime-400 */
+}
+
+/* Style for selected deadline button */
+.deadline-btn.selected {
+    background-color: #a3e635 !important; /* lime-500 */
+    color: #000000 !important;
+    border-color: #a3e635 !important;
+}
+
+/* Gradient Button Styles */
+.btn-gradient-blue {
+    background-image: linear-gradient(to right, #2563eb, #3b82f6);
+    color: white;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px -5px rgb(59 130 246 / 0.4);
+}
+.btn-gradient-blue:hover {
+    opacity: 0.9;
+    box-shadow: 0 6px 20px -5px rgb(59 130 246 / 0.5);
+}
