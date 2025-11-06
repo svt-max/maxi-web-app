@@ -59,11 +59,13 @@ body {
     visibility: hidden;
     z-index: 5;
 }
-/* This is the first page, so it starts at 0 */
-.page#page-welcome {
-    transform: translateX(0);
-    visibility: visible;
-}
+
+/* * *** MODIFICATION ***
+ * Removed the conflicting .page#page-welcome rule.
+ * The .page.active rule in the HTML is all that's needed
+ * to show the welcome page on load, and this allows
+ * the .hiding-left class to correctly hide it.
+ */
 
 
 /* Hotkey Modal styles */

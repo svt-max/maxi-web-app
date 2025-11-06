@@ -183,7 +183,13 @@ function startWalkthrough() {
 function finishOnboarding() {
     // This function lands the user on the Creator Dashboard
     // and sets the app state accordingly.
-    showCreatorDashboard();
+    
+    // *** MODIFICATION ***
+    // Changed this to land on the Payer Dashboard first,
+    // as per the common user flow.
+    // showCreatorDashboard();
+    showPage('page-payer-dashboard', 'forward');
+    // *** END MODIFICATION ***
 }
 
 // --- NEW: OTP Validation Modal (PRD 6.2.1) ---
@@ -265,7 +271,8 @@ function handleOtpValidation() {
             }
         }, 300);
     } else {
-        alert('Please enter a valid code.');
+        // We don't use alert()
+        console.error('Please enter a valid code.');
     }
 }
 
@@ -361,7 +368,8 @@ function confirmPaymentPromise(promiseType) {
     // We'll also navigate back to the dashboard, as the "seduction"
     // flow would start here (PRD 6.2.2)
     setTimeout(() => {
-        alert('Promise sent! The creator has been notified.');
+        // We don't use alert()
+        console.log('Promise sent! The creator has been notified.');
         showPage('page-payer-dashboard', 'backward');
     }, 300);
 }
@@ -408,9 +416,9 @@ function renderRequestDetails() {
             statusEl.innerText = currentViewedRequest.status;
             // Remove old colors, add new one
             statusEl.classList.remove('text-red-500', 'text-yellow-400', 'text-slate-400');
-            if (currentViewedRequest.status.includes('Overdue')) {
+            if (currentViewedRequest.status.toLowerCase().includes('overdue')) {
                 statusEl.classList.add('text-red-500');
-            } else if (currentViewedRequest.status.includes('Promised')) {
+            } else if (currentViewedRequest.status.toLowerCase().includes('promised')) {
                 statusEl.classList.add('text-yellow-400');
             } else {
                 statusEl.classList.add('text-slate-400');
@@ -434,6 +442,59 @@ function triggerPayment() {
         showPage('page-payment-confirmed', 'forward');
     }, 500); // 0.5 second delay
 }
+
+// *** NEW FUNCTION (PRD 5.3) ***
+/**
+ * Triggered from the "Add people to split +" button on an SME invoice.
+ * This flips the user to Creator mode and pre-populates a new
+ * social split with the invoice's details.
+ */
+function triggerCatalystSplit() {
+    if (!currentViewedRequest || currentViewedRequest.type !== 'sme') {
+        console.error('No SME request is being viewed. Cannot trigger catalyst split.');
+        return;
+    }
+
+    console.log('Triggering Catalyst Splitter (PRD 5.3)');
+
+    // 1. Get data from the current SME invoice
+    const invoiceTitle = currentViewedRequest.subtitle; // "INV-000-001"
+    const invoiceCreator = currentViewedRequest.title; // "98% Adidas"
+    const invoiceAmount = currentViewedRequest.amount; // 3025.00
+
+    // 2. Flip to Creator Mode
+    // This function already handles showing the page and flipping the icon
+    showCreatorDashboard();
+
+    // 3. Navigate to the Create Split page
+    // We use a short delay to let the dashboard transition start,
+    // then immediately navigate to the create page.
+    setTimeout(() => {
+        showPage('page-create-split', 'forward');
+        
+        // 4. Pre-populate the form
+        // We use another short delay to ensure the page is in the DOM
+        setTimeout(() => {
+            const titleEl = document.getElementById('split-title');
+            const descEl = document.querySelector('#split-expense-container .split-expense-desc');
+            const amountEl = document.querySelector('#split-expense-container .split-expense-amount');
+
+            if (titleEl) {
+                titleEl.value = `Split: ${invoiceTitle}`;
+            }
+            if (descEl && amountEl) {
+                descEl.value = `Invoice from ${invoiceCreator}`;
+                amountEl.value = invoiceAmount;
+            } else {
+                console.warn('Could not find split form elements to populate.');
+            }
+            console.log('Catalyst split form populated.');
+        }, 100); // 100ms should be enough for the page to be ready
+
+    }, 50); // Short delay
+}
+// *** END NEW FUNCTION ***
+
 
 // --- Creator Form Logic ---
 
@@ -472,12 +533,12 @@ function addSplitExpense() {
 function selectDeadline(e) {
     // Remove 'selected' from all buttons
     document.querySelectorAll('#deadline-options .deadline-btn').forEach(btn => {
-        btn.classList.remove('selected');
+        btn.classList.remove('selected', 'bg-lime-500', 'text-black');
         btn.classList.add('bg-slate-700', 'text-white');
     });
     
     // Add 'selected' to the clicked button
-    e.target.classList.add('selected');
+    e.target.classList.add('selected', 'bg-lime-500', 'text-black');
     e.target.classList.remove('bg-slate-700', 'text-white');
 }
 
@@ -504,7 +565,7 @@ function handleSendInvoice() {
     if (!clientName || items.length === 0) {
         // Use a less obtrusive notification
         console.error('Please fill in a client name and at least one item.');
-        alert('Please fill in a client name and at least one item.');
+        // alert('Please fill in a client name and at least one item.');
         return;
     }
 
@@ -539,7 +600,7 @@ function handleSendSplit() {
     if (!title || !participants || total === 0) {
         // Use a less obtrusive notification
         console.error('Please fill in a title, at least one participant, and an expense.');
-        alert('Please fill in a title, at least one participant, and an expense.');
+        // alert('Please fill in a title, at least one participant, and an expense.');
         return;
     }
 
@@ -617,7 +678,7 @@ function initializeDatabase() {
             subtitle: 'INV-000-001', // Request info
             page: 'page-sme-invoice',
             amount: 3025.00,
-            status: 'Overdue' // This is the value we will change
+            status: '4 days overdue' // This is the value we will change
         },
         {
             id: sarahMasterId,
@@ -626,33 +687,35 @@ function initializeDatabase() {
             subtitle: 'Dinner at Sakura', // Request info
             page: 'page-social-split',
             amount: 187.50,
-            status: 'Pending' // This is the value we will change
+            status: 'Due in 7 days' // This is the value we will change
         }
     ];
 
     // 2. Creator's "Sent" data (Simulating we are Sarah/Adidas)
     // This is the data that will appear on the Creator Dashboard
+    // when/if the user logs in as them (not built yet)
+    // For now, it's just a way to test the "Promise" bridge
     sentRequests = [
-        {
-            id: adidasMasterId, // Note the matching ID
-            type: 'invoice',
-            title: 'Client: Kevin (You)', // What Adidas sees
-            subtitle: 'INV-000-001',
-            amount: '3025.00',
-            status: 'Overdue',
-            statusColor: 'text-red-500', // Payer's status
-            icon: 'https://placehold.co/40x40/000000/FFFFFF?text=A'
-        },
-        {
-            id: sarahMasterId, // Note the matching ID
-            type: 'split',
-            title: 'Dinner at Sakura', // What Sarah sees
-            subtitle: 'You are 1 of 8 participants',
-            amount: '187.50',
-            status: 'Pending', // Payer's status
-            statusColor: 'text-orange-400',
-            icon: 'https://placehold.co/40x40/9333ea/FFFFFF?text=SW'
-        }
+        // {
+        //     id: adidasMasterId, // Note the matching ID
+        //     type: 'invoice',
+        //     title: 'Client: Kevin (You)', // What Adidas sees
+        //     subtitle: 'INV-000-001',
+        //     amount: '3025.00',
+        //     status: '4 days overdue',
+        //     statusColor: 'text-red-500', // Payer's status
+        //     icon: 'https://placehold.co/40x40/000000/FFFFFF?text=A'
+        // },
+        // {
+        //     id: sarahMasterId, // Note the matching ID
+        //     type: 'split',
+        //     title: 'Dinner at Sakura', // What Sarah sees
+        //     subtitle: 'You are 1 of 8 participants',
+        //     amount: '187.50',
+        //     status: 'Due in 7 days', // Payer's status
+        //     statusColor: 'text-orange-400',
+        //     icon: 'https://placehold.co/40x40/9333ea/FFFFFF?text=SW'
+        // }
     ];
     
     console.log('Database initialized.');
@@ -664,9 +727,8 @@ function initializeDatabase() {
 document.addEventListener('DOMContentLoaded', () => {
     // Set the initial page to the new welcome screen
     currentPage = document.getElementById('page-welcome');
-    // We remove the default 'active' class from HTML and add it here
-    // to ensure currentPage is set correctly.
-    currentPage.classList.add('active');
+    // The 'active' class is already on the element in the HTML,
+    // so it will be visible on load.
 
     // NEW: Initialize the database with Payer and Creator data
     initializeDatabase();
