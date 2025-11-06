@@ -128,89 +128,18 @@
                     <p class="text-sm text-gray-400">Across 4 requests</p>
                 </div>
 
-                <div class="space-y-4">
-                    <div class="bg-slate-800 border border-slate-700 rounded-xl p-4 shadow-sm cursor-pointer hover:bg-slate-700 transition-colors" onclick="navigateToRequest('page-sme-invoice')">
-                        <div class="flex justify-between items-center">
-                            <div class="flex items-center gap-3">
-                                <img src="https://placehold.co/40x40/000000/FFFFFF?text=A" alt="Adidas logo" class="w-10 h-10 rounded-full bg-black flex items-center justify-center text-white font-bold">
-                                <div>
-                                    <p class="font-bold text-white">98% Adidas</p>
-                                    <p class="text-sm text-slate-400">INV-000-001</p>
-                                </div>
-                            </div>
-                            <div class="text-right">
-                                <p class="text-lg font-bold text-pink-400">€ 3.025</p>
-                                <p class="text-sm font-semibold text-red-500">4 days overdue</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="bg-slate-800 border border-slate-700 rounded-xl p-4 shadow-sm cursor-pointer hover:bg-slate-700 transition-colors" onclick="navigateToRequest('page-social-split')">
-                        <div class="flex justify-between items-center">
-                            <div class="flex items-center gap-3">
-                                <img src="https://placehold.co/40x40/9333ea/FFFFFF?text=SW" alt="Sarah Williams" class="w-10 h-10 rounded-full bg-purple-600 flex items-center justify-center text-white font-bold">
-                                <div>
-                                    <p class="font-bold text-white">95% Sarah Williams</p>
-                                    <p class="text-sm text-slate-400">Dinner at Sakura</p>
-                                </div>
-                            </div>
-                            <div class="text-right">
-                                <p class="text-lg font-bold text-pink-400">€ 187,50</p>
-                                <p class="text-sm text-slate-400">Due in 7 days</p>
-                            </div>
-                        </div>
-                        <div class="mt-3 flex justify-between items-center text-sm">
-                            <span class="font-semibold text-lime-400">5/8 paid</span>
-                            <div class="flex -space-x-2 overflow-hidden">
-                                <img class="inline-block h-6 w-6 rounded-full ring-2 ring-slate-800" src="https://placehold.co/24x24/9333ea/FFFFFF?text=S" alt="User 1">
-                                <img class="inline-block h-6 w-6 rounded-full ring-2 ring-slate-800" src="https://placehold.co/24x24/10b981/FFFFFF?text=M" alt="User 2">
-                                <img class="inline-block h-6 w-6 rounded-full ring-2 ring-slate-800" src="https://placehold.co/24x24/f59e0b/FFFFFF?text=E" alt="User 3">
-                                <img class="inline-block h-6 w-6 rounded-full ring-2 ring-slate-800" src="https://placehold.co/24x24/3b82f6/FFFFFF?text=D" alt="User 4">
-                                <span class="flex h-6 w-6 items-center justify-center rounded-full ring-2 ring-slate-800 bg-gray-600 text-xs font-medium text-gray-200">+4</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="bg-slate-800 border border-slate-700 rounded-xl p-4 shadow-sm cursor-pointer hover:bg-slate-700 transition-colors">
-                        <div class="flex justify-between items-center">
-                            <div class="flex items-center gap-3">
-                                <img src="https://placehold.co/40x40/f59e0b/FFFFFF?text=DW" alt="Daniel Weekend" class="w-10 h-10 rounded-full bg-yellow-500 flex items-center justify-center text-white font-bold">
-                                <div>
-                                    <p class="font-bold text-white">92% Daniel Weekend</p>
-                                    <p class="text-sm text-slate-400">Brunch</p>
-                                </div>
-                            </div>
-                            <div class="text-right">
-                                <p class="text-lg font-bold text-pink-400">€ 45</p>
-                                <p class="text-sm text-slate-400">Due in 10 days</p>
-                            </div>
-                        </div>
-                        <div class="mt-3 flex justify-between items-center text-sm">
-                            <span class="font-semibold text-lime-400">2/4 paid</span>
-                            <div class="flex -space-x-2 overflow-hidden">
-                                <img class="inline-block h-6 w-6 rounded-full ring-2 ring-slate-800" src="https://placehold.co/24x24/f59e0b/FFFFFF?text=D" alt="User 1">
-                                <img class="inline-block h-6 w-6 rounded-full ring-2 ring-slate-800" src="https://placehold.co/24x24/10b981/FFFFFF?text=A" alt="User 2">
-                                <span class="flex h-6 w-6 items-center justify-center rounded-full ring-2 ring-slate-800 bg-gray-600 text-xs font-medium text-gray-200">+2</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="bg-slate-800 border border-slate-700 rounded-xl p-4 shadow-sm cursor-pointer hover:bg-slate-700 transition-colors">
-                        <div class="flex justify-between items-center">
-                            <div class="flex items-center gap-3">
-                                <img src="https://placehold.co/40x40/ef4444/FFFFFF?text=DR" alt="David Rodriguez" class="w-10 h-10 rounded-full bg-red-500 flex items-center justify-center text-white font-bold">
-                                <div>
-                                    <p class="font-bold text-white">76% David Rodriguez</p>
-                                    <p class="text-sm text-slate-400">INV-000-002</p>
-                                </div>
-                            </div>
-                            <div class="text-right">
-                                <p class="text-lg font-bold text-pink-400">€ 3.025</p>
-                                <p class="text-sm text-slate-400">Due in 17 days</p>
-                            </div>
-                        </div>
-                    </div>
+                <!-- *** MODIFICATION: This list is now dynamic *** -->
+                <div id="received-requests-list" class="space-y-4">
+                    <!-- The list of received requests will be dynamically injected here by script.js -->
                 </div>
+                
+                <!-- *** NEW: Placeholder for when no requests are present *** -->
+                <div id="no-requests-received-placeholder" class="text-center py-12 hidden">
+                    <svg class="w-12 h-12 text-gray-500 mx-auto" fill="none" stroke-width="1.5" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 9v.906a2.25 2.25 0 0 1-1.183 1.981l-6.468 3.638a2.25 2.25 0 0 0-1.183 1.981V18a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 18V9.528c0-1.171.6-2.24 1.566-2.814l5.25-3.5c.966-.644 2.23.04 2.23 1.149V6.75A2.25 2.25 0 0 1 15 9Z" /></svg>
+                    <h4 class="text-lg font-semibold text-gray-300 mt-4">Inbox Zero</h4>
+                    <p class="text-sm text-gray-500 mt-1">You have no pending payment requests.</p>
+                </div>
+                <!-- *** END MODIFICATION *** -->
 
                 <div class="bg-gradient-to-r from-lime-400 to-green-500 text-black p-5 rounded-xl mt-10 text-center shadow-lg">
                     <h3 class="font-bold text-lg">Managing multiple payments?</h3>
@@ -238,6 +167,12 @@
                 <div class="h-52 bg-cover bg-center" style="background-image: url('https://placehold.co/600x400/333/999?text=Dinner+Photo')">
                 </div>
                 
+                <!-- *** NEW: Consolidation Banner (PRD 8.2.1 B) *** -->
+                <div id="consolidation-banner" class="p-4 bg-blue-800 text-center text-blue-100 hidden">
+                    <p class="font-bold text-lg">Consolidation in Progress</p>
+                    <p id="consolidation-timer" class="text-sm">Time left to add expenses: 00:00:00</p>
+                </div>
+                
                 <div class="p-6 space-y-8">
                     <div class="flex justify-between items-center">
                         <div>
@@ -250,7 +185,8 @@
                         <span class="text-sm font-semibold bg-lime-200 text-lime-800 rounded-full px-3 py-1">5 of 8 have paid</span>
                     </div>
 
-                    <div class="bg-pink-900/50 border border-pink-700 rounded-xl p-5 my-4">
+                    <!-- *** MODIFICATION: Added ID to hide this when consolidating *** -->
+                    <div id="your-share-box" class="bg-pink-900/50 border border-pink-700 rounded-xl p-5 my-4">
                         <div class="flex justify-between items-center">
                             <span class="text-sm font-semibold text-pink-300">Your share</span>
                             <span id="split-detail-amount" class="text-3xl font-bold text-pink-300">€ 187,50</span>
@@ -258,39 +194,25 @@
                     </div>
                     
                     <div class="grid grid-cols-2 gap-4 my-4">
-                        <button class="btn-gradient-blue font-semibold py-3 rounded-lg shadow-md" onclick="openHotKeyModal('social')">
+                        <!-- *** MODIFICATION: Added ID to hide this when consolidating *** -->
+                        <button id="pay-share-button" class="btn-gradient-blue font-semibold py-3 rounded-lg shadow-md" onclick="openHotKeyModal('social')">
                             Pay your share
                         </button>
-                        <button class="w-full bg-slate-700 text-slate-200 font-semibold py-3 rounded-lg border border-slate-600">
+                        <!-- *** MODIFICATION: Button is now enabled/disabled via JS *** -->
+                        <button id="add-expense-button" class="w-full bg-slate-700 text-slate-200 font-semibold py-3 rounded-lg border border-slate-600" onclick="showAddExpenseModal()">
                             Add people to split +
                         </button>
                     </div>
 
                     <div class="mt-6">
-                        <h3 class="font-bold text-white mb-3">Group expenses <span class="font-normal text-slate-400">€ 1.500</span></h3>
-                        <div class="space-y-4">
-                            <div class="flex justify-between items-center">
-                                <div>
-                                    <p class="font-medium text-slate-200">Sushi dinner at Sakura</p>
-                                    <p class="text-sm text-slate-400">95% Paid by Sarah Williams</p>
-                                </div>
-                                <div class="text-right">
-                                    <p class="font-medium text-slate-200">€ 750</p>
-                                    <p class="text-sm text-slate-400">€ 93,75 pp</p>
-                                </div>
-                            </div>
-                            <div class="flex justify-between items-center">
-                                <div>
-                                    <p class="font-medium text-slate-200">Uber ride (to & from restaurant)</p>
-                                    <p class="text-sm text-slate-400">70% Paid by Mike Torres</p>
-                                </div>
-                                <div class="text-right">
-                                    <p class="font-medium text-slate-200">€ 750</p>
-                                    <p class="text-sm text-slate-400">€ 93,75 pp</p>
-                                </div>
-                            </div>
+                        <!-- *** MODIFICATION: Added ID for dynamic rendering *** -->
+                        <h3 class="font-bold text-white mb-3">Group expenses <span id="group-expenses-total" class="font-normal text-slate-400">€ 0.00</span></h3>
+                        <!-- *** MODIFICATION: Added ID for dynamic rendering *** -->
+                        <div id="group-expenses-list" class="space-y-4">
+                            <!-- Expenses will be rendered here by JS -->
                         </div>
-                        <button class="w-full bg-slate-800 text-gray-500 font-semibold py-3 rounded-lg border border-slate-700 mt-4 grayscale opacity-50 cursor-not-allowed">
+                        <!-- *** MODIFICATION: This button is now enabled/disabled via JS based on consolidation status *** -->
+                        <button id="add-expense-to-group-button" class="w-full bg-slate-800 text-slate-300 font-semibold py-3 rounded-lg border border-slate-700 mt-4" onclick="showAddExpenseModal()">
                             Add expense to group +
                         </button>
                     </div>
@@ -736,6 +658,42 @@
             </main>
         </div>
 
+        <!-- *** NEW PAGE: Share Link (PRD 4.2) *** -->
+        <div id="page-split-share-link" class="page flex flex-col p-8">
+            <header class="p-6 bg-slate-900 sticky top-0 z-10 flex justify-between items-center -m-8 mb-8">
+                <button class="text-gray-200" onclick="showPage('page-creator-dashboard', 'backward')">
+                    <svg class="w-6 h-6" fill="none" stroke-width="2.5" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5"></path></svg>
+                </button>
+                <h1 class="text-lg font-bold text-white">Split is Live!</h1>
+                <div class="w-6"></div> 
+            </header>
+            
+            <div class="flex-grow flex flex-col justify-center items-center text-center">
+                <div class="walkthrough-image bg-slate-800 w-64 h-64 rounded-full flex items-center justify-center mb-10">
+                    <svg class="w-24 h-24 text-lime-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 1 0 0 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186 9.566-5.314m-9.566 5.314 9.566 5.314m0 0a2.25 2.25 0 1 0 0-2.186m0 2.186c-.18-.324-.283-.696-.283-1.093s.103-.77.283-1.093m0 2.186-9.566-5.314" />
+                    </svg>
+                </div>
+                <h2 class="text-3xl font-bold text-white mb-4">Your Split is Consolidating!</h2>
+                <p class="text-lg text-slate-300 mb-6">Share this link with participants so they can add their expenses.</p>
+                
+                <div class="w-full bg-slate-800 border border-slate-700 rounded-lg p-4 text-left mb-4">
+                    <p class="text-sm text-slate-400">Shareable Project Link (PRD 4.2):</p>
+                    <p id="share-link-text" class="text-white font-mono break-all">max.com/split/...</p>
+                </div>
+                <button class="w-full btn-gradient-blue font-semibold py-3 rounded-lg shadow-md text-lg" onclick="copyShareLink()">
+                    Copy Link
+                </button>
+            </div>
+
+            <div class="pb-10 mt-8">
+                <button class="w-full bg-slate-700 text-white font-semibold py-4 rounded-lg shadow-md" onclick="showPage('page-creator-dashboard', 'backward')">
+                    Go to Dashboard
+                </button>
+            </div>
+        </div>
+        <!-- *** END NEW PAGE *** -->
+
 
         <button id="flip-button" class="fixed z-20 bottom-8 right-6 bg-gradient-to-r from-lime-400 to-green-500 text-black rounded-full p-4 shadow-lg" onclick="toggleMode()">
             <div id="icon-payer">
@@ -873,6 +831,34 @@
             Cancel
         </button>
     </div>
+
+    <!-- *** NEW MODAL: Add Expense (PRD 4.2) *** -->
+    <div id="add-expense-modal-backdrop" class="fixed inset-0 bg-black bg-opacity-70 z-30 hidden opacity-0" onclick="hideAddExpenseModal()"></div>
+    <div id="add-expense-modal" class="fixed bottom-0 left-0 right-0 z-40 bg-slate-800 rounded-t-2xl shadow-2xl p-6 max-w-md mx-auto hidden">
+        <div class="w-12 h-1.5 bg-slate-600 rounded-full mx-auto mb-5"></div>
+        
+        <h2 class="text-2xl font-bold text-white mb-6">Add Your Expense</h2>
+        <p class="text-slate-300 mb-6">Add an expense to the group split. This will be visible to all participants.</p>
+
+        <div class="space-y-4 mb-6">
+            <div>
+                <label for="new-expense-desc" class="block text-sm font-medium text-slate-400 mb-2">Description</label>
+                <input type="text" id="new-expense-desc" class="block w-full rounded-lg bg-slate-900 border-slate-700 text-white p-4" placeholder="e.g., Uber ride">
+            </div>
+             <div>
+                <label for="new-expense-amount" class="block text-sm font-medium text-slate-400 mb-2">Amount</label>
+                <input type="number" id="new-expense-amount" class="block w-full rounded-lg bg-slate-900 border-slate-700 text-white p-4" placeholder="€ Amount">
+            </div>
+            <button class="w-full btn-gradient-blue font-semibold py-3 rounded-lg shadow-md" onclick="handleAddExpense()">
+                Add Expense to Split
+            </button>
+        </div>
+        
+        <button class="w-full text-center text-sm font-semibold text-gray-400 mt-5" onclick="hideAddExpenseModal()">
+            Cancel
+        </button>
+    </div>
+    <!-- *** END NEW MODAL *** -->
 
     <script src="script.js" defer></script>
 </body>

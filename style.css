@@ -39,9 +39,9 @@ body {
     transform: translateX(100%);
     visibility: hidden;
     
-    /* We add a default background to prevent "bleed" */
-    /* This can be overridden by pages if needed */
-    background-color: transparent; 
+    /* *** FIX: Give all pages a solid background *** */
+    /* This prevents the app-container gradient from bleeding through */
+    background-color: #0f172a; /* slate-900 */ 
 }
 .page.active {
     transform: translateX(0);
@@ -59,13 +59,14 @@ body {
     visibility: hidden;
     z-index: 5;
 }
-
-/* * *** MODIFICATION ***
- * Removed the conflicting .page#page-welcome rule.
- * The .page.active rule in the HTML is all that's needed
- * to show the welcome page on load, and this allows
- * the .hiding-left class to correctly hide it.
- */
+/* *** FIX: Removed this buggy rule. *** */
+/* The .page.active rule handles the welcome page correctly. */
+/*
+.page#page-welcome {
+    transform: translateX(0);
+    visibility: visible;
+}
+*/
 
 
 /* Hotkey Modal styles */
@@ -190,5 +191,17 @@ body {
     transition: transform 0.3s ease-in-out;
 }
 #payment-promise-modal.visible {
+    transform: translateY(0);
+}
+
+/* Add Expense Modal styles */
+#add-expense-modal-backdrop {
+    transition: opacity 0.3s ease-in-out;
+}
+#add-expense-modal {
+    transform: translateY(100%);
+    transition: transform 0.3s ease-in-out;
+}
+#add-expense-modal.visible {
     transform: translateY(0);
 }

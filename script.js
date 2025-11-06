@@ -12,6 +12,8 @@ let currentViewedRequest = null;
 // NEW: State for the "Validated Payer" flow (PRD 6.2.1)
 let isUserValidated = false; // By default, user is not validated
 let pendingPageId = null; // Stores the page user *wants* to see
+// NEW: Store timer intervals
+let activeTimers = {};
 
 // --- Navigation ---
 
@@ -76,6 +78,18 @@ function showPage(pageId, direction = 'forward') {
     if (pageId === 'page-creator-dashboard') {
         renderSentRequests();
     }
+    
+    // If we are showing the share link page, render it
+    if (pageId === 'page-split-share-link') {
+        renderShareLinkPage();
+    }
+    
+    // *** NEW: Render received requests when payer dashboard is shown ***
+    if (pageId === 'page-payer-dashboard') {
+        renderReceivedRequests();
+    }
+    
+    currentPage = newPage; // Update the current page
 }
 
 /**
@@ -183,13 +197,7 @@ function startWalkthrough() {
 function finishOnboarding() {
     // This function lands the user on the Creator Dashboard
     // and sets the app state accordingly.
-    
-    // *** MODIFICATION ***
-    // Changed this to land on the Payer Dashboard first,
-    // as per the common user flow.
-    // showCreatorDashboard();
-    showPage('page-payer-dashboard', 'forward');
-    // *** END MODIFICATION ***
+    showCreatorDashboard();
 }
 
 // --- NEW: OTP Validation Modal (PRD 6.2.1) ---
@@ -221,27 +229,30 @@ function hideOtpModal() {
  * This function intercepts navigation to secure pages.
  * It checks if the user is validated first.
  * (PRD 6.2.1 / 9.2)
- * @param {string} pageId The ID of the request page to navigate to.
+ * @param {string} requestId The *unique ID* of the request to navigate to.
  */
-function navigateToRequest(pageId) {
-    // NEW: Find the corresponding request object from our data
-    // We use the pageId as a unique key for now
-    const request = receivedRequests.find(r => r.page === pageId);
+function navigateToRequest(requestId) {
+    // *** MODIFICATION: Find by unique ID, not generic pageId ***
+    const request = receivedRequests.find(r => r.id === requestId);
     
     if (request) {
         currentViewedRequest = request;
         console.log('Currently viewing request:', currentViewedRequest);
     } else {
-        console.warn('Could not find a request for pageId:', pageId);
+        console.warn('Could not find a request for request ID:', requestId);
         currentViewedRequest = null; // Clear it if no match
+        return; // Don't proceed
     }
+    
+    // *** MODIFICATION: Determine the page to show from the request object ***
+    const pageIdToShow = request.page;
 
     if (isUserValidated) {
         // If user is already validated in this session, go straight to the page
-        showPage(pageId, 'forward');
+        showPage(pageIdToShow, 'forward');
     } else {
         // If not validated, store the intended page
-        pendingPageId = pageId;
+        pendingPageId = pageIdToShow;
         // And show the OTP modal instead
         showOtpModal();
     }
@@ -271,8 +282,8 @@ function handleOtpValidation() {
             }
         }, 300);
     } else {
-        // We don't use alert()
-        console.error('Please enter a valid code.');
+        // Use a less obtrusive notification if possible
+        console.warn('Please enter a valid code.');
     }
 }
 
@@ -368,11 +379,71 @@ function confirmPaymentPromise(promiseType) {
     // We'll also navigate back to the dashboard, as the "seduction"
     // flow would start here (PRD 6.2.2)
     setTimeout(() => {
-        // We don't use alert()
+        // Non-blocking notification
         console.log('Promise sent! The creator has been notified.');
         showPage('page-payer-dashboard', 'backward');
     }, 300);
 }
+
+// --- NEW: Add Expense Modal (PRD 4.2) ---
+const addExpenseBackdrop = document.getElementById('add-expense-modal-backdrop');
+const addExpenseModal = document.getElementById('add-expense-modal');
+
+function openAddExpenseModal() {
+    addExpenseBackdrop.classList.remove('hidden');
+    addExpenseModal.classList.remove('hidden');
+    
+    setTimeout(() => {
+        addExpenseBackdrop.classList.remove('opacity-0');
+        addExpenseModal.classList.add('visible');
+    }, 10);
+}
+
+function closeAddExpenseModal() {
+    addExpenseBackdrop.classList.add('opacity-0');
+    addExpenseModal.classList.remove('visible');
+    
+    setTimeout(() => {
+        addExpenseBackdrop.classList.add('hidden');
+        addExpenseModal.classList.add('hidden');
+    }, 300);
+}
+
+function handleAddExpense() {
+    const desc = document.getElementById('add-expense-desc').value;
+    const amount = parseFloat(document.getElementById('add-expense-amount').value);
+    
+    if (!desc || !amount || amount <= 0) {
+        console.warn('Please enter a valid description and amount.');
+        return;
+    }
+
+    if (!currentViewedRequest) {
+        console.error('Cannot add expense: no request is being viewed.');
+        return;
+    }
+
+    // Add the new expense to the request object
+    // In a real app, "You" would be the validated user's name
+    const newExpense = {
+        desc: desc,
+        paidBy: 'You', // (PRD 4.2.1)
+        amount: amount.toFixed(2)
+    };
+    currentViewedRequest.expenses.push(newExpense);
+    
+    // Update the total amount for the split
+    currentViewedRequest.amount = currentViewedRequest.expenses.reduce((total, ex) => total + parseFloat(ex.amount), 0);
+
+    // Re-render the details page to show the new expense
+    renderRequestDetails();
+    
+    // Clear form and close modal
+    document.getElementById('add-expense-desc').value = '';
+    document.getElementById('add-expense-amount').value = '';
+    closeAddExpenseModal();
+}
+
 
 /**
  * "Paints" the data from the currentViewedRequest object onto the
@@ -393,11 +464,71 @@ function renderRequestDetails() {
         const titleEl = document.getElementById('split-detail-title');
         const creatorEl = document.getElementById('split-detail-creator');
         const amountEl = document.getElementById('split-detail-amount');
-        
+        const yourShareContainer = document.getElementById('social-your-share-container');
+        const payButton = document.getElementById('social-pay-btn');
+        const addExpenseButton = document.getElementById('social-add-expense-btn');
+        const consolidationBanner = document.getElementById('consolidation-banner');
+        const timerEl = document.getElementById('consolidation-timer');
+        const expenseListContainer = document.getElementById('social-expense-list');
+        const totalAmountEl = document.getElementById('social-total-amount');
+
         // We use 'subtitle' for the main title, 'title' for the creator
         if (titleEl) titleEl.innerText = currentViewedRequest.subtitle || 'Social Split';
         if (creatorEl) creatorEl.innerText = currentViewedRequest.title; // e.g., "95% Sarah Williams"
-        if (amountEl) amountEl.innerText = formatCurrency(currentViewedRequest.amount);
+        
+        // --- NEW: Consolidation Logic (PRD 8.2.1.B) ---
+        if (currentViewedRequest.isConsolidating) {
+            // HIDE pay controls
+            if (yourShareContainer) yourShareContainer.classList.add('hidden');
+            if (payButton) payButton.classList.add('hidden');
+            // SHOW consolidation controls
+            if (addExpenseButton) addExpenseButton.classList.remove('hidden');
+            if (consolidationBanner) consolidationBanner.classList.remove('hidden');
+
+            // Start timer if not already running
+            if (!activeTimers[currentViewedRequest.id]) {
+                startConsolidationTimer(currentViewedRequest.deadline, timerEl, currentViewedRequest.id);
+            }
+
+        } else {
+            // SHOW pay controls
+            if (yourShareContainer) yourShareContainer.classList.remove('hidden');
+            if (payButton) payButton.classList.remove('hidden');
+            // HIDE consolidation controls
+            if (addExpenseButton) addExpenseButton.classList.add('hidden');
+            if (consolidationBanner) consolidationBanner.classList.add('hidden');
+            // Stop timer if it was running
+            if (activeTimers[currentViewedRequest.id]) {
+                clearInterval(activeTimers[currentViewedRequest.id]);
+                delete activeTimers[currentViewedRequest.id];
+            }
+            
+            // TODO: Set the "Your Share" amount based on Smart Settlement
+            if (amountEl) amountEl.innerText = formatCurrency(currentViewedRequest.amount);
+        }
+
+        // --- NEW: Render Dynamic Expense List ---
+        if (expenseListContainer) {
+            expenseListContainer.innerHTML = ''; // Clear list
+            let total = 0;
+            currentViewedRequest.expenses.forEach(expense => {
+                total += parseFloat(expense.amount);
+                const li = document.createElement('div');
+                li.className = 'flex justify-between items-center';
+                li.innerHTML = `
+                    <div>
+                        <p class="font-medium text-slate-200">${expense.desc}</p>
+                        <p class="text-sm text-slate-400">Paid by ${expense.paidBy}</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-medium text-slate-200">${formatCurrency(expense.amount)}</p>
+                    </div>
+                `;
+                expenseListContainer.appendChild(li);
+            });
+            if (totalAmountEl) totalAmountEl.innerText = formatCurrency(total);
+        }
+
 
     } else if (currentViewedRequest.type === 'sme') {
         // --- Populate SME Invoice Page ---
@@ -416,9 +547,9 @@ function renderRequestDetails() {
             statusEl.innerText = currentViewedRequest.status;
             // Remove old colors, add new one
             statusEl.classList.remove('text-red-500', 'text-yellow-400', 'text-slate-400');
-            if (currentViewedRequest.status.toLowerCase().includes('overdue')) {
+            if (currentViewedRequest.status.includes('Overdue')) {
                 statusEl.classList.add('text-red-500');
-            } else if (currentViewedRequest.status.toLowerCase().includes('promised')) {
+            } else if (currentViewedRequest.status.includes('Promised')) {
                 statusEl.classList.add('text-yellow-400');
             } else {
                 statusEl.classList.add('text-slate-400');
@@ -426,6 +557,129 @@ function renderRequestDetails() {
         }
     }
 }
+
+/**
+ * Starts a countdown timer for a split
+ * @param {string} deadlineISO - The ISO string of the deadline
+ * @param {HTMLElement} timerEl - The element to display the timer in
+ * @param {string} timerId - The unique ID of the split to manage the interval
+ */
+function startConsolidationTimer(deadlineISO, timerEl, timerId) {
+    if (!deadlineISO || !timerEl) return;
+
+    const deadline = new Date(deadlineISO).getTime();
+
+    // Clear any existing timer for this ID
+    if (activeTimers[timerId]) {
+        clearInterval(activeTimers[timerId]);
+    }
+
+    activeTimers[timerId] = setInterval(() => {
+        const now = new Date().getTime();
+        const distance = deadline - now;
+
+        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+        let timeString = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        if (days > 0) {
+            timeString = `${days}d ${timeString}`;
+        }
+
+        if (distance < 0) {
+            clearInterval(activeTimers[timerId]);
+            delete activeTimers[timerId];
+            timerEl.innerText = "Consolidation finished!";
+            
+            // *** The timer has ended ***
+            // Find the request and update its state
+            // and trigger the Smart Settlement (PRD 4.2.1)
+            if (currentViewedRequest) {
+                currentViewedRequest.isConsolidating = false;
+                
+                // *** NEW: Trigger Smart Settlement ***
+                console.log(`Split ${currentViewedRequest.id} has finalized! Running Smart Settlement...`);
+                runSmartSettlement(currentViewedRequest);
+                
+                // Re-render the details to show the "Pay" button
+                renderRequestDetails(); 
+            }
+        } else {
+            timerEl.innerText = `Time left to add expenses: ${timeString}`;
+        }
+    }, 1000);
+}
+
+/**
+ * *** NEW: Smart Settlement Logic (PRD 4.2.1) ***
+ * This function calculates who owes what.
+ * @param {object} request - The split request object that has just finalized.
+ */
+function runSmartSettlement(request) {
+    if (!request || !request.expenses || request.type !== 'social') {
+        console.error('Smart Settlement Failed: Invalid request object.');
+        return;
+    }
+
+    console.log('--- Running Smart Settlement ---');
+    const contributions = {};
+    let totalPot = 0;
+
+    // 1. Tally contributions
+    request.expenses.forEach(expense => {
+        const contributor = expense.paidBy;
+        const amount = parseFloat(expense.amount);
+        
+        if (!contributions[contributor]) {
+            contributions[contributor] = 0;
+        }
+        contributions[contributor] += amount;
+        totalPot += amount;
+    });
+
+    console.log('Total Pot:', totalPot.toFixed(2));
+    console.log('Contributions:', contributions);
+
+    // 2. Get participants (Note: This is a weak point in our prototype, we'll fake it)
+    // In a real app, request.participants would be a list of all users in the split.
+    // For now, we'll just use the people who contributed + "You" (the user).
+    const participants = new Set(Object.keys(contributions));
+    participants.add('You'); // Assume "You" are in the split
+    
+    const numParticipants = participants.size;
+    if (numParticipants === 0) {
+        console.error('Smart Settlement Failed: No participants found.');
+        return;
+    }
+
+    const sharePerPerson = totalPot / numParticipants;
+    console.log(`Share per person (${numParticipants} participants):`, sharePerPerson.toFixed(2));
+
+    // 3. Calculate net positions
+    const netPositions = {};
+    participants.forEach(participant => {
+        const contribution = contributions[participant] || 0;
+        const netPosition = contribution - sharePerPerson;
+        netPositions[participant] = netPosition;
+    });
+
+    console.log('--- Net Positions (PRD 4.2.1) ---');
+    // 4. Log debtors and creditors
+    for (const [participant, position] of Object.entries(netPositions)) {
+        if (position < 0) {
+            console.log(`DEBTOR: ${participant} owes ${Math.abs(position).toFixed(2)}`);
+        } else if (position > 0) {
+            console.log(`CREDITOR: ${participant} is owed ${position.toFixed(2)}`);
+        } else {
+            console.log(`SETTLED: ${participant} is settled.`);
+        }
+    }
+    console.log('--- End of Smart Settlement ---');
+    // The next step would be to create the payment notifications (PRD 4.2.1)
+}
+
 
 /**
  * Simulates the payment and triggers the conversion flow (PRD Ch 6)
@@ -442,59 +696,6 @@ function triggerPayment() {
         showPage('page-payment-confirmed', 'forward');
     }, 500); // 0.5 second delay
 }
-
-// *** NEW FUNCTION (PRD 5.3) ***
-/**
- * Triggered from the "Add people to split +" button on an SME invoice.
- * This flips the user to Creator mode and pre-populates a new
- * social split with the invoice's details.
- */
-function triggerCatalystSplit() {
-    if (!currentViewedRequest || currentViewedRequest.type !== 'sme') {
-        console.error('No SME request is being viewed. Cannot trigger catalyst split.');
-        return;
-    }
-
-    console.log('Triggering Catalyst Splitter (PRD 5.3)');
-
-    // 1. Get data from the current SME invoice
-    const invoiceTitle = currentViewedRequest.subtitle; // "INV-000-001"
-    const invoiceCreator = currentViewedRequest.title; // "98% Adidas"
-    const invoiceAmount = currentViewedRequest.amount; // 3025.00
-
-    // 2. Flip to Creator Mode
-    // This function already handles showing the page and flipping the icon
-    showCreatorDashboard();
-
-    // 3. Navigate to the Create Split page
-    // We use a short delay to let the dashboard transition start,
-    // then immediately navigate to the create page.
-    setTimeout(() => {
-        showPage('page-create-split', 'forward');
-        
-        // 4. Pre-populate the form
-        // We use another short delay to ensure the page is in the DOM
-        setTimeout(() => {
-            const titleEl = document.getElementById('split-title');
-            const descEl = document.querySelector('#split-expense-container .split-expense-desc');
-            const amountEl = document.querySelector('#split-expense-container .split-expense-amount');
-
-            if (titleEl) {
-                titleEl.value = `Split: ${invoiceTitle}`;
-            }
-            if (descEl && amountEl) {
-                descEl.value = `Invoice from ${invoiceCreator}`;
-                amountEl.value = invoiceAmount;
-            } else {
-                console.warn('Could not find split form elements to populate.');
-            }
-            console.log('Catalyst split form populated.');
-        }, 100); // 100ms should be enough for the page to be ready
-
-    }, 50); // Short delay
-}
-// *** END NEW FUNCTION ***
-
 
 // --- Creator Form Logic ---
 
@@ -565,22 +766,38 @@ function handleSendInvoice() {
     if (!clientName || items.length === 0) {
         // Use a less obtrusive notification
         console.error('Please fill in a client name and at least one item.');
-        // alert('Please fill in a client name and at least one item.');
         return;
     }
+    
+    const newId = `INV-${Date.now()}`;
 
-    const newRequest = {
-        id: `INV-${Date.now()}`,
+    // 1. Create the request for the Creator's dashboard
+    const newSentRequest = {
+        id: newId,
         type: 'invoice',
-        title: clientName,
+        title: `Client: ${clientName}`,
         subtitle: `INV-${Date.now().toString().slice(-4)}`,
         amount: totalWithVat.toFixed(2),
         status: 'Pending',
         statusColor: 'text-orange-400',
         icon: 'https://placehold.co/40x40/000000/FFFFFF?text=I'
     };
+    sentRequests.push(newSentRequest);
 
-    sentRequests.push(newRequest);
+    // 2. Create the corresponding request for the Payer's dashboard
+    const newReceivedRequest = {
+        id: newId,
+        type: 'sme',
+        title: '97% You (Creator)', // Creator's info
+        subtitle: newSentRequest.subtitle, // Request info
+        page: 'page-sme-invoice',
+        amount: totalWithVat,
+        status: 'Pending',
+        expenses: items, // Store line items
+        vat: vat
+    };
+    receivedRequests.push(newReceivedRequest);
+
     showPage('page-creator-dashboard', 'backward'); // Go back to dashboard
 }
 
@@ -590,36 +807,78 @@ function handleSendInvoice() {
 function handleSendSplit() {
     const title = document.getElementById('split-title').value;
     const participants = document.getElementById('split-participants').value;
+    const expenses = [];
     let total = 0;
 
     document.querySelectorAll('.split-expense-item').forEach(item => {
+        const desc = item.querySelector('.split-expense-desc').value;
         const amount = parseFloat(item.querySelector('.split-expense-amount').value) || 0;
-        total += amount;
+        if (desc && amount > 0) {
+            // In a real app, "You" would be the validated user's name
+            expenses.push({ desc, amount, paidBy: 'You' });
+            total += amount;
+        }
     });
+    
+    // Get deadline
+    const selectedDeadlineEl = document.querySelector('#deadline-options .deadline-btn.selected');
+    const deadlineHours = parseInt(selectedDeadlineEl.dataset.value); // e.g., 24, 48, or 0
+    let deadline = null;
+    if (deadlineHours > 0) {
+        deadline = new Date(Date.now() + deadlineHours * 60 * 60 * 1000).toISOString();
+    }
+    // FOR DEMO: Let's make it 1 minute
+    deadline = new Date(Date.now() + 1 * 60 * 1000).toISOString();
 
-    if (!title || !participants || total === 0) {
+
+    if (!title || !participants || expenses.length === 0) {
         // Use a less obtrusive notification
         console.error('Please fill in a title, at least one participant, and an expense.');
-        // alert('Please fill in a title, at least one participant, and an expense.');
         return;
     }
 
-    const participantCount = participants.split(',').length;
-    const subtitle = participantCount > 1 ? `${participantCount} participants` : participants;
+    const participantList = participants.split(',').map(p => p.trim());
+    const participantCount = participantList.length + 1; // +1 for the creator
+    const subtitle = `${participantCount} participants`;
+    const newId = `SPL-${Date.now()}`;
 
-    const newRequest = {
-        id: `SPL-${Date.now()}`,
+    // 1. Create the request for the Creator's dashboard
+    const newSentRequest = {
+        id: newId,
         type: 'split',
         title: title,
         subtitle: subtitle,
         amount: total.toFixed(2),
-        status: `0/${participantCount} Paid`,
-        statusColor: 'text-lime-400',
-        icon: 'https://placehold.co/40x40/9333ea/FFFFFF?text=S'
+        status: `Consolidating...`,
+        statusColor: 'text-blue-400',
+        icon: 'https://placehold.co/40x40/9333ea/FFFFFF?text=S',
+        isConsolidating: true, // (PRD 4.2)
+        deadline: deadline
     };
+    sentRequests.push(newSentRequest);
 
-    sentRequests.push(newRequest);
-    showPage('page-creator-dashboard', 'backward'); // Go back to dashboard
+    // 2. Create the corresponding request for the Payer's dashboard
+    // This simulates *all* participants getting the request, including "You"
+    const newReceivedRequest = {
+        id: newId,
+        type: 'social',
+        title: '97% You (Creator)', // Creator's info
+        subtitle: title, // Request info
+        page: 'page-social-split',
+        amount: total, // This is the *total pot* amount for now
+        status: 'Consolidating...',
+        expenses: expenses, // (PRD 4.2)
+        isConsolidating: true,
+        deadline: deadline,
+        participants: participantList // Store participants
+    };
+    receivedRequests.push(newReceivedRequest);
+
+    // Set this as the "current request" for the share page
+    currentViewedRequest = newReceivedRequest;
+    
+    // Go to the new "Share Link" page (PRD 4.2, step 2)
+    showPage('page-split-share-link', 'forward');
 }
 
 /**
@@ -639,6 +898,14 @@ function renderSentRequests() {
         sentRequests.slice().reverse().forEach(req => {
             const requestCard = document.createElement('div');
             requestCard.className = 'bg-slate-800 border border-slate-700 rounded-xl p-4 shadow-sm';
+            
+            // Allow clicking to view
+            const matchingReceived = receivedRequests.find(r => r.id === req.id);
+            if (matchingReceived) {
+                requestCard.classList.add('cursor-pointer', 'hover:bg-slate-700');
+                requestCard.onclick = () => navigateToRequest(matchingReceived.id);
+            }
+            
             requestCard.innerHTML = `
                 <div class="flex justify-between items-center">
                     <div class="flex items-center gap-3">
@@ -660,6 +927,74 @@ function renderSentRequests() {
 }
 
 /**
+ * *** NEW: Renders the `receivedRequests` array into the Payer Dashboard ***
+ */
+function renderReceivedRequests() {
+    const container = document.getElementById('received-requests-list');
+    const placeholder = document.getElementById('no-requests-received-placeholder');
+    
+    if (!container || !placeholder) {
+        console.error('Could not find received requests container');
+        return;
+    }
+
+    container.innerHTML = ''; // Clear the list
+
+    if (receivedRequests.length === 0) {
+        placeholder.style.display = 'block';
+    } else {
+        placeholder.style.display = 'none';
+        // Show newest first
+        receivedRequests.slice().reverse().forEach(req => {
+            const requestCard = document.createElement('div');
+            requestCard.className = 'bg-slate-800 border border-slate-700 rounded-xl p-4 shadow-sm cursor-pointer hover:bg-slate-700 transition-colors';
+            requestCard.onclick = () => navigateToRequest(req.id);
+            
+            // We need to determine the right icon/color
+            let iconHtml = '';
+            let statusColor = 'text-slate-400';
+            let statusText = req.status;
+
+            if (req.isConsolidating) {
+                statusColor = 'text-blue-400';
+                statusText = 'Consolidating...';
+            } else if (req.status.toLowerCase().includes('overdue')) {
+                statusColor = 'text-red-500';
+            } else if (req.status.toLowerCase().includes('promised')) {
+                statusColor = 'text-yellow-400';
+            } else if (req.status.toLowerCase().includes('pending')) {
+                statusColor = 'text-orange-400';
+            }
+
+
+            if (req.type === 'sme') {
+                iconHtml = `<img src="${req.icon || 'https://placehold.co/40x40/000000/FFFFFF?text=SME'}" alt="SME" class="w-10 h-10 rounded-full">`;
+            } else if (req.type === 'social') {
+                iconHtml = `<img src="${req.icon || 'https://placehold.co/40x40/9333ea/FFFFFF?text=SOC'}" alt="Social" class="w-10 h-10 rounded-full">`;
+            }
+
+            requestCard.innerHTML = `
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center gap-3">
+                        ${iconHtml}
+                        <div>
+                            <p class="font-bold text-white">${req.title}</p>
+                            <p class="text-sm text-slate-400">${req.subtitle}</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-lg font-bold text-pink-400">€ ${Number(req.amount).toFixed(2)}</p>
+                        <p class="text-sm font-semibold ${statusColor}">${statusText}</p>
+                    </div>
+                </div>
+            `;
+            container.appendChild(requestCard);
+        });
+    }
+}
+
+
+/**
  * Populates our "in-memory database" with initial data.
  * This simulates a real server, creating data for both
  * the payer and the creator.
@@ -678,7 +1013,13 @@ function initializeDatabase() {
             subtitle: 'INV-000-001', // Request info
             page: 'page-sme-invoice',
             amount: 3025.00,
-            status: '4 days overdue' // This is the value we will change
+            status: 'Overdue', // This is the value we will change
+            icon: 'https://placehold.co/40x40/000000/FFFFFF?text=A',
+            isConsolidating: false,
+            expenses: [
+                { desc: 'Consulting services', amount: 2000.00, paidBy: 'Adidas' },
+                { desc: 'Additional support', amount: 500.00, paidBy: 'Adidas' }
+            ]
         },
         {
             id: sarahMasterId,
@@ -686,40 +1027,89 @@ function initializeDatabase() {
             title: '95% Sarah Williams', // Creator's info
             subtitle: 'Dinner at Sakura', // Request info
             page: 'page-social-split',
-            amount: 187.50,
-            status: 'Due in 7 days' // This is the value we will change
+            amount: 1500.00, // This is the *total* pot
+            status: 'Pending', // This is the value we will change
+            icon: 'https://placehold.co/40x40/9333ea/FFFFFF?text=SW',
+            isConsolidating: false, // This split is finalized
+            deadline: null,
+            expenses: [
+                { desc: 'Sushi dinner at Sakura', amount: 750.00, paidBy: 'Sarah Williams' },
+                { desc: 'Uber ride (to & from)', amount: 750.00, paidBy: 'Mike Torres' }
+            ]
         }
     ];
 
     // 2. Creator's "Sent" data (Simulating we are Sarah/Adidas)
     // This is the data that will appear on the Creator Dashboard
-    // when/if the user logs in as them (not built yet)
-    // For now, it's just a way to test the "Promise" bridge
     sentRequests = [
-        // {
-        //     id: adidasMasterId, // Note the matching ID
-        //     type: 'invoice',
-        //     title: 'Client: Kevin (You)', // What Adidas sees
-        //     subtitle: 'INV-000-001',
-        //     amount: '3025.00',
-        //     status: '4 days overdue',
-        //     statusColor: 'text-red-500', // Payer's status
-        //     icon: 'https://placehold.co/40x40/000000/FFFFFF?text=A'
-        // },
-        // {
-        //     id: sarahMasterId, // Note the matching ID
-        //     type: 'split',
-        //     title: 'Dinner at Sakura', // What Sarah sees
-        //     subtitle: 'You are 1 of 8 participants',
-        //     amount: '187.50',
-        //     status: 'Due in 7 days', // Payer's status
-        //     statusColor: 'text-orange-400',
-        //     icon: 'https://placehold.co/40x40/9333ea/FFFFFF?text=SW'
-        // }
+        {
+            id: adidasMasterId, // Note the matching ID
+            type: 'invoice',
+            title: 'Client: Kevin (You)', // What Adidas sees
+            subtitle: 'INV-000-001',
+            amount: '3025.00',
+            status: 'Overdue',
+            statusColor: 'text-red-500', // Payer's status
+            icon: 'https://placehold.co/40x40/000000/FFFFFF?text=A',
+            isConsolidating: false
+        },
+        {
+            id: sarahMasterId, // Note the matching ID
+            type: 'split',
+            title: 'Dinner at Sakura', // What Sarah sees
+            subtitle: '8 participants',
+            amount: '1500.00',
+            status: '5/8 Paid', // Payer's status
+            statusColor: 'text-lime-400',
+            icon: 'https://placehold.co/40x40/9333ea/FFFFFF?text=SW',
+            isConsolidating: false
+        }
     ];
     
     console.log('Database initialized.');
 }
+
+/**
+ * Renders the "Share Link" page
+ */
+function renderShareLinkPage() {
+    if (!currentViewedRequest) {
+        showPage('page-creator-dashboard', 'backward');
+        return;
+    }
+    
+    const titleEl = document.getElementById('share-split-title');
+    const linkEl = document.getElementById('share-split-link');
+    
+    if (titleEl) titleEl.innerText = `Your split "${currentViewedRequest.subtitle}" is live!`;
+    // Simulate a project link (PRD 4.2)
+    if (linkEl) linkEl.value = `https://max.com/split/${currentViewedRequest.id}`;
+}
+
+/**
+ * Handles the "Catalyst Splitter" button click
+ * (PRD 5.3)
+ */
+function triggerCatalystSplitter() {
+    if (!currentViewedRequest) return;
+
+    // 1. Flip to Creator Mode
+    showCreatorDashboard();
+    
+    // 2. Go to the "Create Split" page
+    setTimeout(() => {
+        showPage('page-create-split', 'forward');
+        
+        // 3. Pre-populate the form (PRD 5.3, step 3)
+        setTimeout(() => {
+            document.getElementById('split-title').value = `Split: ${currentViewedRequest.subtitle}`;
+            document.querySelector('.split-expense-desc').value = `Invoice from ${currentViewedRequest.title}`;
+            document.querySelector('.split-expense-amount').value = currentViewedRequest.amount;
+        }, 350); // Wait for page transition
+        
+    }, 100);
+}
+
 
 // --- App Initialization ---
 
@@ -727,11 +1117,16 @@ function initializeDatabase() {
 document.addEventListener('DOMContentLoaded', () => {
     // Set the initial page to the new welcome screen
     currentPage = document.getElementById('page-welcome');
-    // The 'active' class is already on the element in the HTML,
+    // We remove the default 'active' class from HTML and add it here
+    // to ensure currentPage is set correctly.
+    currentPage.classList.add('active');
     // so it will be visible on load.
 
     // NEW: Initialize the database with Payer and Creator data
     initializeDatabase();
+    
+    // *** NEW: Render the initial payer requests ***
+    renderReceivedRequests();
 
     // --- Attach Event Listeners ---
     
