@@ -209,14 +209,34 @@ body {
     transform: translateY(0);
 }
 
-/* Add Expense Modal styles */
-#add-expense-modal-backdrop {
+/* --- MODIFICATION: Renamed Split Expense Modal --- */
+#add-expense-modal-split-backdrop {
     transition: opacity 0.3s ease-in-out;
 }
-#add-expense-modal {
+#add-expense-modal-split {
     transform: translateY(100%);
     transition: transform 0.3s ease-in-out;
 }
-#add-expense-modal.visible {
+#add-expense-modal-split.visible {
     transform: translateY(0);
 }
+/* --- END MODIFICATION --- */
+
+
+/* --- NEW: Styles for Group Pot Modals --- */
+#add-contribution-modal-backdrop,
+#add-expense-modal-pot-backdrop {
+    transition: opacity 0.3s ease-in-out;
+}
+
+#add-contribution-modal,
+#add-expense-modal-pot {
+    transform: translateY(100%);
+    transition: transform 0.3s ease-in-out;
+}
+
+#add-contribution-modal.visible,
+#add-expense-modal-pot.visible {
+    transform: translateY(0);
+}
+/* --- END NEW --- */

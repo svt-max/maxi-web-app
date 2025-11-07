@@ -17,6 +17,17 @@ let activeTimers = {};
 // *** NEW: Temporary storage for the invoice being created ***
 let tempInvoiceData = {};
 
+// --- NEW: Group Pot State ---
+// This stores the ID of the pot we are currently viewing
+let currentPotId = null;
+// This is the (hardcoded) ID of the current user.
+// This MUST match the CURRENT_USER_ID in app.py to test admin features.
+const CURRENT_USER_ID = 'user-uuid-admin-001';
+
+// --- NEW: API Config ---
+const API_URL = 'http://127.0.0.1:5000'; // URL of your Flask backend
+
+
 // --- Navigation ---
 
 /**
@@ -84,6 +95,7 @@ function showPage(pageId, direction = 'forward') {
     // If we are showing the creator dashboard, refresh the list
     if (pageId === 'page-creator-dashboard') {
         renderSentRequests();
+        renderMyGroupPots(); // --- NEW: Also render group pots ---
     }
     
     // If we are showing the share link page, render it
@@ -94,6 +106,11 @@ function showPage(pageId, direction = 'forward') {
     // *** NEW: Render received requests when payer dashboard is shown ***
     if (pageId === 'page-payer-dashboard') {
         renderReceivedRequests();
+    }
+    
+    // --- NEW: Load data if we are showing the pot dashboard ---
+    if (pageId === 'page-group-pot-dashboard') {
+        loadGroupPotData();
     }
     
     currentPage = newPage; // Update the current page
@@ -285,8 +302,10 @@ function navigateToCreatorDetail(requestId) {
         showPage('page-sme-invoice-detail-creator', 'forward');
     } else if (request.type === 'split') {
         // TODO: Create and navigate to 'page-social-split-detail-creator'
-        console.log('Navigating to creator split detail (not built yet)');
-        // For now, let's just show an alert
+        // For V2, we'll show the new split tracking page
+        showPage('page-social-split-detail-creator', 'forward');
+        // We need to render it too
+        renderCreatorSplitDetail();
     }
 }
 
@@ -397,9 +416,23 @@ function confirmPaymentPromise(promiseType) {
     if (linkedSentRequest) {
         linkedSentRequest.status = newStatus;
         linkedSentRequest.statusColor = newStatusColor;
+        
         // *** NEW: Update creator's status object (for PRD 5.2.1) ***
-        linkedSentRequest.recipientStatus.status = newStatus;
-        linkedSentRequest.recipientStatus.stage = 'Reacted';
+        if (linkedSentRequest.recipientStatus) {
+            linkedSentRequest.recipientStatus.status = newStatus;
+            linkedSentRequest.recipientStatus.stage = 'Reacted';
+        }
+        
+        // *** NEW: Update creator's *participant* status (for PRD 4.2.2) ***
+        if (linkedSentRequest.participantStatus) {
+            // This is a proto-V1 hack. We'll just update the first participant
+            // In a real app, we'd know *which* participant "You" are.
+            const userAsParticipant = linkedSentRequest.participantStatus.find(p => p.name.includes("You"));
+             if (userAsParticipant) {
+                userAsParticipant.stage = 'Reacted';
+                userAsParticipant.status = newStatus;
+            }
+        }
         
         console.log('Creator request updated:', linkedSentRequest);
     } else {
@@ -422,36 +455,182 @@ function confirmPaymentPromise(promiseType) {
     }, 300);
 }
 
-// --- NEW: Add Expense Modal (PRD 4.2) ---
-const addExpenseBackdrop = document.getElementById('add-expense-modal-backdrop');
-const addExpenseModal = document.getElementById('add-expense-modal');
+// --- NEW: Helper function to centralize all status updates ---
+/**
+ * Updates the status of the current request on both payer and creator sides.
+ * @param {object} statusDetails
+ * @param {string} statusDetails.payerStatus - Status text for the payer (e.g., "Promised")
+ * @param {string} statusDetails.creatorStatus - Status text for the creator (e.g., "Promised")
+ * @param {string} statusDetails.creatorStatusColor - Tailwind color for creator (e.g., "text-yellow-400")
+ * @param {string} statusDetails.stage - The new stage (e.g., "Reacted", "Seen")
+ */
+function updateRequestStatus(statusDetails) {
+    const { payerStatus, creatorStatus, creatorStatusColor, stage } = statusDetails;
 
-function openAddExpenseModal() {
-    // *** MODIFICATION: Use correct IDs from modal ***
-    document.getElementById('new-expense-desc').value = '';
-    document.getElementById('new-expense-amount').value = '';
+    if (!currentViewedRequest) {
+        console.error('No request is being viewed. Cannot update status.');
+        return;
+    }
 
-    addExpenseBackdrop.classList.remove('hidden');
-    addExpenseModal.classList.remove('hidden');
+    // 1. Update the Payer's "receivedRequest" object
+    currentViewedRequest.status = payerStatus;
+
+    // 2. Find and update the Creator's "sentRequest" object
+    const linkedSentRequest = sentRequests.find(req => req.id === currentViewedRequest.id);
     
-    setTimeout(() => {
-        addExpenseBackdrop.classList.remove('opacity-0');
-        addExpenseModal.classList.add('visible');
-    }, 10);
-}
-
-function closeAddExpenseModal() {
-    addExpenseBackdrop.classList.add('opacity-0');
-    addExpenseModal.classList.remove('visible');
+    if (linkedSentRequest) {
+        linkedSentRequest.status = creatorStatus;
+        linkedSentRequest.statusColor = creatorStatusColor;
+        
+        // Update creator's invoice recipient status
+        if (linkedSentRequest.recipientStatus) {
+            linkedSentRequest.recipientStatus.status = creatorStatus;
+            linkedSentRequest.recipientStatus.stage = stage;
+        }
+        
+        // Update creator's split participant status
+        if (linkedSentRequest.participantStatus) {
+            const userAsParticipant = linkedSentRequest.participantStatus.find(p => p.name.includes("You"));
+             if (userAsParticipant) {
+                userAsParticipant.stage = stage;
+                userAsParticipant.status = creatorStatus;
+            }
+        }
+        console.log('Creator request updated:', linkedSentRequest);
+    } else {
+        console.warn('Could not find linked sentRequest to update.');
+    }
     
+    console.log(`Status Updated! Payer sees: "${payerStatus}", Creator sees: "${creatorStatus}"`);
+
+    // Close the hotkey modal and go back to the dashboard
+    closeHotKeyModal();
     setTimeout(() => {
-        addExpenseBackdrop.classList.add('hidden');
-        addExpenseModal.classList.add('hidden');
+        showPage('page-payer-dashboard', 'backward');
     }, 300);
 }
 
-function handleAddExpense() {
-    // *** MODIFICATION: Use correct IDs from modal ***
+/**
+ * Handles one-click promises like "Remind me tomorrow"
+ * (PRD 3.4)
+ * @param {string} promiseType - 'tomorrow'
+ */
+function handleOneClickPromise(promiseType) {
+    let payerStatus = "Remind Me Tomorrow";
+    let creatorStatus = "Reminded Tomorrow";
+
+    if (promiseType === 'tomorrow') {
+        // In a real app, you'd set a reminder.
+        // For now, we'll just update the status.
+        updateRequestStatus({
+            payerStatus: "Will be reminded tomorrow",
+            creatorStatus: "Remind Tomorrow",
+            creatorStatusColor: "text-yellow-400",
+            stage: "Reacted"
+        });
+    }
+}
+
+/**
+ * Handles the "Already paid!" hotkey
+ * (PRD 3.4)
+ */
+function handleAlreadyPaid() {
+    updateRequestStatus({
+        payerStatus: "Marked as Paid",
+        creatorStatus: "Pending Confirmation",
+        creatorStatusColor: "text-orange-400",
+        stage: "Reacted"
+    });
+}
+
+// --- NEW: Dispute Modal (PRD 3.4) ---
+const disputeBackdrop = document.getElementById('dispute-modal-backdrop');
+const disputeModal = document.getElementById('dispute-modal');
+
+function showDisputeModal() {
+    disputeBackdrop.classList.remove('hidden');
+    disputeModal.classList.remove('hidden');
+    setTimeout(() => {
+        disputeBackdrop.classList.remove('opacity-0');
+        disputeModal.classList.add('visible');
+    }, 10);
+}
+
+function hideDisputeModal() {
+    disputeBackdrop.classList.add('opacity-0');
+    disputeModal.classList.remove('visible');
+    setTimeout(() => {
+        disputeBackdrop.classList.add('hidden');
+        disputeModal.classList.add('hidden');
+    }, 300);
+}
+
+/**
+ * Closes hotkey modal and opens dispute modal
+ */
+function handleDisputeClick() {
+    closeHotKeyModal();
+    setTimeout(showDisputeModal, 300);
+}
+
+/**
+ * Confirms the dispute, updates status, and closes modal
+ */
+function confirmDispute() {
+    const message = document.getElementById('dispute-message').value;
+    if (!message) {
+        console.warn('Please enter a dispute message.');
+        return;
+    }
+
+    console.log(`Dispute message sent: "${message}"`);
+    // In a real app, this message would be posted to the Social Feed (PRD 3.4)
+
+    updateRequestStatus({
+        payerStatus: `Disputed: "${message}"`,
+        creatorStatus: "Disputed",
+        creatorStatusColor: "text-red-500",
+        stage: "Reacted"
+    });
+
+    hideDisputeModal();
+    // updateRequestStatus already handles closing hotkey modal and navigating,
+    // so we just need to navigate back from the detail page.
+    setTimeout(() => {
+        showPage('page-payer-dashboard', 'backward');
+    }, 300);
+}
+
+
+// --- MODIFICATION: Renamed Add Expense Modal for Splits (PRD 4.2) ---
+const addExpenseSplitBackdrop = document.getElementById('add-expense-modal-split-backdrop');
+const addExpenseSplitModal = document.getElementById('add-expense-modal-split');
+
+function openAddSplitExpenseModal() {
+    document.getElementById('new-expense-desc').value = '';
+    document.getElementById('new-expense-amount').value = '';
+
+    addExpenseSplitBackdrop.classList.remove('hidden');
+    addExpenseSplitModal.classList.remove('hidden');
+    
+    setTimeout(() => {
+        addExpenseSplitBackdrop.classList.remove('opacity-0');
+        addExpenseSplitModal.classList.add('visible');
+    }, 10);
+}
+
+function closeAddSplitExpenseModal() {
+    addExpenseSplitBackdrop.classList.add('opacity-0');
+    addExpenseSplitModal.classList.remove('visible');
+    
+    setTimeout(() => {
+        addExpenseSplitBackdrop.classList.add('hidden');
+        addExpenseSplitModal.classList.add('hidden');
+    }, 300);
+}
+
+function handleAddSplitExpense() {
     const desc = document.getElementById('new-expense-desc').value;
     const amount = parseFloat(document.getElementById('new-expense-amount').value);
     
@@ -483,8 +662,56 @@ function handleAddExpense() {
     // Clear form and close modal
     document.getElementById('new-expense-desc').value = '';
     document.getElementById('new-expense-amount').value = '';
-    closeAddExpenseModal();
+    closeAddSplitExpenseModal();
 }
+// --- END MODIFICATION ---
+
+// --- NEW: Modals for Group Pot (PRD 4.3) ---
+const addContributionBackdrop = document.getElementById('add-contribution-modal-backdrop');
+const addContributionModal = document.getElementById('add-contribution-modal');
+const addPotExpenseBackdrop = document.getElementById('add-expense-modal-pot-backdrop');
+const addPotExpenseModal = document.getElementById('add-expense-modal-pot');
+
+function openAddContributionModal() {
+    document.getElementById('new-contribution-amount').value = '';
+    addContributionBackdrop.classList.remove('hidden');
+    addContributionModal.classList.remove('hidden');
+    setTimeout(() => {
+        addContributionBackdrop.classList.remove('opacity-0');
+        addContributionModal.classList.add('visible');
+    }, 10);
+}
+
+function closeAddContributionModal() {
+    addContributionBackdrop.classList.add('opacity-0');
+    addContributionModal.classList.remove('visible');
+    setTimeout(() => {
+        addContributionBackdrop.classList.add('hidden');
+        addContributionModal.classList.add('hidden');
+    }, 300);
+}
+
+function openAddPotExpenseModal() {
+    document.getElementById('new-pot-expense-desc').value = '';
+    document.getElementById('new-pot-expense-amount').value = '';
+    addPotExpenseBackdrop.classList.remove('hidden');
+    addPotExpenseModal.classList.remove('hidden');
+    setTimeout(() => {
+        addPotExpenseBackdrop.classList.remove('opacity-0');
+        addPotExpenseModal.classList.add('visible');
+    }, 10);
+}
+
+function closeAddPotExpenseModal() {
+    addPotExpenseBackdrop.classList.add('opacity-0');
+    addPotExpenseModal.classList.remove('visible');
+    setTimeout(() => {
+        addPotExpenseBackdrop.classList.add('hidden');
+        addPotExpenseModal.classList.add('hidden');
+    }, 300);
+}
+// --- END NEW ---
+
 
 /**
  * A simple formatter for currency
@@ -548,7 +775,7 @@ function renderRequestDetails() {
             }
             
             // TODO: Set the "Your Share" amount based on Smart Settlement
-            if (amountEl) amountEl.innerText = formatCurrency(currentViewedRequest.amount);
+            if (amountEl) amountEl.innerText = formatCurrency(currentViewedRequest.yourShare);
         }
 
         // --- NEW: Render Dynamic Expense List ---
@@ -597,11 +824,15 @@ function renderRequestDetails() {
         if (statusEl) {
             statusEl.innerText = currentViewedRequest.status;
             // Remove old colors, add new one
-            statusEl.classList.remove('text-red-500', 'text-yellow-400', 'text-slate-400');
+            statusEl.classList.remove('text-red-500', 'text-yellow-400', 'text-slate-400', 'text-orange-400');
             if (currentViewedRequest.status.includes('Overdue')) {
                 statusEl.classList.add('text-red-500');
             } else if (currentViewedRequest.status.includes('Promised')) {
                 statusEl.classList.add('text-yellow-400');
+            } else if (currentViewedRequest.status.includes('Marked as Paid')) {
+                statusEl.classList.add('text-orange-400');
+            } else if (currentViewedRequest.status.includes('Disputed')) {
+                statusEl.classList.add('text-red-500');
             } else {
                 statusEl.classList.add('text-slate-400');
             }
@@ -686,7 +917,7 @@ function renderCreatorInvoiceDetail() {
                 <p class="text-sm text-slate-400">Status: <span class="font-medium text-slate-200">${status.status}</span></p>
             </div>
         </div>
-        ${status.status.includes('Pending') ? `<button class="text-xs font-semibold text-lime-800 bg-lime-200 px-3 py-1 rounded-full">Send reminder</button>` : ''}
+        ${status.status.includes('Pending') || status.status.includes('Overdue') ? `<button class="text-xs font-semibold text-lime-800 bg-lime-200 px-3 py-1 rounded-full">Send reminder</button>` : ''}
     `;
     statusContainer.appendChild(statusCard);
     
@@ -711,6 +942,105 @@ function renderCreatorInvoiceDetail() {
     totalDiv.className = 'flex justify-between items-center text-lg font-bold text-white pt-3 mt-2';
     totalDiv.innerHTML = `
         <p>Total</p>
+        <p>${formatCurrency(request.amount)}</p>
+    `;
+    itemsContainer.appendChild(totalDiv);
+}
+
+/**
+ * *** NEW: Renders the CREATOR'S view of their sent split ***
+ * (PRD 4.2.2)
+ */
+function renderCreatorSplitDetail() {
+    if (!currentViewedRequest || currentViewedRequest.type !== 'split') {
+        console.warn('renderCreatorSplitDetail called, but no current split is set.');
+        showPage('page-creator-dashboard', 'backward');
+        return;
+    }
+    
+    const request = currentViewedRequest;
+    
+    // Populate header
+    document.getElementById('creator-split-header-title').innerText = `Tracking ${request.title}`;
+    
+    // Populate main info
+    document.getElementById('creator-split-title').innerText = request.title;
+    document.getElementById('creator-split-total-amount').innerText = formatCurrency(request.amount);
+    
+    // Populate Participant Status Dashboard (PRD 4.2.2)
+    const statusContainer = document.getElementById('participant-status-dashboard');
+    statusContainer.innerHTML = ''; // Clear
+    
+    const getStatusIcon = (stage) => {
+        if (stage === 'Paid') return `<svg class="w-5 h-5 text-lime-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16zm3.707-9.293a1 1 0 0 0-1.414-1.414L9 10.586 7.707 9.293a1 1 0 0 0-1.414 1.414l2 2a1 1 0 0 0 1.414 0l4-4Z" clip-rule="evenodd"></path></svg>`;
+        if (stage === 'Reacted') return `<svg class="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0zm-7-4a1 1 0 1 1-2 0 1 1 0 0 1 2 0zM9 9a1 1 0 0 0 0 2v3a1 1 0 0 0 1 1h1a1 1 0 1 0 0-2V9H9z" clip-rule="evenodd"></path></svg>`;
+        if (stage === 'Opened' || stage === 'Seen') return `<svg class="w-5 h-5 text-blue-400" fill="currentColor" viewBox="0 0 20 20"><path d="M10 12a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"></path><path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.022 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 1 1-8 0 4 4 0 0 1 8 0z" clip-rule="evenodd"></path></svg>`;
+        if (stage === 'Delivered') return `<svg class="w-5 h-5 text-slate-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16zm3.707-9.293a1 1 0 0 0-1.414-1.414L9 10.586 7.707 9.293a1 1 0 0 0-1.414 1.414l2 2a1 1 0 0 0 1.414 0l4-4Z" clip-rule="evenodd"></path></svg>`;
+        return `<svg class="w-5 h-5 text-slate-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16zm-7-8a7 7 0 1 1 14 0 7 7 0 0 1-14 0z" clip-rule="evenodd"></path></svg>`;
+    };
+    
+    // Add the creator (You) first
+    const creatorStatus = request.participantStatus.find(p => p.name.includes("You"));
+    if (creatorStatus) {
+        const creatorCard = document.createElement('div');
+        creatorCard.className = 'bg-slate-800 border border-slate-700 rounded-xl p-4 flex justify-between items-center';
+        creatorCard.innerHTML = `
+            <div class="flex items-center gap-3">
+                ${getStatusIcon(creatorStatus.stage)}
+                <div>
+                    <p class="font-bold text-white">${creatorStatus.name} (Admin)</p>
+                    <p class="text-sm text-slate-400">Stage: <span class="font-medium text-slate-200">${creatorStatus.stage}</span></p>
+                    <p class="text-sm text-slate-400">Status: <span class="font-medium text-lime-400">${creatorStatus.status}</span></p>
+                </div>
+            </div>
+        `;
+        statusContainer.appendChild(creatorCard);
+    }
+
+    // Add other participants
+    request.participantStatus.forEach(status => {
+        if (status.name.includes("You")) return; // Skip admin, already added
+        
+        const statusCard = document.createElement('div');
+        statusCard.className = 'bg-slate-800 border border-slate-700 rounded-xl p-4 flex justify-between items-center';
+        statusCard.innerHTML = `
+            <div class="flex items-center gap-3">
+                ${getStatusIcon(status.stage)}
+                <div>
+                    <p class="font-bold text-white">${status.name}</p>
+                    <p class="text-sm text-slate-400">Stage: <span class="font-medium text-slate-200">${status.stage}</span></p>
+                    <p class="text-sm text-slate-400">Status: <span class="font-medium text-slate-200">${status.status}</span></p>
+                </div>
+            </div>
+            ${status.status.includes('Pending') ? `<button class="text-xs font-semibold text-lime-800 bg-lime-200 px-3 py-1 rounded-full">Send reminder</button>` : ''}
+        `;
+        statusContainer.appendChild(statusCard);
+    });
+    
+    // Populate Expense Details
+    const itemsContainer = document.getElementById('creator-split-expenses-list');
+    itemsContainer.innerHTML = ''; // Clear
+    
+    let subtotal = 0;
+    request.details.expenses.forEach(item => {
+        subtotal += parseFloat(item.amount);
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'flex justify-between items-center text-sm py-2 border-b border-slate-700 last:border-b-0';
+        itemDiv.innerHTML = `
+            <div>
+                <p class="font-medium text-slate-200">${item.desc}</p>
+                <p class="text-sm text-slate-400">Paid by ${item.paidBy}</p>
+            </div>
+            <p class="font-medium text-slate-200">${formatCurrency(item.amount)}</p>
+        `;
+        itemsContainer.appendChild(itemDiv);
+    });
+    
+    // Add total row
+    const totalDiv = document.createElement('div');
+    totalDiv.className = 'flex justify-between items-center text-lg font-bold text-white pt-3 mt-2';
+    totalDiv.innerHTML = `
+        <p>Total Pot</p>
         <p>${formatCurrency(request.amount)}</p>
     `;
     itemsContainer.appendChild(totalDiv);
@@ -755,16 +1085,33 @@ function startConsolidationTimer(deadlineISO, timerEl, timerId) {
             // *** The timer has ended ***
             // Find the request and update its state
             // and trigger the Smart Settlement (PRD 4.2.1)
-            if (currentViewedRequest) {
-                currentViewedRequest.isConsolidating = false;
+            const request = receivedRequests.find(r => r.id === timerId);
+            if (request) {
+                request.isConsolidating = false;
                 
                 // *** NEW: Trigger Smart Settlement ***
-                console.log(`Split ${currentViewedRequest.id} has finalized! Running Smart Settlement...`);
-                runSmartSettlement(currentViewedRequest);
+                console.log(`Split ${request.id} has finalized! Running Smart Settlement...`);
+                runSmartSettlement(request);
                 
-                // Re-render the details to show the "Pay" button
-                renderRequestDetails(); 
+                // If we are currently viewing this request, re-render it
+                if (currentViewedRequest && currentViewedRequest.id === timerId) {
+                    renderRequestDetails(); 
+                }
+                // Also refresh the payer dashboard list
+                renderReceivedRequests();
             }
+            
+            const sentRequest = sentRequests.find(r => r.id === timerId);
+            if(sentRequest) {
+                sentRequest.isConsolidating = false;
+                sentRequest.status = "Settled";
+                sentRequest.statusColor = "text-lime-400";
+                // Refresh creator dashboard if visible
+                if (currentPage && currentPage.id === 'page-creator-dashboard') {
+                    renderSentRequests();
+                }
+            }
+            
         } else {
             timerEl.innerText = `Time left to add expenses: ${timeString}`;
         }
@@ -805,6 +1152,8 @@ function runSmartSettlement(request) {
     // In a real app, request.participants would be a list of all users in the split.
     // For now, we'll just use the people who contributed + "You" (the user).
     const participants = new Set(Object.keys(contributions));
+    // Add participants from the original list
+    request.participants.forEach(p => participants.add(p));
     participants.add('You'); // Assume "You" are in the split
     
     const numParticipants = participants.size;
@@ -823,20 +1172,59 @@ function runSmartSettlement(request) {
         const netPosition = contribution - sharePerPerson;
         netPositions[participant] = netPosition;
     });
-
+    
+    // 4. Find *our* (the user's) net position
+    const myPosition = netPositions['You'];
+    request.yourShare = 0; // Default
+    
     console.log('--- Net Positions (PRD 4.2.1) ---');
-    // 4. Log debtors and creditors
     for (const [participant, position] of Object.entries(netPositions)) {
         if (position < 0) {
             console.log(`DEBTOR: ${participant} owes ${Math.abs(position).toFixed(2)}`);
+            if (participant === 'You') {
+                request.yourShare = Math.abs(position); // This is what we owe
+            }
         } else if (position > 0) {
             console.log(`CREDITOR: ${participant} is owed ${position.toFixed(2)}`);
+            // This is the "Claim Your Balance" funnel (PRD 4.2.1)
+            // For now, we'll just log it.
         } else {
             console.log(`SETTLED: ${participant} is settled.`);
         }
     }
+    
+    // Update request status
+    request.status = `Your Share: ${formatCurrency(request.yourShare)}`;
+    if (request.yourShare > 0) {
+        request.statusColor = 'text-orange-400';
+    } else {
+         request.status = `Settled`;
+         request.statusColor = 'text-lime-400';
+    }
+    
+    // Update the corresponding sentRequest for the creator
+    const linkedSentRequest = sentRequests.find(req => req.id === request.id);
+    if(linkedSentRequest) {
+        // Update creator's participant status
+        linkedSentRequest.participantStatus.forEach(p => {
+            const pos = netPositions[p.name];
+            if (pos !== undefined) {
+                if (pos < 0) p.status = `Owes ${formatCurrency(Math.abs(pos))}`;
+                else if (pos > 0) p.status = `Creditor (+${formatCurrency(pos)})`;
+                else p.status = `Settled`;
+            }
+        });
+        // Update creator's "You" (admin) status
+        const adminStatus = linkedSentRequest.participantStatus.find(p => p.name.includes("You"));
+        const adminPos = netPositions["You"]; // "You" is the creator in this context
+         if (adminStatus && adminPos !== undefined) {
+            if (adminPos < 0) adminStatus.status = `Owes ${formatCurrency(Math.abs(adminPos))}`;
+            else if (adminPos > 0) adminStatus.status = `Creditor (+${formatCurrency(adminPos)})`;
+            else adminStatus.status = `Settled`;
+        }
+    }
+    
     console.log('--- End of Smart Settlement ---');
-    // The next step would be to create the payment notifications (PRD 4.2.1)
 }
 
 
@@ -1088,7 +1476,7 @@ function handleSendSplit() {
         const amount = parseFloat(item.querySelector('.split-expense-amount').value) || 0;
         if (desc && amount > 0) {
             // In a real app, "You" would be the validated user's name
-            expenses.push({ desc, amount, paidBy: 'You' });
+            expenses.push({ desc, amount: amount.toFixed(2), paidBy: 'You' });
             total += amount;
         }
     });
@@ -1103,7 +1491,7 @@ function handleSendSplit() {
         deadline = new Date(Date.now() + deadlineHours * 60 * 60 * 1000).toISOString();
     }
     // FOR DEMO: Let's make it 1 minute if a deadline is set
-    if (deadline) {
+    if (deadline && deadlineHours > 0) {
         deadline = new Date(Date.now() + 1 * 60 * 1000).toISOString();
     }
 
@@ -1131,12 +1519,18 @@ function handleSendSplit() {
         icon: 'https://placehold.co/40x40/9333ea/FFFFFF?text=S',
         isConsolidating: !!deadline, // (PRD 4.2)
         deadline: deadline,
+        details: { // Store details for creator's view
+            expenses: expenses
+        },
         // *** NEW: Add participant status object (PRD 4.2.2) ***
-        participantStatus: participantList.map(name => ({
-            name: name,
-            stage: 'Delivered',
-            status: 'Pending'
-        }))
+        participantStatus: [
+            { name: "You", stage: 'Seen', status: `Creditor (+${formatCurrency(total * (participantList.length / participantCount))})`}, // Creator is auto-creditor
+            ...participantList.map(name => ({
+                name: name,
+                stage: 'Delivered',
+                status: 'Pending'
+            }))
+        ]
     };
     sentRequests.push(newSentRequest);
 
@@ -1149,6 +1543,7 @@ function handleSendSplit() {
         subtitle: title, // Request info
         page: 'page-social-split',
         amount: total, // This is the *total pot* amount for now
+        yourShare: 0, // Will be calculated by smart settlement
         status: deadline ? 'Consolidating...' : 'Pending',
         expenses: expenses, // (PRD 4.2)
         isConsolidating: !!deadline,
@@ -1183,14 +1578,7 @@ function renderSentRequests() {
             requestCard.className = 'bg-slate-800 border border-slate-700 rounded-xl p-4 shadow-sm cursor-pointer hover:bg-slate-700';
             
             // *** MODIFICATION: Click navigates to creator's detail view ***
-            if (req.type === 'invoice') {
-                requestCard.onclick = () => navigateToCreatorDetail(req.id);
-            } else if (req.type === 'split') {
-                // TODO: Implement navigateToCreatorSplitDetail(req.id)
-                // requestCard.onclick = () => navigateToCreatorSplitDetail(req.id);
-                // For now, let's just log it
-                requestCard.onclick = () => console.log('Clicked split, creator detail view not built yet.');
-            }
+            requestCard.onclick = () => navigateToCreatorDetail(req.id);
             
             requestCard.innerHTML = `
                 <div class="flex justify-between items-center">
@@ -1241,6 +1629,7 @@ function renderReceivedRequests() {
             let iconHtml = '';
             let statusColor = 'text-slate-400';
             let statusText = req.status;
+            let amountText = formatCurrency(req.amount); // Default to total pot
 
             if (req.isConsolidating) {
                 statusColor = 'text-blue-400';
@@ -1251,6 +1640,25 @@ function renderReceivedRequests() {
                 statusColor = 'text-yellow-400';
             } else if (req.status.toLowerCase().includes('pending')) {
                 statusColor = 'text-orange-400';
+            } else if (req.status.toLowerCase().includes('settled')) {
+                statusColor = 'text-lime-400';
+                statusText = 'Settled';
+            } else if (req.status.toLowerCase().includes('marked as paid')) {
+                statusColor = 'text-orange-400';
+            } else if (req.status.toLowerCase().includes('disputed')) {
+                statusColor = 'text-red-500';
+                statusText = 'Disputed'; // Shorten for UI
+            }
+
+
+            // For non-consolidating splits, show "Your Share"
+            if (req.type === 'social' && !req.isConsolidating) {
+                amountText = formatCurrency(req.yourShare);
+                // If status is default, update it
+                if (statusText.toLowerCase() === 'pending') {
+                    statusText = `Your Share: ${amountText}`;
+                    statusColor = 'text-orange-400';
+                }
             }
 
 
@@ -1270,7 +1678,7 @@ function renderReceivedRequests() {
                         </div>
                     </div>
                     <div class="text-right">
-                        <p class="text-lg font-bold text-pink-400">€ ${Number(req.amount).toFixed(2)}</p>
+                        <p class="text-lg font-bold text-pink-400">${amountText}</p>
                         <p class="text-sm font-semibold ${statusColor}">${statusText}</p>
                     </div>
                 </div>
@@ -1299,6 +1707,12 @@ function initializeDatabase() {
     const adidasVat = 21;
     const adidasVatAmount = 525.00;
     const adidasTotal = 3025.00;
+    
+    const sarahExpenses = [
+        { desc: 'Sushi dinner at Sakura', amount: 750.00, paidBy: 'Sarah Williams' },
+        { desc: 'Uber ride (to & from)', amount: 750.00, paidBy: 'Mike Torres' }
+    ];
+    const sarahTotal = 1500.00;
 
     // 1. Payer's "Received" data
     receivedRequests = [
@@ -1321,15 +1735,14 @@ function initializeDatabase() {
             title: '95% Sarah Williams', // Creator's info
             subtitle: 'Dinner at Sakura', // Request info
             page: 'page-social-split',
-            amount: 1500.00, // This is the *total* pot
+            amount: sarahTotal, // This is the *total* pot
+            yourShare: 187.50, // This is *your* share after settlement
             status: 'Pending', // This is the value we will change
             icon: 'https://placehold.co/40x40/9333ea/FFFFFF?text=SW',
             isConsolidating: false, // This split is finalized
             deadline: null,
-            expenses: [
-                { desc: 'Sushi dinner at Sakura', amount: 750.00, paidBy: 'Sarah Williams' },
-                { desc: 'Uber ride (to & from)', amount: 750.00, paidBy: 'Mike Torres' }
-            ]
+            expenses: sarahExpenses,
+            participants: ['Sarah Williams', 'Mike Torres', 'Emma', 'Lisa', 'James', 'User 7', 'User 8']
         }
     ];
 
@@ -1368,12 +1781,16 @@ function initializeDatabase() {
             type: 'split',
             title: 'Dinner at Sakura', // What Sarah sees
             subtitle: '8 participants',
-            amount: '1500.00',
+            amount: sarahTotal.toFixed(2),
             status: '5/8 Paid', // Payer's status
             statusColor: 'text-lime-400',
             icon: 'https://placehold.co/40x40/9333ea/FFFFFF?text=SW',
             isConsolidating: false,
+            details: {
+                expenses: sarahExpenses
+            },
             participantStatus: [
+                { name: 'You', stage: 'Seen', status: 'Creditor (+€562.50)' }, // You are Sarah
                 { name: 'Mike Torres', stage: 'Paid', status: 'Creditor (+€562.50)' },
                 { name: 'Emma Rodriguez', stage: 'Seen', status: 'Paid' },
                 { name: 'Lisa Thompson', stage: 'Seen', status: 'Pending (72%)' },
@@ -1411,15 +1828,12 @@ function copyShareLink() {
     linkEl.setSelectionRange(0, 99999); // For mobile
     
     try {
-        // Use newer clipboard API if available
-        navigator.clipboard.writeText(linkEl.value).then(() => {
-            console.log('Link copied to clipboard!');
-            // You could show a temporary "Copied!" message
-        });
-    } catch (err) {
-        // Fallback for older browsers
+        // Use clipboard API
         document.execCommand('copy');
-        console.log('Link copied to clipboard (fallback)!');
+        console.log('Link copied to clipboard!');
+        // You could show a temporary "Copied!" message
+    } catch (err) {
+        console.error('Fallback: could not copy text: ', err);
     }
 }
 
@@ -1448,9 +1862,288 @@ function triggerCatalystSplitter() {
     }, 100);
 }
 
+// --- NEW: Group Pot Functions (PRD 4.3) ---
+
+/**
+ * Handles the "Create Group Pot" form submission
+ * (PRD 4.3.1)
+ * @param {Event} event The form submit event
+ */
+async function handleCreatePot(event) {
+    event.preventDefault(); // Stop the form from reloading the page
+    const form = event.target;
+    const formData = new FormData(form);
+    
+    // Build the payload
+    const payload = {
+        name: formData.get('name'),
+        members: formData.get('members').split(',').map(m => m.trim()), // Turn string into array
+        schedule: {
+            amount: parseFloat(formData.get('schedule_amount')),
+            frequency: formData.get('schedule_frequency'),
+            due_day: parseInt(formData.get('schedule_day')) || null
+        }
+    };
+    
+    console.log('Creating pot with payload:', payload);
+
+    try {
+        const response = await fetch(`${API_URL}/api/pots`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload),
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const newPot = await response.json();
+        console.log('Pot created successfully:', newPot);
+        
+        form.reset(); // Clear the form
+        renderMyGroupPots(); // Refresh the list on the dashboard
+        showPage('page-creator-dashboard', 'backward'); // Go back to dashboard
+
+    } catch (error) {
+        console.error('Could not create pot:', error);
+        // Here you would show an error to the user
+    }
+}
+
+/**
+ * Fetches and renders the user's group pots on the Creator Dashboard
+ * (PRD 4.3)
+ */
+async function renderMyGroupPots() {
+    const container = document.getElementById('group-pots-list');
+    const placeholder = document.getElementById('no-pots-placeholder');
+    
+    try {
+        const response = await fetch(`${API_URL}/api/pots`);
+        if (!response.ok) throw new Error('Failed to fetch pots');
+        const pots = await response.json();
+
+        container.innerHTML = ''; // Clear list
+        if (pots.length === 0) {
+            placeholder.style.display = 'block';
+        } else {
+            placeholder.style.display = 'none';
+            pots.forEach(pot => {
+                const potCard = document.createElement('div');
+                potCard.className = 'bg-slate-800 border border-slate-700 rounded-xl p-4 shadow-sm cursor-pointer hover:bg-slate-700';
+                potCard.onclick = () => navigateToPotDashboard(pot.id);
+                
+                potCard.innerHTML = `
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center gap-3">
+                            <img src="https://placehold.co/40x40/06b6d4/FFFFFF?text=P" alt="Pot" class="w-10 h-10 rounded-full">
+                            <div>
+                                <p class="font-bold text-white">${pot.name}</p>
+                                <p class="text-sm text-slate-400">${pot.memberCount} members</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-lg font-bold text-lime-400">${formatCurrency(pot.totalBalance)}</p>
+                            <p class="text-sm font-semibold text-slate-400">Total Balance</p>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(potCard);
+            });
+        }
+    } catch (error) {
+        console.error('Failed to render group pots:', error);
+        placeholder.style.display = 'block';
+        container.innerHTML = '';
+    }
+}
+
+/**
+ * Navigates to the pot dashboard
+ * @param {string} potId The ID of the pot to view
+ */
+function navigateToPotDashboard(potId) {
+    currentPotId = potId;
+    showPage('page-group-pot-dashboard', 'forward');
+}
+
+/**
+ * Fetches and loads all data for the pot dashboard page
+ * (PRD 4.3.3)
+ */
+async function loadGroupPotData() {
+    if (!currentPotId) {
+        console.error('No pot ID set.');
+        showPage('page-creator-dashboard', 'backward');
+        return;
+    }
+    
+    // Show loading state (simple version)
+    document.getElementById('pot-dashboard-title').innerText = 'Loading...';
+    document.getElementById('pot-total-balance').innerText = '...';
+    document.getElementById('pot-contribution-tally').innerHTML = '<p class="text-slate-400">Loading tally...</p>';
+    document.getElementById('pot-transaction-feed').innerHTML = '<p class="text-slate-400 text-center">Loading transactions...</p>';
+    document.getElementById('pot-add-expense-btn').classList.add('hidden');
+
+    try {
+        const response = await fetch(`${API_URL}/api/pots/${currentPotId}`);
+        if (!response.ok) throw new Error('Failed to fetch pot details');
+        const data = await response.json();
+
+        // Populate Header
+        document.getElementById('pot-dashboard-title').innerText = data.name;
+        
+        // Populate Module 1: Total Balance
+        document.getElementById('pot-total-balance').innerText = formatCurrency(data.totalBalance);
+        
+        // Populate Module 2: Schedule
+        const schedule = data.schedule;
+        document.getElementById('pot-schedule-details').innerText = `${schedule.frequency}`;
+        document.getElementById('pot-schedule-amount').innerText = formatCurrency(schedule.amount);
+        document.getElementById('pot-schedule-next-due').innerText = `Next due on: ${new Date(schedule.nextDueDate).toLocaleDateString()}`;
+
+        // Populate Module 3: Tally
+        renderPotTally(data.contributionTally);
+        
+        // Populate Module 4: Feed
+        renderPotFeed(data.transactionFeed);
+        
+        // Show/Hide Admin Buttons
+        if (data.is_admin) {
+            document.getElementById('pot-add-expense-btn').classList.remove('hidden');
+        }
+
+    } catch (error) {
+        console.error('Failed to load pot data:', error);
+        document.getElementById('pot-dashboard-title').innerText = 'Error';
+    }
+}
+
+/**
+ * Renders the contribution tally list
+ * @param {Array} tally - Array of tally objects from the API
+ */
+function renderPotTally(tally) {
+    const container = document.getElementById('pot-contribution-tally');
+    container.innerHTML = ''; // Clear
+    
+    tally.sort((a, b) => b.total_paid - a.total_paid); // Show highest contributor first
+    
+    tally.forEach(member => {
+        const memberDiv = document.createElement('div');
+        memberDiv.className = 'flex justify-between items-center text-sm';
+        memberDiv.innerHTML = `
+            <p class="font-medium text-slate-200">${member.name}</p>
+            <p class="font-medium text-lime-400">${formatCurrency(member.total_paid)}</p>
+        `;
+        container.appendChild(memberDiv);
+    });
+}
+
+/**
+ * Renders the transaction feed
+ * @param {Array} feed - Array of transaction objects from the API
+ */
+function renderPotFeed(feed) {
+    const container = document.getElementById('pot-transaction-feed');
+    container.innerHTML = ''; // Clear
+    
+    if (feed.length === 0) {
+        container.innerHTML = '<p class="text-slate-400 text-center">No transactions yet.</p>';
+        return;
+    }
+    
+    feed.forEach(tx => {
+        const isContribution = tx.type === 'Contribution';
+        const amountColor = isContribution ? 'text-lime-400' : 'text-red-400';
+        const sign = isContribution ? '+' : '';
+        
+        const txDiv = document.createElement('div');
+        txDiv.className = 'flex justify-between items-center bg-slate-800 p-3 rounded-lg border border-slate-700';
+        txDiv.innerHTML = `
+            <div>
+                <p class="font-medium text-slate-200">${tx.description}</p>
+                <p class="text-sm text-slate-400">${tx.user_name} on ${new Date(tx.date).toLocaleDateString()}</p>
+            </div>
+            <div class="text-right">
+                <p class="font-medium ${amountColor} text-lg">${sign}${formatCurrency(tx.amount)}</p>
+            </div>
+        `;
+        container.appendChild(txDiv);
+    });
+}
+
+/**
+ * Handles adding a new contribution from the modal
+ * (PRD 4.3.2)
+ */
+async function handleAddContribution() {
+    const amount = parseFloat(document.getElementById('new-contribution-amount').value);
+    if (!amount || amount <= 0) {
+        console.warn('Invalid contribution amount');
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API_URL}/api/pots/${currentPotId}/contributions`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ amount: amount }),
+        });
+        
+        if (!response.ok) throw new Error('Failed to add contribution');
+        
+        // const data = await response.json(); // API returns new transaction and total
+        
+        // Simple way: Just close modal and reload all data
+        closeAddContributionModal();
+        loadGroupPotData(); // Reload the dashboard
+        renderMyGroupPots(); // Also refresh the main list in the background
+        
+    } catch (error) {
+        console.error('Failed to add contribution:', error);
+    }
+}
+
+/**
+ * Handles logging a new expense from the modal
+ * (PRD 4.3.5)
+ */
+async function handleAddPotExpense() {
+    const description = document.getElementById('new-pot-expense-desc').value;
+    const amount = parseFloat(document.getElementById('new-pot-expense-amount').value);
+    
+    if (!description || !amount || amount <= 0) {
+        console.warn('Invalid expense description or amount');
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API_URL}/api/pots/${currentPotId}/expenses`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ description: description, amount: amount }),
+        });
+        
+        if (!response.ok) throw new Error('Failed to log expense');
+        
+        // Simple way: Just close modal and reload all data
+        closeAddPotExpenseModal();
+        loadGroupPotData(); // Reload the dashboard
+        renderMyGroupPots(); // Also refresh the main list in the background
+        
+    } catch (error) {
+        console.error('Failed to log expense:', error);
+    }
+}
+
+// --- END NEW Group Pot Functions ---
+
 
 // --- App Initialization ---
-
 // Ensure the correct page is shown on load
 document.addEventListener('DOMContentLoaded', () => {
     // Set the initial page to the new welcome screen
@@ -1479,4 +2172,55 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('#deadline-options .deadline-btn').forEach(btn => {
         btn.addEventListener('click', selectDeadline);
     });
+    
+    // Creator Form: Group Pot (PRD 4.3.1)
+    // We use the 'onsubmit' in the HTML, but if we didn't, we'd do this:
+    // document.getElementById('create-pot-form').addEventListener('submit', handleCreatePot);
 });
+
+/**
+ * Handles the "Scan Bill" button click.
+ */
+async function handleScanInvoice() {
+    console.log('Triggering OCR flow...');
+    // In a real app, this function would:
+    // 1. Call `navigator.mediaDevices.getUserMedia` to open the camera.
+    // 2. Let the user snap a photo.
+    // 3. Take the image blob, convert it to base64.
+    // 4. `fetch` POST to '/scan-invoice' on our Python backend.
+    
+    // --- SIMULATED OCR Call ---
+    // This simulates steps 1-3 and calls the (fake) backend
+    try {
+        // This is a fake base64 string. In reality, you'd get this from the camera.
+        const fakeBase64Image = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
+
+        const response = await fetch(`${API_URL}/scan-invoice`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ image: fakeBase64Image })
+        });
+        
+        if (!response.ok) throw new Error('OCR scan failed');
+        
+        const data = await response.json();
+        
+        console.log('OCR Response:', data);
+
+        // 6. Pre-populate the 'page-create-invoice' form:
+        document.getElementById('invoice-client-name').value = data.client || '';
+        document.querySelector('.invoice-item-desc').value = 'Scanned Items';
+        document.querySelector('.invoice-item-amount').value = data.total || '';
+        
+        // 7. `showPage('page-create-invoice', 'forward')`.
+        showPage('page-create-invoice', 'forward');
+        
+    } catch (error) {
+        console.error('Failed to scan invoice:', error);
+        // Fallback for demo if backend isn't running
+        document.getElementById('invoice-client-name').value = 'Scanned Client, Inc.';
+        document.querySelector('.invoice-item-desc').value = 'Services from scanned bill';
+        document.querySelector('.invoice-item-amount').value = '123.45';
+        showPage('page-create-invoice', 'forward');
+    }
+}
