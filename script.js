@@ -14,6 +14,8 @@ let isUserValidated = false; // By default, user is not validated
 let pendingPageId = null; // Stores the page user *wants* to see
 // NEW: Store timer intervals
 let activeTimers = {};
+// *** NEW: Temporary storage for the invoice being created ***
+let tempInvoiceData = {};
 
 // --- Navigation ---
 
@@ -68,6 +70,11 @@ function showPage(pageId, direction = 'forward') {
     // Check if we are showing a detail page; if so, render its data
     if (pageId === 'page-social-split' || pageId === 'page-sme-invoice') {
         renderRequestDetails();
+    }
+    
+    // *** NEW: Check if we are showing the creator detail page ***
+    if (pageId === 'page-sme-invoice-detail-creator') {
+        renderCreatorInvoiceDetail();
     }
     
     currentPage = newPage; // Update the current page
@@ -259,6 +266,32 @@ function navigateToRequest(requestId) {
 }
 
 /**
+ * *** NEW: Navigate to Creator's detail/tracking page ***
+ * (PRD 5.2.1)
+ * @param {string} requestId The *unique ID* of the *sent* request to track.
+ */
+function navigateToCreatorDetail(requestId) {
+    const request = sentRequests.find(r => r.id === requestId);
+    
+    if (!request) {
+        console.error('Could not find sent request with ID:', requestId);
+        return;
+    }
+    
+    currentViewedRequest = request; // Store the *sent* request
+    
+    // Determine which creator detail page to show
+    if (request.type === 'invoice') {
+        showPage('page-sme-invoice-detail-creator', 'forward');
+    } else if (request.type === 'split') {
+        // TODO: Create and navigate to 'page-social-split-detail-creator'
+        console.log('Navigating to creator split detail (not built yet)');
+        // For now, let's just show an alert
+    }
+}
+
+
+/**
  * Handles the "Verify" button click from the OTP modal.
  * In a real app, this would check the code against a backend.
  */
@@ -364,6 +397,10 @@ function confirmPaymentPromise(promiseType) {
     if (linkedSentRequest) {
         linkedSentRequest.status = newStatus;
         linkedSentRequest.statusColor = newStatusColor;
+        // *** NEW: Update creator's status object (for PRD 5.2.1) ***
+        linkedSentRequest.recipientStatus.status = newStatus;
+        linkedSentRequest.recipientStatus.stage = 'Reacted';
+        
         console.log('Creator request updated:', linkedSentRequest);
     } else {
         console.warn('Could not find linked sentRequest to update.');
@@ -390,6 +427,10 @@ const addExpenseBackdrop = document.getElementById('add-expense-modal-backdrop')
 const addExpenseModal = document.getElementById('add-expense-modal');
 
 function openAddExpenseModal() {
+    // *** MODIFICATION: Use correct IDs from modal ***
+    document.getElementById('new-expense-desc').value = '';
+    document.getElementById('new-expense-amount').value = '';
+
     addExpenseBackdrop.classList.remove('hidden');
     addExpenseModal.classList.remove('hidden');
     
@@ -410,8 +451,9 @@ function closeAddExpenseModal() {
 }
 
 function handleAddExpense() {
-    const desc = document.getElementById('add-expense-desc').value;
-    const amount = parseFloat(document.getElementById('add-expense-amount').value);
+    // *** MODIFICATION: Use correct IDs from modal ***
+    const desc = document.getElementById('new-expense-desc').value;
+    const amount = parseFloat(document.getElementById('new-expense-amount').value);
     
     if (!desc || !amount || amount <= 0) {
         console.warn('Please enter a valid description and amount.');
@@ -439,24 +481,26 @@ function handleAddExpense() {
     renderRequestDetails();
     
     // Clear form and close modal
-    document.getElementById('add-expense-desc').value = '';
-    document.getElementById('add-expense-amount').value = '';
+    document.getElementById('new-expense-desc').value = '';
+    document.getElementById('new-expense-amount').value = '';
     closeAddExpenseModal();
 }
 
+/**
+ * A simple formatter for currency
+ */
+const formatCurrency = (val) => `€ ${Number(val).toFixed(2)}`;
 
 /**
  * "Paints" the data from the currentViewedRequest object onto the
  * static HTML template. This makes the detail pages dynamic.
+ * This now renders the *PAYER'S* view of a request.
  */
 function renderRequestDetails() {
     if (!currentViewedRequest) {
         console.warn('renderRequestDetails called, but no currentViewedRequest is set.');
         return;
     }
-
-    // A simple formatter for currency
-    const formatCurrency = (val) => `€ ${Number(val).toFixed(2)}`;
 
     // Check the type of request and populate the correct page
     if (currentViewedRequest.type === 'social') {
@@ -467,8 +511,8 @@ function renderRequestDetails() {
         const yourShareContainer = document.getElementById('social-your-share-container');
         const payButton = document.getElementById('social-pay-btn');
         const addExpenseButton = document.getElementById('social-add-expense-btn');
-        const consolidationBanner = document.getElementById('consolidation-banner');
-        const timerEl = document.getElementById('consolidation-timer');
+        const consolidationBanner = document.getElementById('social-consolidation-banner');
+        const timerEl = document.getElementById('social-consolidation-timer');
         const expenseListContainer = document.getElementById('social-expense-list');
         const totalAmountEl = document.getElementById('social-total-amount');
 
@@ -536,6 +580,13 @@ function renderRequestDetails() {
         const creatorEl = document.getElementById('sme-detail-creator');
         const amountEl = document.getElementById('sme-detail-amount');
         const statusEl = document.getElementById('sme-detail-status');
+        
+        // *** NEW: Populate SME line items ***
+        const itemsContainer = document.getElementById('sme-invoice-items-container');
+        const subtotalEl = document.getElementById('sme-subtotal');
+        const vatPercentEl = document.getElementById('sme-vat-percent');
+        const vatAmountEl = document.getElementById('sme-vat-amount');
+        const totalAmountEl = document.getElementById('sme-total-amount');
 
         // We use 'subtitle' for the main title, 'title' for the creator
         if (titleEl) titleEl.innerText = currentViewedRequest.subtitle || 'Invoice';
@@ -555,8 +606,116 @@ function renderRequestDetails() {
                 statusEl.classList.add('text-slate-400');
             }
         }
+        
+        // *** NEW: Render SME line items ***
+        if (itemsContainer) {
+            // Find the inner container to clear
+            const listEl = itemsContainer.querySelector('.space-y-3');
+            listEl.innerHTML = ''; // Clear old items
+            
+            let subtotal = 0;
+            currentViewedRequest.expenses.forEach(item => {
+                const amount = parseFloat(item.amount);
+                subtotal += amount;
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'flex justify-between items-center text-sm';
+                itemDiv.innerHTML = `
+                    <p class="font-medium text-slate-200">${item.desc}</p>
+                    <p class="font-medium text-slate-200">${formatCurrency(amount)}</p>
+                `;
+                listEl.appendChild(itemDiv);
+            });
+            
+            const vat = currentViewedRequest.vat || 0;
+            const vatAmount = subtotal * (vat / 100);
+            const total = subtotal + vatAmount;
+            
+            if (subtotalEl) subtotalEl.innerText = formatCurrency(subtotal);
+            if (vatPercentEl) vatPercentEl.innerText = vat;
+            if (vatAmountEl) vatAmountEl.innerText = formatCurrency(vatAmount);
+            if (totalAmountEl) totalAmountEl.innerText = formatCurrency(total);
+        }
     }
 }
+
+/**
+ * *** NEW: Renders the CREATOR'S view of their sent invoice ***
+ * (PRD 5.2.1)
+ */
+function renderCreatorInvoiceDetail() {
+    if (!currentViewedRequest || currentViewedRequest.type !== 'invoice') {
+        console.warn('renderCreatorInvoiceDetail called, but no current invoice is set.');
+        // Optionally, navigate back
+        showPage('page-creator-dashboard', 'backward');
+        return;
+    }
+    
+    const request = currentViewedRequest;
+    
+    // Populate header
+    document.getElementById('creator-detail-header-title').innerText = `Tracking ${request.subtitle}`;
+    
+    // Populate main info
+    document.getElementById('creator-detail-client-name').innerText = request.title;
+    document.getElementById('creator-detail-total-amount').innerText = formatCurrency(request.amount);
+    
+    // Populate Recipient Status Dashboard (PRD 5.2.1)
+    const statusContainer = document.getElementById('recipient-status-dashboard');
+    statusContainer.innerHTML = ''; // Clear
+    
+    // In a real app, request.recipientStatus would be an array for multiple recipients
+    // For this prototype, we'll use the single object we created
+    const status = request.recipientStatus;
+    
+    const getStatusIcon = (stage) => {
+        if (stage === 'Paid') return `<svg class="w-5 h-5 text-lime-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16zm3.707-9.293a1 1 0 0 0-1.414-1.414L9 10.586 7.707 9.293a1 1 0 0 0-1.414 1.414l2 2a1 1 0 0 0 1.414 0l4-4Z" clip-rule="evenodd"></path></svg>`;
+        if (stage === 'Reacted') return `<svg class="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0zm-7-4a1 1 0 1 1-2 0 1 1 0 0 1 2 0zM9 9a1 1 0 0 0 0 2v3a1 1 0 0 0 1 1h1a1 1 0 1 0 0-2V9H9z" clip-rule="evenodd"></path></svg>`;
+        if (stage === 'Opened' || stage === 'Seen') return `<svg class="w-5 h-5 text-blue-400" fill="currentColor" viewBox="0 0 20 20"><path d="M10 12a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"></path><path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.022 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 1 1-8 0 4 4 0 0 1 8 0z" clip-rule="evenodd"></path></svg>`;
+        if (stage === 'Delivered') return `<svg class="w-5 h-5 text-slate-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16zm3.707-9.293a1 1 0 0 0-1.414-1.414L9 10.586 7.707 9.293a1 1 0 0 0-1.414 1.414l2 2a1 1 0 0 0 1.414 0l4-4Z" clip-rule="evenodd"></path></svg>`;
+        return `<svg class="w-5 h-5 text-slate-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16zm-7-8a7 7 0 1 1 14 0 7 7 0 0 1-14 0z" clip-rule="evenodd"></path></svg>`;
+    };
+    
+    const statusCard = document.createElement('div');
+    statusCard.className = 'bg-slate-800 border border-slate-700 rounded-xl p-4 flex justify-between items-center';
+    statusCard.innerHTML = `
+        <div class="flex items-center gap-3">
+            ${getStatusIcon(status.stage)}
+            <div>
+                <p class="font-bold text-white">${status.recipientName}</p>
+                <p class="text-sm text-slate-400">Stage: <span class="font-medium text-slate-200">${status.stage}</span></p>
+                <p class="text-sm text-slate-400">Status: <span class="font-medium text-slate-200">${status.status}</span></p>
+            </div>
+        </div>
+        ${status.status.includes('Pending') ? `<button class="text-xs font-semibold text-lime-800 bg-lime-200 px-3 py-1 rounded-full">Send reminder</button>` : ''}
+    `;
+    statusContainer.appendChild(statusCard);
+    
+    // Populate Invoice Details
+    const itemsContainer = document.getElementById('creator-detail-items-container');
+    itemsContainer.innerHTML = ''; // Clear
+    
+    let subtotal = 0;
+    request.details.items.forEach(item => {
+        subtotal += parseFloat(item.amount);
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'flex justify-between items-center text-sm py-2 border-b border-slate-700 last:border-b-0';
+        itemDiv.innerHTML = `
+            <p class="font-medium text-slate-200">${item.desc}</p>
+            <p class="font-medium text-slate-200">${formatCurrency(item.amount)}</p>
+        `;
+        itemsContainer.appendChild(itemDiv);
+    });
+    
+    // Add total row
+    const totalDiv = document.createElement('div');
+    totalDiv.className = 'flex justify-between items-center text-lg font-bold text-white pt-3 mt-2';
+    totalDiv.innerHTML = `
+        <p>Total</p>
+        <p>${formatCurrency(request.amount)}</p>
+    `;
+    itemsContainer.appendChild(totalDiv);
+}
+
 
 /**
  * Starts a countdown timer for a split
@@ -744,30 +903,100 @@ function selectDeadline(e) {
 }
 
 /**
- * Collects invoice form data, saves it, and navigates to the dashboard
+ * *** NEW: Step 1 of Invoice Flow: Review (PRD 5.2) ***
+ * Collects form data, stores it, and navigates to the review page.
  */
-function handleSendInvoice() {
+function handleReviewInvoice() {
     const clientName = document.getElementById('invoice-client-name').value;
     const items = [];
-    let total = 0;
+    let subtotal = 0;
 
     document.querySelectorAll('.invoice-item').forEach(item => {
         const desc = item.querySelector('.invoice-item-desc').value;
         const amount = parseFloat(item.querySelector('.invoice-item-amount').value) || 0;
         if (desc && amount > 0) {
-            items.push({ desc, amount });
-            total += amount;
+            items.push({ desc, amount: amount.toFixed(2) });
+            subtotal += amount;
         }
     });
 
     const vat = parseFloat(document.getElementById('invoice-vat').value) || 0;
-    const totalWithVat = total * (1 + (vat / 100));
+    const vatAmount = subtotal * (vat / 100);
+    const totalWithVat = subtotal + vatAmount;
+    
+    const nextSteps = document.getElementById('invoice-next-steps').value;
+    const reminderProfileEl = document.getElementById('invoice-reminder-profile');
+    const reminderProfile = reminderProfileEl.options[reminderProfileEl.selectedIndex].text;
 
     if (!clientName || items.length === 0) {
-        // Use a less obtrusive notification
         console.error('Please fill in a client name and at least one item.');
         return;
     }
+    
+    // Store in our temporary global variable
+    tempInvoiceData = {
+        clientName,
+        items,
+        subtotal,
+        vat,
+        vatAmount,
+        totalWithVat,
+        nextSteps,
+        reminderProfile
+    };
+    
+    // --- Now, populate the review page ---
+    document.getElementById('review-client-name').innerText = `To: ${clientName}`;
+    document.getElementById('review-total-amount').innerText = formatCurrency(totalWithVat);
+    
+    const reviewItemsList = document.getElementById('review-items-list');
+    reviewItemsList.innerHTML = ''; // Clear
+    items.forEach(item => {
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'flex justify-between items-center text-sm';
+        itemDiv.innerHTML = `
+            <p class="font-medium text-slate-200">${item.desc}</p>
+            <p class="font-medium text-slate-200">${formatCurrency(item.amount)}</p>
+        `;
+        reviewItemsList.appendChild(itemDiv);
+    });
+    
+    document.getElementById('review-subtotal').innerText = formatCurrency(subtotal);
+    document.getElementById('review-vat-percent').innerText = vat;
+    document.getElementById('review-vat-amount').innerText = formatCurrency(vatAmount);
+    document.getElementById('review-grand-total').innerText = formatCurrency(totalWithVat);
+    
+    document.getElementById('review-next-steps').innerText = nextSteps || 'No note added.';
+    document.getElementById('review-reminder-profile').innerText = reminderProfile;
+    
+    // TODO: Handle logo upload preview
+    
+    // Navigate to the review page
+    showPage('page-review-invoice', 'forward');
+}
+
+
+/**
+ * *** NEW: Step 2 of Invoice Flow: Send ***
+ * Collects invoice form data, saves it, and navigates to the dashboard
+ */
+function handleSendInvoice() {
+    // Read from the temporary data, not the form
+    const data = tempInvoiceData;
+    
+    if (!data || !data.clientName) {
+        console.error('No invoice data to send. Please review first.');
+        showPage('page-create-invoice', 'backward');
+        return;
+    }
+    
+    // Show loader
+    const sendButton = document.getElementById('confirm-send-invoice-btn');
+    const sendButtonText = document.getElementById('send-btn-text');
+    const sendButtonLoader = document.getElementById('send-btn-loader');
+    sendButtonText.classList.add('hidden');
+    sendButtonLoader.classList.remove('hidden');
+
     
     const newId = `INV-${Date.now()}`;
 
@@ -775,12 +1004,29 @@ function handleSendInvoice() {
     const newSentRequest = {
         id: newId,
         type: 'invoice',
-        title: `Client: ${clientName}`,
+        title: `Client: ${data.clientName}`,
         subtitle: `INV-${Date.now().toString().slice(-4)}`,
-        amount: totalWithVat.toFixed(2),
-        status: 'Pending',
+        amount: data.totalWithVat.toFixed(2),
+        status: 'Pending', // <-- This will be updated by Payer actions
         statusColor: 'text-orange-400',
-        icon: 'https://placehold.co/40x40/000000/FFFFFF?text=I'
+        icon: 'https://placehold.co/40x40/000000/FFFFFF?text=I',
+        // *** NEW: Store all details for creator's tracking view ***
+        details: {
+            clientName: data.clientName,
+            items: data.items,
+            subtotal: data.subtotal,
+            vat: data.vat,
+            vatAmount: data.vatAmount,
+            total: data.totalWithVat,
+            note: data.nextSteps,
+            reminderProfile: data.reminderProfile
+        },
+        // *** NEW: Add recipient status object (PRD 5.2.1) ***
+        recipientStatus: {
+            recipientName: data.clientName,
+            stage: 'Delivered', // Default state after sending
+            status: 'Pending'
+        }
     };
     sentRequests.push(newSentRequest);
 
@@ -791,14 +1037,41 @@ function handleSendInvoice() {
         title: '97% You (Creator)', // Creator's info
         subtitle: newSentRequest.subtitle, // Request info
         page: 'page-sme-invoice',
-        amount: totalWithVat,
+        amount: data.totalWithVat,
         status: 'Pending',
-        expenses: items, // Store line items
-        vat: vat
+        expenses: data.items, // Store line items
+        vat: data.vat,
+        note: data.nextSteps
+        // We assume the payer gets a 97% score for the creator
     };
     receivedRequests.push(newReceivedRequest);
+    
+    // Clear temp data
+    tempInvoiceData = {};
+    
+    // Simulate send delay
+    setTimeout(() => {
+        // Hide loader
+        sendButtonText.classList.remove('hidden');
+        sendButtonLoader.classList.add('hidden');
+        
+        // *** NEW: Navigate to the new creator tracking page (PRD 5.2.1) ***
+        navigateToCreatorDetail(newSentRequest.id);
+        
+        // Clear the form for next time (in background)
+        document.getElementById('invoice-client-name').value = '';
+        document.getElementById('invoice-vat').value = '';
+        document.getElementById('invoice-next-steps').value = '';
+        document.querySelectorAll('.invoice-item').forEach((item, index) => {
+            if (index === 0) { // Keep one blank row
+                item.querySelector('.invoice-item-desc').value = '';
+                item.querySelector('.invoice-item-amount').value = '';
+            } else {
+                item.remove(); // Remove extra rows
+            }
+        });
 
-    showPage('page-creator-dashboard', 'backward'); // Go back to dashboard
+    }, 1000); // 1 second delay
 }
 
 /**
@@ -822,13 +1095,17 @@ function handleSendSplit() {
     
     // Get deadline
     const selectedDeadlineEl = document.querySelector('#deadline-options .deadline-btn.selected');
-    const deadlineHours = parseInt(selectedDeadlineEl.dataset.value); // e.g., 24, 48, or 0
+    // Handle "No Deadline" case
+    const deadlineHours = selectedDeadlineEl ? parseInt(selectedDeadlineEl.dataset.value) : 0;
+    
     let deadline = null;
     if (deadlineHours > 0) {
         deadline = new Date(Date.now() + deadlineHours * 60 * 60 * 1000).toISOString();
     }
-    // FOR DEMO: Let's make it 1 minute
-    deadline = new Date(Date.now() + 1 * 60 * 1000).toISOString();
+    // FOR DEMO: Let's make it 1 minute if a deadline is set
+    if (deadline) {
+        deadline = new Date(Date.now() + 1 * 60 * 1000).toISOString();
+    }
 
 
     if (!title || !participants || expenses.length === 0) {
@@ -849,11 +1126,17 @@ function handleSendSplit() {
         title: title,
         subtitle: subtitle,
         amount: total.toFixed(2),
-        status: `Consolidating...`,
-        statusColor: 'text-blue-400',
+        status: deadline ? `Consolidating...` : 'Pending', // Set status based on deadline
+        statusColor: deadline ? 'text-blue-400' : 'text-orange-400',
         icon: 'https://placehold.co/40x40/9333ea/FFFFFF?text=S',
-        isConsolidating: true, // (PRD 4.2)
-        deadline: deadline
+        isConsolidating: !!deadline, // (PRD 4.2)
+        deadline: deadline,
+        // *** NEW: Add participant status object (PRD 4.2.2) ***
+        participantStatus: participantList.map(name => ({
+            name: name,
+            stage: 'Delivered',
+            status: 'Pending'
+        }))
     };
     sentRequests.push(newSentRequest);
 
@@ -866,9 +1149,9 @@ function handleSendSplit() {
         subtitle: title, // Request info
         page: 'page-social-split',
         amount: total, // This is the *total pot* amount for now
-        status: 'Consolidating...',
+        status: deadline ? 'Consolidating...' : 'Pending',
         expenses: expenses, // (PRD 4.2)
-        isConsolidating: true,
+        isConsolidating: !!deadline,
         deadline: deadline,
         participants: participantList // Store participants
     };
@@ -897,13 +1180,16 @@ function renderSentRequests() {
         // Show newest first
         sentRequests.slice().reverse().forEach(req => {
             const requestCard = document.createElement('div');
-            requestCard.className = 'bg-slate-800 border border-slate-700 rounded-xl p-4 shadow-sm';
+            requestCard.className = 'bg-slate-800 border border-slate-700 rounded-xl p-4 shadow-sm cursor-pointer hover:bg-slate-700';
             
-            // Allow clicking to view
-            const matchingReceived = receivedRequests.find(r => r.id === req.id);
-            if (matchingReceived) {
-                requestCard.classList.add('cursor-pointer', 'hover:bg-slate-700');
-                requestCard.onclick = () => navigateToRequest(matchingReceived.id);
+            // *** MODIFICATION: Click navigates to creator's detail view ***
+            if (req.type === 'invoice') {
+                requestCard.onclick = () => navigateToCreatorDetail(req.id);
+            } else if (req.type === 'split') {
+                // TODO: Implement navigateToCreatorSplitDetail(req.id)
+                // requestCard.onclick = () => navigateToCreatorSplitDetail(req.id);
+                // For now, let's just log it
+                requestCard.onclick = () => console.log('Clicked split, creator detail view not built yet.');
             }
             
             requestCard.innerHTML = `
@@ -948,6 +1234,7 @@ function renderReceivedRequests() {
         receivedRequests.slice().reverse().forEach(req => {
             const requestCard = document.createElement('div');
             requestCard.className = 'bg-slate-800 border border-slate-700 rounded-xl p-4 shadow-sm cursor-pointer hover:bg-slate-700 transition-colors';
+            // *** This click handler is for PAYERS, so it's correct ***
             requestCard.onclick = () => navigateToRequest(req.id);
             
             // We need to determine the right icon/color
@@ -1003,6 +1290,15 @@ function initializeDatabase() {
     // We'll create a "master" ID to link these objects
     const adidasMasterId = 'INV-MASTER-001';
     const sarahMasterId = 'SPL-MASTER-001';
+    
+    const adidasItems = [
+        { desc: 'Consulting services', amount: 2000.00 },
+        { desc: 'Additional support', amount: 500.00 }
+    ];
+    const adidasSubtotal = 2500.00;
+    const adidasVat = 21;
+    const adidasVatAmount = 525.00;
+    const adidasTotal = 3025.00;
 
     // 1. Payer's "Received" data
     receivedRequests = [
@@ -1012,14 +1308,12 @@ function initializeDatabase() {
             title: '98% Adidas', // Creator's info
             subtitle: 'INV-000-001', // Request info
             page: 'page-sme-invoice',
-            amount: 3025.00,
+            amount: adidasTotal,
             status: 'Overdue', // This is the value we will change
             icon: 'https://placehold.co/40x40/000000/FFFFFF?text=A',
             isConsolidating: false,
-            expenses: [
-                { desc: 'Consulting services', amount: 2000.00, paidBy: 'Adidas' },
-                { desc: 'Additional support', amount: 500.00, paidBy: 'Adidas' }
-            ]
+            expenses: adidasItems, // Use 'expenses' to hold line items
+            vat: adidasVat
         },
         {
             id: sarahMasterId,
@@ -1047,11 +1341,27 @@ function initializeDatabase() {
             type: 'invoice',
             title: 'Client: Kevin (You)', // What Adidas sees
             subtitle: 'INV-000-001',
-            amount: '3025.00',
+            amount: adidasTotal.toFixed(2),
             status: 'Overdue',
             statusColor: 'text-red-500', // Payer's status
             icon: 'https://placehold.co/40x40/000000/FFFFFF?text=A',
-            isConsolidating: false
+            isConsolidating: false,
+            // *** NEW: Add creator detail and status ***
+            details: {
+                clientName: 'Kevin (You)',
+                items: adidasItems,
+                subtotal: adidasSubtotal,
+                vat: adidasVat,
+                vatAmount: adidasVatAmount,
+                total: adidasTotal,
+                note: 'Thank you for the great work!',
+                reminderProfile: 'My Business Voice (Friendly)'
+            },
+            recipientStatus: {
+                recipientName: 'Kevin (You)',
+                stage: 'Opened',
+                status: 'Overdue'
+            }
         },
         {
             id: sarahMasterId, // Note the matching ID
@@ -1062,7 +1372,13 @@ function initializeDatabase() {
             status: '5/8 Paid', // Payer's status
             statusColor: 'text-lime-400',
             icon: 'https://placehold.co/40x40/9333ea/FFFFFF?text=SW',
-            isConsolidating: false
+            isConsolidating: false,
+            participantStatus: [
+                { name: 'Mike Torres', stage: 'Paid', status: 'Creditor (+€562.50)' },
+                { name: 'Emma Rodriguez', stage: 'Seen', status: 'Paid' },
+                { name: 'Lisa Thompson', stage: 'Seen', status: 'Pending (72%)' },
+                // ... etc
+            ]
         }
     ];
     
@@ -1085,6 +1401,28 @@ function renderShareLinkPage() {
     // Simulate a project link (PRD 4.2)
     if (linkEl) linkEl.value = `https://max.com/split/${currentViewedRequest.id}`;
 }
+
+/**
+ * Copies the share link to the clipboard
+ */
+function copyShareLink() {
+    const linkEl = document.getElementById('share-split-link');
+    linkEl.select();
+    linkEl.setSelectionRange(0, 99999); // For mobile
+    
+    try {
+        // Use newer clipboard API if available
+        navigator.clipboard.writeText(linkEl.value).then(() => {
+            console.log('Link copied to clipboard!');
+            // You could show a temporary "Copied!" message
+        });
+    } catch (err) {
+        // Fallback for older browsers
+        document.execCommand('copy');
+        console.log('Link copied to clipboard (fallback)!');
+    }
+}
+
 
 /**
  * Handles the "Catalyst Splitter" button click
@@ -1132,7 +1470,8 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Creator Form: Invoice
     document.getElementById('add-invoice-item').addEventListener('click', addInvoiceItem);
-    document.getElementById('send-invoice-btn').addEventListener('click', handleSendInvoice);
+    // *** MODIFICATION: Removed old listener. The new flow is handled by onclick="" attributes in the HTML. ***
+    // document.getElementById('send-invoice-btn').addEventListener('click', handleSendInvoice);
 
     // Creator Form: Split
     document.getElementById('add-split-expense').addEventListener('click', addSplitExpense);

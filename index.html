@@ -168,51 +168,53 @@
                 </div>
                 
                 <!-- *** NEW: Consolidation Banner (PRD 8.2.1 B) *** -->
-                <div id="consolidation-banner" class="p-4 bg-blue-800 text-center text-blue-100 hidden">
+                <!-- Renamed ID for clarity -->
+                <div id="social-consolidation-banner" class="p-4 bg-blue-800 text-center text-blue-100 hidden">
                     <p class="font-bold text-lg">Consolidation in Progress</p>
-                    <p id="consolidation-timer" class="text-sm">Time left to add expenses: 00:00:00</p>
+                    <p id="social-consolidation-timer" class="text-sm">Time left to add expenses: 00:00:00</p>
                 </div>
                 
                 <div class="p-6 space-y-8">
                     <div class="flex justify-between items-center">
                         <div>
-                            <h2 class="text-2xl font-bold text-white">Dinner at Sakura</h2>
+                            <h2 id="social-detail-title" class="text-2xl font-bold text-white">Dinner at Sakura</h2>
                             <div class="flex gap-4 text-sm text-slate-400 mt-1">
                                 <span>8 people</span>
                                 <span>5 photos</span>
                             </div>
                         </div>
-                        <span class="text-sm font-semibold bg-lime-200 text-lime-800 rounded-full px-3 py-1">5 of 8 have paid</span>
+                        <span id="social-paid-status-pill" class="text-sm font-semibold bg-lime-200 text-lime-800 rounded-full px-3 py-1">5 of 8 have paid</span>
                     </div>
 
                     <!-- *** MODIFICATION: Added ID to hide this when consolidating *** -->
-                    <div id="your-share-box" class="bg-pink-900/50 border border-pink-700 rounded-xl p-5 my-4">
+                    <div id="social-your-share-container" class="bg-pink-900/50 border border-pink-700 rounded-xl p-5 my-4">
                         <div class="flex justify-between items-center">
                             <span class="text-sm font-semibold text-pink-300">Your share</span>
-                            <span id="split-detail-amount" class="text-3xl font-bold text-pink-300">€ 187,50</span>
+                            <span id="social-detail-amount" class="text-3xl font-bold text-pink-300">€ 187,50</span>
                         </div>
                     </div>
                     
                     <div class="grid grid-cols-2 gap-4 my-4">
                         <!-- *** MODIFICATION: Added ID to hide this when consolidating *** -->
-                        <button id="pay-share-button" class="btn-gradient-blue font-semibold py-3 rounded-lg shadow-md" onclick="openHotKeyModal('social')">
+                        <button id="social-pay-btn" class="btn-gradient-blue font-semibold py-3 rounded-lg shadow-md" onclick="openHotKeyModal('social')">
                             Pay your share
                         </button>
                         <!-- *** MODIFICATION: Button is now enabled/disabled via JS *** -->
-                        <button id="add-expense-button" class="w-full bg-slate-700 text-slate-200 font-semibold py-3 rounded-lg border border-slate-600" onclick="showAddExpenseModal()">
+                        <!-- This button adds *people* to the split, not expenses -->
+                        <button id="social-add-people-btn" class="w-full bg-slate-700 text-slate-200 font-semibold py-3 rounded-lg border border-slate-600">
                             Add people to split +
                         </button>
                     </div>
 
                     <div class="mt-6">
                         <!-- *** MODIFICATION: Added ID for dynamic rendering *** -->
-                        <h3 class="font-bold text-white mb-3">Group expenses <span id="group-expenses-total" class="font-normal text-slate-400">€ 0.00</span></h3>
+                        <h3 class="font-bold text-white mb-3">Group expenses <span id="social-total-amount" class="font-normal text-slate-400">€ 0.00</span></h3>
                         <!-- *** MODIFICATION: Added ID for dynamic rendering *** -->
-                        <div id="group-expenses-list" class="space-y-4">
+                        <div id="social-expense-list" class="space-y-4">
                             <!-- Expenses will be rendered here by JS -->
                         </div>
                         <!-- *** MODIFICATION: This button is now enabled/disabled via JS based on consolidation status *** -->
-                        <button id="add-expense-to-group-button" class="w-full bg-slate-800 text-slate-300 font-semibold py-3 rounded-lg border border-slate-700 mt-4" onclick="showAddExpenseModal()">
+                        <button id="social-add-expense-btn" class="w-full bg-slate-800 text-slate-300 font-semibold py-3 rounded-lg border border-slate-700 mt-4" onclick="openAddExpenseModal()">
                             Add expense to group +
                         </button>
                     </div>
@@ -320,6 +322,8 @@
             </main>
         </div>
 
+        
+        
         <div id="page-sme-invoice" class="page">
             <header class="p-6 bg-slate-800 sticky top-0 z-10 shadow-sm flex justify-between items-center">
                 <button class="text-gray-200" onclick="showPage('page-payer-dashboard', 'backward')">
@@ -347,7 +351,7 @@
                     </button>
                     <!-- *** MODIFICATION *** -->
                     <!-- Added onclick handler to trigger the Catalyst Splitter flow (PRD 5.3) -->
-                    <button class="w-full bg-slate-700 text-slate-200 font-semibold py-3 rounded-lg border border-slate-600" onclick="triggerCatalystSplit()">
+                    <button class="w-full bg-slate-700 text-slate-200 font-semibold py-3 rounded-lg border border-slate-600" onclick="triggerCatalystSplitter()">
                         Add people to split +
                     </button>
                     <!-- *** END MODIFICATION *** -->
@@ -355,30 +359,24 @@
 
                 <div class="mt-6">
                     <h3 class="font-bold text-white mb-3">Invoice details</h3>
-                    <div class="bg-slate-800 rounded-xl p-4 border border-slate-700">
+                    <!-- *** MODIFICATION: Added ID for dynamic rendering *** -->
+                    <div id="sme-invoice-items-container" class="bg-slate-800 rounded-xl p-4 border border-slate-700">
                         <div class="space-y-3 border-b border-slate-700 pb-3">
-                            <div class="flex justify-between items-center text-sm">
-                                <p class="text-slate-300">Consulting services</p>
-                                <p class="font-medium text-slate-200">€ 2.000,00</p>
-                            </div>
-                            <div class="flex justify-between items-center text-sm">
-                                <p class="text-slate-300">Additional support hours</p>
-                                <p class="font-medium text-slate-200">€ 500,00</p>
-                            </div>
+                            <!-- Items will be injected here -->
                         </div>
                         <div class="space-y-2 border-b border-slate-700 py-3">
                             <div class="flex justify-between items-center text-sm">
                                 <p class="text-slate-400">Subtotal</p>
-                                <p class="text-slate-400">€ 2.500,00</p>
+                                <p id="sme-subtotal" class="text-slate-400">€ 0.00</p>
                             </div>
                             <div class="flex justify-between items-center text-sm">
-                                <p class="text-slate-400">VAT (21%)</p>
-                                <p class="text-slate-400">€ 525,00</p>
+                                <p class="text-slate-400">VAT (<span id="sme-vat-percent">0</span>%)</p>
+                                <p id="sme-vat-amount" class="text-slate-400">€ 0.00</p>
                             </div>
                         </div>
                         <div class="flex justify-between items-center font-bold text-white pt-3 text-lg">
                             <p>Total</p>
-                            <p>€ 3.025,00</p>
+                            <p id="sme-total-amount">€ 0.00</p>
                         </div>
                     </div>
                     <button class="w-full text-lime-400 font-semibold py-3 rounded-lg border border-lime-800 bg-lime-900/50 mt-4">
@@ -545,13 +543,25 @@
                     <svg class="w-6 h-6" fill="none" stroke-width="2.5" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5"></path></svg>
                 </button>
                 <h1 class="text-lg font-bold text-white">Create New Invoice</h1>
-                <div class="w-6"></div> </header>
+                <div class="w-6"></div> 
+            </header>
 
-            <main class="p-6 pb-24 space-y-10">
+            <!-- *** MODIFICATION: Added space-y-8 *** -->
+            <main class="p-6 pb-24 space-y-8">
                 <div>
                     <label for="invoice-client-name" class="block text-2xl font-bold text-white">Who is this for?</label>
                     <input type="text" id="invoice-client-name" class="mt-3 block w-full rounded-lg bg-slate-800 border-slate-700 text-white p-4 text-lg" placeholder="Client Name or Email">
                 </div>
+                
+                <!-- *** NEW: Add Logo (PRD 5.2) *** -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-300">Your Logo (PRD 5.2)</label>
+                    <button class="mt-2 w-full flex items-center gap-3 rounded-lg bg-slate-800 border-slate-700 text-slate-400 p-4">
+                        <svg class="w-5 h-5 text-blue-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" /></svg>
+                        <span>Upload logo (e.g., logo.png)</span>
+                    </button>
+                </div>
+                <!-- *** END NEW *** -->
 
                 <div>
                     <label class="block text-2xl font-bold text-white mb-3">What is this for?</label>
@@ -596,13 +606,194 @@
                 </div>
 
                 <div>
-                    <label for="invoice-next-steps" class="block text-2xl font-bold text-white">Add a note</label>
+                    <label for="invoice-next-steps" class="block text-2xl font-bold text-white">Add a note (PRD 5.2)</label>
                     <textarea id="invoice-next-steps" class="mt-3 block w-full rounded-lg bg-slate-800 border-slate-700 text-white p-4" rows="3" placeholder="P.S. I'll call you next week to discuss Q4..."></textarea>
                 </div>
+                
+                <!-- *** NEW: Reminder Profile (PRD 5.4) *** -->
+                <div>
+                    <label for="invoice-reminder-profile" class="block text-2xl font-bold text-white">Reminder Profile (PRD 5.4)</label>
+                    <select id="invoice-reminder-profile" class="mt-3 block w-full rounded-lg bg-slate-800 border-slate-700 text-white p-4 text-lg">
+                        <option value="friendly">My Business Voice (Friendly)</option>
+                        <option value="formal">Formal</option>
+                        <option value="none">No Reminders</option>
+                    </select>
+                </div>
+                <!-- *** END NEW *** -->
 
-                <button id="send-invoice-btn" class="w-full btn-gradient-blue text-white font-semibold py-4 rounded-lg shadow-lg mt-6 text-lg">
+                <!-- *** MODIFICATION: Changed ID and onclick *** -->
+                <button id="review-invoice-btn" class="w-full btn-gradient-blue text-white font-semibold py-4 rounded-lg shadow-lg mt-6 text-lg" onclick="handleReviewInvoice()">
                     Review & Send Invoice
                 </button>
+                <!-- *** END MODIFICATION *** -->
+            </main>
+        </div>
+        
+        <!-- *** NEW PAGE: Review Invoice (for "Slick" flow) *** -->
+        <div id="page-review-invoice" class="page">
+            <header class="p-6 bg-slate-900 sticky top-0 z-10 flex justify-between items-center">
+                <button class="text-gray-200" onclick="showPage('page-create-invoice', 'backward')">
+                    <svg class="w-6 h-6" fill="none" stroke-width="2.5" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5"></path></svg>
+                </button>
+                <h1 class="text-lg font-bold text-white">Review Invoice</h1>
+                <div class="w-6"></div> 
+            </header>
+
+            <main class="p-6 pb-32 space-y-8">
+                <!-- This is the "Payer's View" of the SME invoice, repurposed as a preview -->
+                <div>
+                    <p class="text-sm text-slate-400 text-center mb-4">This is a preview of what your client will see.</p>
+                    
+                    <div class="bg-slate-800 rounded-xl border border-slate-700 p-4">
+                        <div class="flex justify-between items-center mb-4">
+                            <h2 id="review-client-name" class="text-lg font-semibold text-white"></h2>
+                            <img src="https://placehold.co/80x32/1e293b/FFFFFF?text=LOGO" alt="Your Logo" id="review-logo-img">
+                        </div>
+                        
+                        <div class="bg-pink-900/50 border border-pink-700 rounded-xl p-5 my-4">
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm font-semibold text-pink-300">Amount due</span>
+                                <span id="review-total-amount" class="text-3xl font-bold text-pink-300">€ 0.00</span>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-6">
+                            <h3 class="font-bold text-white mb-3">Invoice details</h3>
+                            <div class="bg-slate-900 rounded-xl p-4 border border-slate-700">
+                                <div id="review-items-list" class="space-y-3 border-b border-slate-700 pb-3">
+                                    <!-- Review items will be injected here -->
+                                </div>
+                                <div class="space-y-2 border-b border-slate-700 py-3">
+                                    <div class="flex justify-between items-center text-sm">
+                                        <p class="text-slate-400">Subtotal</p>
+                                        <p id="review-subtotal" class="text-slate-400">€ 0.00</p>
+                                    </div>
+                                    <div class="flex justify-between items-center text-sm">
+                                        <p class="text-slate-400">VAT (<span id="review-vat-percent">0</span>%)</p>
+                                        <p id="review-vat-amount" class="text-slate-400">€ 0.00</p>
+                                    </div>
+                                </div>
+                                <div class="flex justify-between items-center font-bold text-white pt-3 text-lg">
+                                    <p>Total</p>
+                                    <p id="review-grand-total">€ 0.00</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-6">
+                            <h3 class="font-bold text-white mb-3">Note (PRD 5.2)</h3>
+                            <div class="bg-slate-900 rounded-xl p-4 border border-slate-700">
+                                <p id="review-next-steps" class="text-slate-300 italic"></p>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-6">
+                            <h3 class="font-bold text-white mb-3">Reminder Profile (PRD 5.4)</h3>
+                            <div class="bg-slate-900 rounded-xl p-4 border border-slate-700">
+                                <p id="review-reminder-profile" class="text-slate-300"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button id="confirm-send-invoice-btn" class="w-full btn-gradient-blue text-white font-semibold py-4 rounded-lg shadow-lg mt-6 text-lg flex items-center justify-center gap-3" onclick="handleSendInvoice()">
+                    <span id="send-btn-text">Confirm & Send Invoice</span>
+                    <div id="send-btn-loader" class="loader hidden"></div>
+                </button>
+            </main>
+        </div>
+        <!-- *** END NEW PAGE *** -->
+        
+        <!-- *** NEW PAGE: Creator's Invoice Detail/Tracking (PRD 5.2.1) *** -->
+        <div id="page-sme-invoice-detail-creator" class="page">
+            <header class="p-6 bg-slate-900 sticky top-0 z-10 flex justify-between items-center">
+                <button class="text-gray-200" onclick="showPage('page-creator-dashboard', 'backward')">
+                    <svg class="w-6 h-6" fill="none" stroke-width="2.5" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5"></path></svg>
+                </button>
+                <h1 id="creator-detail-header-title" class="text-lg font-bold text-white">Tracking Invoice</h1>
+                <div class="w-6"></div> 
+            </header>
+            
+            <main class="p-6 pb-32 space-y-8">
+                <div>
+                    <h2 id="creator-detail-client-name" class="text-3xl font-bold text-white"></h2>
+                    <p id="creator-detail-total-amount" class="text-4xl font-bold text-pink-400 mt-1"></p>
+                </div>
+                
+                <!-- This is the Recipient Status Dashboard (PRD 5.2.1) -->
+                <div>
+                    <h3 class="font-bold text-white mb-4 text-lg">Recipient Status</h3>
+                    <div id="recipient-status-dashboard" class="space-y-4">
+                        <!-- Status steps will be injected here by JS -->
+                    </div>
+                </div>
+                
+                <div class_="mt-6">
+                    <h3 class="font-bold text-white mb-3 text-lg">Invoice details</h3>
+                    <div id="creator-detail-items-container" class="bg-slate-800 rounded-xl p-4 border border-slate-700">
+                        <!-- Creator's view of items will be injected here -->
+                    </div>
+                </div>
+
+                <div class="mt-6">
+                    <h3 class="font-bold text-white mb-4 text-lg">Comments and activity</h3>
+                    <!-- This would be populated from a database in a real app -->
+                    <div class="text-center text-slate-500 py-8">
+                        <p>No comments yet.</p>
+                    </div>
+                    <div class="mt-4">
+                        <textarea class="w-full bg-slate-800 border border-slate-700 rounded-lg p-3 text-sm text-white placeholder-gray-400" rows="2" placeholder="Add a private note or send a follow-up..."></textarea>
+                        <div class="flex justify-end items-center mt-2">
+                            <button class="btn-gradient-blue text-sm font-semibold px-4 py-1.5 rounded-full">Post</button>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+        <!-- *** END NEW PAGE *** -->
+        <div id="page-social-split-detail-creator" class="page">
+            <header class="p-6 bg-slate-900 sticky top-0 z-10 flex justify-between items-center">
+                <button class="text-gray-200" onclick="showPage('page-creator-dashboard', 'backward')">
+                    <svg class="w-6 h-6" fill="none" stroke-width="2.5" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5"></path></svg>
+                </button>
+                <h1 id="creator-split-header-title" class="text-lg font-bold text-white">Tracking Split</h1>
+                <div class="w-6"></div> 
+            </header>
+            
+            <main class="p-6 pb-32 space-y-8">
+                <div>
+                    <h2 id="creator-split-title" class="text-3xl font-bold text-white"></h2>
+                    <p id="creator-split-total-amount" class="text-4xl font-bold text-pink-400 mt-1"></p>
+                </div>
+                
+                <!-- This is the Participant Status Dashboard (PRD 4.2.2) -->
+                <div>
+                    <h3 class="font-bold text-white mb-4 text-lg">Participant Status</h3>
+                    <div id="participant-status-dashboard" class="space-y-4">
+                        <!-- Participant status cards will be injected here by JS -->
+                    </div>
+                </div>
+                
+                <div class="mt-6">
+                    <h3 class="font-bold text-white mb-3 text-lg">Expenses Added</h3>
+                    <div id="creator-split-expenses-list" class="bg-slate-800 rounded-xl p-4 border border-slate-700">
+                        <!-- Creator's view of expenses will be injected here -->
+                    </div>
+                </div>
+
+                <div class="mt-6">
+                    <h3 class="font-bold text-white mb-4 text-lg">Comments and activity</h3>
+                    <!-- This would be populated from a database in a real app -->
+                    <div class="text-center text-slate-500 py-8">
+                        <p>No comments yet.</p>
+                    </div>
+                    <div class="mt-4">
+                        <textarea class="w-full bg-slate-800 border border-slate-700 rounded-lg p-3 text-sm text-white placeholder-gray-400" rows="2" placeholder="Add a private note or send a follow-up..."></textarea>
+                        <div class="flex justify-end items-center mt-2">
+                            <button class="btn-gradient-blue text-sm font-semibold px-4 py-1.5 rounded-full">Post</button>
+                        </div>
+                    </div>
+                </div>
             </main>
         </div>
 
@@ -674,12 +865,12 @@
                         <path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 1 0 0 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186 9.566-5.314m-9.566 5.314 9.566 5.314m0 0a2.25 2.25 0 1 0 0-2.186m0 2.186c-.18-.324-.283-.696-.283-1.093s.103-.77.283-1.093m0 2.186-9.566-5.314" />
                     </svg>
                 </div>
-                <h2 class="text-3xl font-bold text-white mb-4">Your Split is Consolidating!</h2>
+                <h2 id="share-split-title" class="text-3xl font-bold text-white mb-4">Your Split is Consolidating!</h2>
                 <p class="text-lg text-slate-300 mb-6">Share this link with participants so they can add their expenses.</p>
                 
                 <div class="w-full bg-slate-800 border border-slate-700 rounded-lg p-4 text-left mb-4">
                     <p class="text-sm text-slate-400">Shareable Project Link (PRD 4.2):</p>
-                    <p id="share-link-text" class="text-white font-mono break-all">max.com/split/...</p>
+                    <input id="share-split-link" type="text" class="text-white font-mono break-all w-full bg-transparent" readonly>
                 </div>
                 <button class="w-full btn-gradient-blue font-semibold py-3 rounded-lg shadow-md text-lg" onclick="copyShareLink()">
                     Copy Link
