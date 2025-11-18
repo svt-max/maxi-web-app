@@ -41,11 +41,11 @@ SARAH_USER_ID = 'user-uuid-sarah-003'
 
 
 # --- Database Models (PRD 4.3) ---
-# 
 class User(db.Model):
     id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     name = db.Column(db.String(100), nullable=False)
     phone_number = db.Column(db.String(20), unique=True)
+    score = db.Column(db.Integer, default=97) # Add score from PRD
     
     # --- Pot Relationships ---
     admin_pots = db.relationship('Pot', backref='admin', lazy=True)
@@ -88,8 +88,6 @@ class PotTransaction(db.Model):
     date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
 # --- NEW: Unified Request & Social Feed Models (PRD 3.3, 4.2, 5.2) ---
-# 
-
 class Request(db.Model):
     """ A unified table for both Invoices and Splits (PRD 2.1) """
     id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
@@ -97,7 +95,7 @@ class Request(db.Model):
     title = db.Column(db.String(100), nullable=False) # "Client: Adidas" or "Dinner at Sakura"
     subtitle = db.Column(db.String(100)) # "INV-000-001" or "8 participants"
     creator_id = db.Column(db.String(36), db.ForeignKey('user.id'), nullable=False)
-    total_amount = db.Column(db.Float, nullable=False)
+    total_amount = db.Column(db.Float, nullable=False, default=0)
     status = db.Column(db.String(50), nullable=False, default='Pending') # Creator's status
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     
@@ -108,6 +106,7 @@ class Request(db.Model):
     # Split-specific fields (nullable)
     split_deadline = db.Column(db.DateTime) # Consolidation timer (PRD 4.2)
     split_project_link = db.Column(db.String(200)) # Shareable link (PRD 4.2)
+    photo_url = db.Column(db.String(500)) # For split cover photo
 
     # Relationships
     participants = db.relationship('RequestParticipant', backref='request', lazy=True, cascade="all, delete-orphan")
@@ -121,19 +120,25 @@ class RequestParticipant(db.Model):
     user_id = db.Column(db.String(36), db.ForeignKey('user.id'), nullable=False)
     
     # Participant-specific status
-    status = db.Column(db.String(50), nullable=False, default='Pending') # 'Pending', 'Promised', 'Paid', 'Disputed'
+    status = db.Column(db.String(50), nullable=False, default='Pending') # 'Pending', 'Promised', 'Paid', 'Disputed', 'Creditor'
     stage = db.Column(db.String(50), nullable=False, default='Delivered') # 'Delivered', 'Seen', 'Reacted'
-    net_share = db.Column(db.Float) # Final calculated amount (PRD 4.2.1)
+    net_share = db.Column(db.Float, default=0) # Final calculated amount (PRD 4.2.1)
+    fixed_split_amount = db.Column(db.Float, nullable=True) # NEW: Store the target amount if custom
 
 class RequestItem(db.Model):
-    """ Line items for Invoices or Expenses for Splits (PRD 4.2 / 5.2) """
+    """ Line items for Invoices or Expenses for Splits """
     id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     request_id = db.Column(db.String(36), db.ForeignKey('request.id'), nullable=False)
     description = db.Column(db.String(200), nullable=False)
     amount = db.Column(db.Float, nullable=False)
     
-    # For splits: who paid for this item? (PRD 4.2)
+    # For splits: who paid for this item?
     paid_by_user_id = db.Column(db.String(36), db.ForeignKey('user.id'), nullable=True)
+    
+    # --- NEW: Admin Gatekeeper (PRD 3.2.2) ---
+    # Expenses must be approved by the creator before counting toward the total.
+    is_approved = db.Column(db.Boolean, default=False) 
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 class Comment(db.Model):
     """ A single comment for the Social Feed (PRD 3.3) """
@@ -154,17 +159,18 @@ def create_db_and_seed():
         if User.query.count() == 0:
             print("Seeding database...")
             # Create users
-            admin_user = User(id=CURRENT_USER_ID, name='You (Admin)', phone_number='+1111111111')
-            lisa = User(id=str(uuid.uuid4()), name='Lisa Thompson', phone_number='+2222222222')
-            kevin = User(id=str(uuid.uuid4()), name='Kevin (Guest)', phone_number='+3333333333')
-            james = User(id=str(uuid.uuid4()), name='James Park', phone_number='+4444444444')
+            admin_user = User(id=CURRENT_USER_ID, name='You (Admin)', phone_number='+1111111111', score=97)
+            lisa = User(id=str(uuid.uuid4()), name='Lisa Thompson', phone_number='+2222222222', score=95)
+            kevin = User(id=str(uuid.uuid4()), name='Kevin (Guest)', phone_number='+3333333333', score=92)
+            james = User(id=str(uuid.uuid4()), name='James Park', phone_number='+4444444444', score=72)
             
             # --- NEW: Seed Users from PDR ---
-            adidas_user = User(id=ADIDAS_USER_ID, name='98% Adidas', phone_number='+5555555555')
-            sarah_user = User(id=SARAH_USER_ID, name='95% Sarah Williams', phone_number='+6666666666')
-            mike_user = User(id=str(uuid.uuid4()), name='Mike Torres', phone_number='+7777777777')
+            adidas_user = User(id=ADIDAS_USER_ID, name='Adidas', phone_number='+5555555555', score=98)
+            sarah_user = User(id=SARAH_USER_ID, name='Sarah Williams', phone_number='+6666666666', score=95)
+            mike_user = User(id=str(uuid.uuid4()), name='Mike Torres', phone_number='+7777777777', score=88)
             
             db.session.add_all([admin_user, lisa, kevin, james, adidas_user, sarah_user, mike_user])
+            db.session.commit() # Commit users so they can be referenced
 
             # Create Pot 1: "FC Lions Team Fees" (PRD 4.3.4)
             pot1 = Pot(id='pot-uuid-001', name='FC Lions Team Fees', admin_id=admin_user.id)
@@ -209,12 +215,12 @@ def create_db_and_seed():
                 user_id=CURRENT_USER_ID,
                 status='Overdue',
                 stage='Seen',
-                net_share=3025.00
+                net_share=-3025.00 # You owe this
             )
             db.session.add(adidas_participant)
             # Add line items
-            adidas_item_1 = RequestItem(request_id=adidas_req.id, description='Consulting services', amount=2000.00)
-            adidas_item_2 = RequestItem(request_id=adidas_req.id, description='Additional support', amount=500.00)
+            adidas_item_1 = RequestItem(request_id=adidas_req.id, description='Consulting services', amount=2000.00, is_approved=True)
+            adidas_item_2 = RequestItem(request_id=adidas_req.id, description='Additional support', amount=500.00, is_approved=True)
             db.session.add_all([adidas_item_1, adidas_item_2])
             
             # 2. Sarah's Social Split (PDR 8.1)
@@ -222,38 +228,182 @@ def create_db_and_seed():
                 id='SPL-MASTER-001',
                 type='split',
                 title='Dinner at Sakura',
-                subtitle='8 participants',
+                subtitle='3 participants',
                 creator_id=SARAH_USER_ID,
-                total_amount=1500.00,
-                status='5/8 Paid' # Creator's status
+                total_amount=750.00, # Only Sarah's expense is approved initially
+                status='1/3 Paid', # Creator's status
+                split_deadline=datetime.utcnow() + timedelta(days=2), # 2 day timer
+                photo_url='https://images.unsplash.com/photo-1551024601-bec78c92a26e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80'
             )
             db.session.add(sarah_req)
-            # Add participant (You)
+            # Add participants
             sarah_participant_you = RequestParticipant(
                 request_id=sarah_req.id,
                 user_id=CURRENT_USER_ID,
                 status='Pending', # Your status
                 stage='Seen',
-                net_share=187.50
+                net_share=-250.00 # (750 / 3)
             )
-            # Add other participants
             sarah_participant_mike = RequestParticipant(
                 request_id=sarah_req.id,
                 user_id=mike_user.id,
                 status='Paid',
                 stage='Reacted',
-                net_share=-562.50 # Mike is owed money
+                net_share=-250.00
             )
-            db.session.add_all([sarah_participant_you, sarah_participant_mike])
+            sarah_participant_sarah = RequestParticipant(
+                request_id=sarah_req.id,
+                user_id=SARAH_USER_ID,
+                status='Creditor',
+                stage='Reacted',
+                net_share=500.00 # (750 paid - 250 share)
+            )
+            db.session.add_all([sarah_participant_you, sarah_participant_mike, sarah_participant_sarah])
             # Add expenses
-            sarah_item_1 = RequestItem(request_id=sarah_req.id, description='Sushi dinner at Sakura', amount=750.00, paid_by_user_id=SARAH_USER_ID)
-            sarah_item_2 = RequestItem(request_id=sarah_req.id, description='Uber ride (to & from)', amount=750.00, paid_by_user_id=mike_user.id)
+            sarah_item_1 = RequestItem(request_id=sarah_req.id, description='Sushi dinner at Sakura', amount=750.00, paid_by_user_id=SARAH_USER_ID, is_approved=True)
+            # This one is NOT approved yet
+            sarah_item_2 = RequestItem(request_id=sarah_req.id, description='Uber ride (to & from)', amount=75.00, paid_by_user_id=mike_user.id, is_approved=False)
             db.session.add_all([sarah_item_1, sarah_item_2])
             
             db.session.commit()
             print("Database seeded!")
 
+def calculate_net_balances(request_id):
+    """
+    PRD 3.2.2: Smart Settlement Engine
+    Calculates the net position for every participant based on APPROVED expenses.
+    Supports both EQUAL splits (default) and CUSTOM/FIXED amount splits.
+    """
+    req = Request.query.get(request_id)
+    if not req:
+        return
+
+    # 1. Get all APPROVED items
+    items = RequestItem.query.filter_by(request_id=request_id, is_approved=True).all()
+    
+    # 2. Calculate Total Group Spend
+    total_spend = sum(item.amount for item in items)
+    req.total_amount = total_spend # Update total
+
+    # 3. Get Participants
+    participants = RequestParticipant.query.filter_by(request_id=request_id).all()
+    participant_count = len(participants)
+    
+    if participant_count == 0:
+        db.session.commit()
+        return total_spend
+
+    # 4. Calculate Fallback Equal Share (used if fixed_split_amount is None)
+    # Note: In a more complex app, we might mix fixed + equal, but for this MVP,
+    # if fixed amounts exist, they override the equal logic per person.
+    equal_share = total_spend / participant_count
+
+    # 5. Calculate Net Position for each participant
+    paid_count = 0
+    
+    for p in participants:
+        # Sum what THIS user paid
+        user_paid_total = sum(item.amount for item in items if item.paid_by_user_id == p.user_id)
+        
+        # Determine what they SHOULD pay (Expected Share)
+        expected_share = 0
+        if p.fixed_split_amount is not None:
+            # Use the custom amount set during review
+            expected_share = p.fixed_split_amount
+        else:
+            # Fallback to equal split
+            expected_share = equal_share
+
+        # Net Share: Positive means they are OWED money. Negative means they OWE money.
+        # Example: Sarah paid 750, Share is 187.50. Net = +562.50
+        p.net_share = user_paid_total - expected_share
+        
+        # Update Status based on Net Share
+        # We use a small epsilon (0.01) for float comparison
+        if p.status == 'Paid':
+            paid_count += 1
+        elif p.net_share > 0.01:
+            p.status = "Creditor"
+        elif p.net_share < -0.01:
+            # Only reset to Pending if they were not already Paid/Promised
+            if p.status not in ['Paid', 'Promised']:
+                p.status = 'Pending'
+        else:
+            p.status = 'Settled'
+            paid_count += 1
+    
+    # 6. Update main request status
+    req.status = f"{paid_count}/{participant_count} Paid"
+    req.subtitle = f"{participant_count} participants"
+
+    db.session.commit()
+    return total_spend
+
 # --- API Endpoints: Group Pot (PRD 4.3) ---
+@app.route('/api/requests/<request_id>/expenses', methods=['POST'])
+def add_split_expense(request_id):
+    """ Add an expense to a split (PRD 3.2.2) """
+    req = Request.query.get(request_id)
+    if not req:
+        return jsonify({'error': 'Request not found'}), 404
+        
+    data = request.json
+    user_id = data.get('user_id', CURRENT_USER_ID) # In real app, get from session
+    
+    # Admin Gatekeeper Logic:
+    # If the Creator adds it, it's auto-approved. If a participant adds it, it's pending.
+    is_creator = (user_id == req.creator_id)
+    auto_approve = is_creator 
+    
+    new_item = RequestItem(
+        request_id=request_id,
+        description=data['description'],
+        amount=float(data['amount']),
+        paid_by_user_id=user_id,
+        is_approved=auto_approve
+    )
+    db.session.add(new_item)
+    db.session.commit()
+    
+    # Recalculate balances immediately if approved
+    if auto_approve:
+        calculate_net_balances(request_id)
+        
+    return jsonify({
+        'message': 'Expense added',
+        'is_approved': auto_approve,
+        'status': 'Approved' if auto_approve else 'Pending Approval',
+        'item': {
+            'id': new_item.id,
+            'desc': new_item.description,
+            'amount': new_item.amount,
+            'paidBy': new_item.paid_by_user.name,
+            'is_approved': new_item.is_approved
+        }
+    }), 201
+
+@app.route('/api/requests/items/<item_id>/approve', methods=['POST'])
+def approve_expense(item_id):
+    """ Admin Gatekeeper: Approve a participant's expense """
+    item = RequestItem.query.get(item_id)
+    if not item:
+        return jsonify({'error': 'Item not found'}), 404
+        
+    # Security check: Ensure CURRENT_USER is the Admin (Creator) of the request
+    req = Request.query.get(item.request_id)
+    if req.creator_id != CURRENT_USER_ID:
+        return jsonify({'error': 'Only the Admin can approve expenses'}), 403
+        
+    item.is_approved = True
+    db.session.commit()
+    
+    # Trigger Smart Settlement Engine
+    new_total = calculate_net_balances(req.id)
+    
+    return jsonify({
+        'message': 'Expense approved and balances recalculated',
+        'new_total': new_total
+    })
 
 @app.route('/api/pots', methods=['POST'])
 def create_pot():
@@ -300,7 +450,7 @@ def get_all_pots():
     return jsonify(pots_data), 200
 
 @app.route('/api/pots/<pot_id>', methods=['GET'])
-def get_pot_details():
+def get_pot_details(pot_id):
     """ API Spec 2: Get Pot Dashboard Details (PRD 4.3.3) """
     pot = Pot.query.get(pot_id)
     if not pot:
@@ -350,7 +500,7 @@ def get_pot_details():
     }), 200
     
 @app.route('/api/pots/<pot_id>/contributions', methods=['POST'])
-def make_contribution():
+def make_contribution(pot_id):
     """ API Spec 3: Make a Contribution ("Money In") (PRD 4.3.2) """
     data = request.json
     amount = float(data['amount'])
@@ -379,7 +529,7 @@ def make_contribution():
     }), 201
 
 @app.route('/api/pots/<pot_id>/expenses', methods=['POST'])
-def log_pot_expense():
+def log_pot_expense(pot_id):
     """ API Spec 4: Log an Expense ("Money Out") (PRD 4.3.5) """
     pot = Pot.query.get(pot_id)
     if pot.admin_id != CURRENT_USER_ID:
@@ -411,7 +561,7 @@ def log_pot_expense():
     }), 201
 
 @app.route('/api/pots/<pot_id>/schedule', methods=['PUT'])
-def update_schedule():
+def update_schedule(pot_id):
     """ API Spec 5: Set/Update Scheduled Contribution (PRD 4.3.2) """
     pot = Pot.query.get(pot_id)
     if pot.admin_id != CURRENT_USER_ID:
@@ -436,24 +586,21 @@ def update_schedule():
 @app.route('/api/requests/sent', methods=['GET'])
 def get_sent_requests():
     """ Get all requests created by the current user (Creator Dashboard) """
-    # Query the Request table where creator_id == CURRENT_USER_ID
-    # This replaces the `sentRequests` array in script.js
     requests = Request.query.filter_by(creator_id=CURRENT_USER_ID).all()
     
-    # We need to format this data to match what the frontend expects
     sent_requests_data = []
     for req in requests:
-        # Determine icon and status color
-        icon = ''
         status_color = 'text-orange-400' # default
         if req.type == 'invoice':
-            icon = 'https.placehold.co/40x40/000000/FFFFFF?text=I'
-            if req.status == 'Overdue':
+            if 'Overdue' in req.status:
                 status_color = 'text-red-500'
+            elif 'Paid' in req.status:
+                status_color = 'text-lime-400'
         elif req.type == 'split':
-            icon = 'https.placehold.co/40x40/9333ea/FFFFFF?text=S'
             if 'Paid' in req.status:
                 status_color = 'text-lime-400'
+            elif 'Consolidating' in req.status:
+                status_color = 'text-blue-400'
         
         sent_requests_data.append({
             'id': req.id,
@@ -463,8 +610,8 @@ def get_sent_requests():
             'amount': req.total_amount,
             'status': req.status,
             'statusColor': status_color,
-            'icon': icon
-            # We will fetch details (like items, participants) on-demand
+            'isConsolidating': req.split_deadline > datetime.utcnow() if req.split_deadline else False,
+            'deadline': req.split_deadline.isoformat() if req.split_deadline else None
         })
     
     return jsonify(sent_requests_data), 200
@@ -472,8 +619,6 @@ def get_sent_requests():
 @app.route('/api/requests/received', methods=['GET'])
 def get_received_requests():
     """ Get all requests where the current user is a participant (Payer Dashboard) """
-    # Query the RequestParticipant table where user_id == CURRENT_USER_ID
-    # This replaces the `receivedRequests` array in script.js
     participations = RequestParticipant.query.filter_by(user_id=CURRENT_USER_ID).all()
     
     received_requests_data = []
@@ -481,31 +626,28 @@ def get_received_requests():
         req = p.request
         creator = req.creator # Get the User object who created this
         
-        # Determine the page and icon
         page = ''
-        icon = ''
         amount_to_show = p.net_share # Show the participant's net share
         
         if req.type == 'invoice':
             page = 'page-sme-invoice'
-            icon = 'https.placehold.co/40x40/000000/FFFFFF?text=A' # Placeholder for creator
-            amount_to_show = req.total_amount # For SME invoice, payer sees total
+            amount_to_show = abs(p.net_share) # For SME invoice, payer owes the net share
+            req_type = 'sme'
         elif req.type == 'split':
             page = 'page-social-split'
-            icon = 'https.placehold.co/40x40/9333ea/FFFFFF?text=S' # Placeholder for creator
+            req_type = 'social'
 
         received_requests_data.append({
             'id': req.id,
-            'type': 'sme' if req.type == 'invoice' else 'social',
-            'title': creator.name, # e.g., "98% Adidas"
-            'subtitle': req.subtitle,
+            'type': req_type,
+            'title': f"{creator.score}% {creator.name}", # e.g., "98% Adidas"
+            'subtitle': req.title,
             'page': page,
-            'amount': amount_to_show,
+            'amount': abs(amount_to_show),
             'status': p.status, # Use the participant's specific status
-            'icon': icon,
             'isConsolidating': req.split_deadline > datetime.utcnow() if req.split_deadline else False,
-            'deadline': req.split_deadline.isoformat() if req.split_deadline else None
-            # Details like expenses will be fetched on demand
+            'deadline': req.split_deadline.isoformat() if req.split_deadline else None,
+            'photo': req.photo_url
         })
         
     return jsonify(received_requests_data), 200
@@ -518,11 +660,13 @@ def get_request_details(request_id):
         return jsonify({'error': 'Request not found'}), 404
 
     # Get items
-    items = RequestItem.query.filter_by(request_id=req.id).all()
+    items = RequestItem.query.order_by(RequestItem.created_at.asc()).filter_by(request_id=req.id).all()
     items_data = [{
+        'id': item.id,
         'desc': item.description,
         'amount': item.amount,
-        'paidBy': item.paid_by_user.name if item.paid_by_user else 'N/A'
+        'paidBy': item.paid_by_user.name if item.paid_by_user else 'N/A',
+        'is_approved': item.is_approved
     } for item in items]
 
     # Get participants (for creator's view)
@@ -553,8 +697,9 @@ def get_request_details(request_id):
         'title': req.title,
         'subtitle': req.subtitle,
         'total_amount': req.total_amount,
-        'creator_name': req.creator.name,
+        'creator_name': f"{req.creator.score}% {req.creator.name}",
         'status': req.status, # Creator's overall status
+        'photo': req.photo_url,
         
         # Payer-specific info (your status for this request)
         'your_participant_record': {
@@ -581,26 +726,155 @@ def get_request_details(request_id):
 @app.route('/api/requests/<request_id>/comments', methods=['POST'])
 def post_comment(request_id):
     """ Add a comment to the social feed (PRD 3.3) """
-    # TODO: Create a new Comment object linked to this request_id and CURRENT_USER_ID
-    return jsonify({}), 201 # Placeholder
+    data = request.json
+    new_comment = Comment(
+        request_id=request_id,
+        user_id=CURRENT_USER_ID,
+        text_content=data['text'],
+        image_url=data.get('image_url')
+    )
+    db.session.add(new_comment)
+    db.session.commit()
+    return jsonify({
+        'id': new_comment.id,
+        'text': new_comment.text_content,
+        'image_url': new_comment.image_url,
+        'user_name': new_comment.user.name,
+        'created_at': new_comment.created_at.isoformat()
+    }), 201 
 
 @app.route('/api/requests/invoice', methods=['POST'])
 def create_invoice():
     """ Create a new SME Invoice (PRD 5.2) """
-    # TODO: Get data from request.json
+    data = request.json
+    creator = User.query.get(CURRENT_USER_ID)
+    
+    # Find or create participant
+    participant_user = User.query.filter_by(name=data['clientName']).first()
+    if not participant_user:
+        participant_user = User(id=str(uuid.uuid4()), name=data['clientName'], phone_number=str(uuid.uuid4()))
+        db.session.add(participant_user)
+        db.session.commit()
+
     # 1. Create Request object
+    new_req = Request(
+        id=f'INV-MASTER-{str(uuid.uuid4())[:4]}',
+        type='invoice',
+        title=f"Client: {data['clientName']}",
+        subtitle=f'INV-{str(uuid.uuid4())[:4]}',
+        creator_id=creator.id,
+        total_amount=data['totalWithVat'],
+        status='Pending',
+        invoice_note=data['nextSteps'],
+        invoice_vat_percent=data['vat']
+    )
+    db.session.add(new_req)
+    db.session.commit() # Commit to get new_req.id
+
     # 2. Create RequestItem objects
+    for item in data['items']:
+        new_item = RequestItem(
+            request_id=new_req.id,
+            description=item['desc'],
+            amount=item['amount'],
+            is_approved=True # Invoice items are always approved
+        )
+        db.session.add(new_item)
+    
     # 3. Create RequestParticipant object for the recipient
-    return jsonify({}), 201 # Placeholder
+    new_participant = RequestParticipant(
+        request_id=new_req.id,
+        user_id=participant_user.id,
+        status='Pending',
+        stage='Delivered',
+        net_share= -abs(data['totalWithVat']) # They owe the full amount
+    )
+    db.session.add(new_participant)
+    db.session.commit()
+    
+    return jsonify({
+        'id': new_req.id,
+        'title': new_req.title,
+        'subtitle': new_req.subtitle,
+        'amount': new_req.total_amount,
+        'status': new_req.status
+    }), 201
 
 @app.route('/api/requests/split', methods=['POST'])
 def create_split():
     """ Create a new Social Split (PRD 4.2) """
-    # TODO: Get data from request.json
+    data = request.json
+    creator = User.query.get(CURRENT_USER_ID)
+
+    deadline = None
+    if data['deadlineHours'] > 0:
+        deadline = datetime.utcnow() + timedelta(hours=data['deadlineHours'])
+
     # 1. Create Request object
-    # 2. Create RequestItem objects for the creator's expenses
-    # 3. Create RequestParticipant objects for all participants
-    return jsonify({}), 201 # Placeholder
+    new_req = Request(
+        id=f'SPL-MASTER-{str(uuid.uuid4())[:4]}',
+        type='split',
+        title=data['title'],
+        creator_id=creator.id,
+        status='Consolidating' if deadline else 'Pending',
+        split_deadline=deadline,
+        photo_url=data.get('photo', None)
+    )
+    db.session.add(new_req)
+    db.session.commit() # Commit to get new_req.id
+
+    # Extract custom distribution
+    custom_shares = data.get('split_distribution', {})
+
+    # 2. Create list of all participant users (including creator)
+    all_participants_users = [creator]
+    for name in data['participants']:
+        user = User.query.filter_by(name=name).first()
+        if not user:
+            user = User(id=str(uuid.uuid4()), name=name, phone_number=str(uuid.uuid4()))
+            db.session.add(user)
+        all_participants_users.append(user)
+    db.session.commit()
+
+    # 3. Create RequestItem objects for the creator's expenses
+    for item in data['expenses']:
+        new_item = RequestItem(
+            request_id=new_req.id,
+            description=item['desc'],
+            amount=item['amount'],
+            paid_by_user_id=creator.id,
+            is_approved=True # Creator's items are auto-approved
+        )
+        db.session.add(new_item)
+    
+    # 4. Create RequestParticipant objects for all participants
+    for user in all_participants_users:
+        # Determine name key for lookup (Frontend uses 'You' for creator)
+        lookup_name = 'You' if user.id == creator.id else user.name
+        target = custom_shares.get(lookup_name, None)
+
+        new_participant = RequestParticipant(
+            request_id=new_req.id,
+            user_id=user.id,
+            status='Pending',
+            stage='Delivered',
+            fixed_split_amount=target # STORE THE TARGET HERE
+        )
+        db.session.add(new_participant)
+    
+    db.session.commit()
+    
+    # 5. Run the Smart Settlement Engine
+    calculate_net_balances(new_req.id)
+
+    return jsonify({
+        'id': new_req.id,
+        'title': new_req.title,
+        'subtitle': new_req.subtitle,
+        'amount': new_req.total_amount,
+        'status': new_req.status,
+        'deadline': new_req.split_deadline.isoformat() if new_req.split_deadline else None
+    }), 201
 
 
 # --- OCR Endpoint (Merged from OCR.py) ---
@@ -634,7 +908,7 @@ def scan_invoice():
         # image = vision.Image(content=image_data)
         # response = client.document_text_detection(image=image)
         # if response.error.message:
-        ...
+        # ...
         
     except Exception as e:
         return jsonify({"error": f"An error occurred: {e}"}), 500

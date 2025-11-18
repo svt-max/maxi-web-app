@@ -1,15 +1,65 @@
-/* Base styles */
+/* style.css */
+
 body {
     font-family: 'Inter', sans-serif;
+    background-color: #020617; /* Very dark slate, almost black */
+    color: #e2e8f0;
+}
+h1, h2, h3, .card-amount {
+    letter-spacing: -0.025em; /* "Tracking tight" makes numbers/headings look premium */
 }
 
-/* * FIX 2: Added gradient background.
- * We removed bg-slate-900 from the HTML.
- */
+/* Make the status pills glow slightly */
+.card-status {
+    /* Keep existing padding/font styles */
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+}
+
+.card-status-overdue {
+    background: linear-gradient(to bottom right, #ef4444, #b91c1c);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4); /* Red Glow */
+}
+
+.card-status-paid {
+    background: linear-gradient(to bottom right, #a3e635, #65a30d);
+    color: #0f172a;
+    box-shadow: 0 4px 12px rgba(163, 230, 53, 0.4); /* Lime Glow */
+}
+
 #app-container {
-    color: #cbd5e1; /* slate-300 */
-    /* *** NEW: "Midnight-blue-black-ish" gradient *** */
-    background-image: linear-gradient(to bottom, #000092, #000000); /* slate-900 to black */
+    /* The Base Color */
+    background-color: #0f172a; 
+    
+    /* The "Aurora" Mesh Gradient */
+    background-image: 
+        radial-gradient(at 0% 0%, hsla(253,16%,7%,1) 0, transparent 50%), 
+        radial-gradient(at 50% 0%, hsla(225,39%,25%,1) 0, transparent 50%), 
+        radial-gradient(at 100% 0%, hsla(339,49%,30%,1) 0, transparent 50%), 
+        radial-gradient(at 80% 100%, hsla(242, 100%, 70%, 0.1) 0, transparent 50%),
+        radial-gradient(at 0% 100%, hsla(84, 100%, 59%, 0.05) 0, transparent 50%);
+        
+    /* Optional: Subtle noise texture for that "premium fintech" feel */
+    position: relative;
+    height: 100vh; /* Force it to fill the screen */
+    width: 100vw;
+    overflow: hidden; /* Hide overflow so the 'pages' handle the scrolling */
+}
+
+/* Add a noise overlay to the container (Optional but recommended) */
+#app-container::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* You can use a base64 noise image or a url here. 
+       For now, we simulate texture with a very fine repeating gradient or leave blank if you prefer smooth. */
+    opacity: 0.03; 
+    pointer-events: none;
+    z-index: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
 }
 
 
@@ -25,11 +75,7 @@ body {
     background: #1e293b; /* slate-800 */
 }
 
-/* * FIX 1: Page transition and layout fix.
- * This is the new, stable layout.
- * All pages are 'absolute' and fill the container.
- * 'overflow-y: auto' makes the *page* scrollable, not the container.
- */
+/* Page transition and layout */
 .page {
     position: absolute;
     top: 0;
@@ -40,16 +86,12 @@ body {
     transition: transform 0.3s ease-in-out;
     transform: translateX(100%);
     visibility: hidden;
-    
-    /* *** FIX: Give all pages a solid background *** */
-    /* This prevents the app-container gradient from bleeding through */
     background-color: transparent;
 }
 .page.active {
     transform: translateX(0);
     visibility: visible;
     z-index: 10;
-    /* We removed position: relative and min-height */
 }
 .page.hiding-left {
     transform: translateX(-100%);
@@ -61,15 +103,8 @@ body {
     visibility: hidden;
     z-index: 5;
 }
-/* *** FIX: Removed this buggy rule. *** */
-/* The .page.active rule handles the welcome page correctly. */
-/*
-.page#page-welcome {
-    transform: translateX(0);
-    visibility: visible;
-}
-*/
-/* This makes the header "stick" but lets the background gradient show through */
+
+/* Sticky header style */
 .page > header {
     background-color: rgba(0, 0, 0, 0.3); /* Semi-transparent black */
     -webkit-backdrop-filter: blur(10px);
@@ -77,29 +112,47 @@ body {
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* Hotkey Modal styles */
-#hotkey-modal-backdrop {
+/* Modal styles */
+#hotkey-modal-backdrop,
+#onboarding-modal-backdrop,
+#otp-validation-modal-backdrop,
+#payment-promise-modal-backdrop,
+#add-expense-modal-split-backdrop,
+#dispute-modal-backdrop,
+#add-contribution-modal-backdrop,
+#add-expense-modal-pot-backdrop,
+#claim-balance-modal-backdrop,
+#create-new-modal-backdrop {
     transition: opacity 0.3s ease-in-out;
 }
-#hotkey-modal {
+
+#hotkey-modal,
+#onboarding-modal,
+#otp-validation-modal,
+#payment-promise-modal,
+#add-expense-modal-split,
+#dispute-modal,
+#add-contribution-modal,
+#add-expense-modal-pot,
+#claim-balance-modal,
+#create-new-modal {
     transform: translateY(100%);
     transition: transform 0.3s ease-in-out;
 }
-#hotkey-modal.visible {
+
+#hotkey-modal.visible,
+#onboarding-modal.visible,
+#otp-validation-modal.visible,
+#payment-promise-modal.visible,
+#add-expense-modal-split.visible,
+#dispute-modal.visible,
+#add-contribution-modal.visible,
+#add-expense-modal-pot.visible,
+#claim-balance-modal.visible,
+#create-new-modal.visible {
     transform: translateY(0);
 }
 
-/* Onboarding Modal styles */
-#onboarding-modal-backdrop {
-    transition: opacity 0.3s ease-in-out;
-}
-#onboarding-modal {
-    transform: translateY(100%);
-    transition: transform 0.3s ease-in-out;
-}
-#onboarding-modal.visible {
-    transform: translateY(0);
-}
 .step-icon {
     flex-shrink: 0;
     width: 3rem; /* w-12 */
@@ -140,25 +193,30 @@ body {
 
 /* Gradient Button Styles */
 .btn-gradient-blue {
-    background-image: linear-gradient(to right, #2563eb, #3b82f6);
+    /* A richer blue to cyan gradient */
+    background-image: linear-gradient(135deg, #3b82f6 0%, #2dd4bf 100%);
     color: white;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px -5px rgb(59 130 246 / 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.4); /* Glow effect */
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
+
+.btn-gradient-blue:active {
+    transform: scale(0.98);
+    box-shadow: 0 0 10px rgba(59, 130, 246, 0.2);
 }
 .btn-gradient-blue:hover {
     opacity: 0.9;
     box-shadow: 0 6px 20px -5px rgb(59 130 246 / 0.5);
 }
 
-/* * FIX 3: New Score Pill Styles
- */
+/* Score Pill Styles */
 .score-pill {
     border-radius: 9999px; /* rounded-full */
     padding: 0.25rem 0.75rem; /* py-1 px-3 */
     font-size: 0.875rem; /* text-sm */
     font-weight: 600; /* semibold */
-    
-    /* *** NEW: Glassmorphism Style *** */
     background-color: rgba(255, 255, 255, 0.1); /* Semi-transparent white */
     -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px); /* The "glass" effect */
@@ -166,77 +224,767 @@ body {
     color: #a3e635; /* lime-400 */
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
-
-/* 49% and below */
 .score-pill.score-red {
-    background-color: #FF98A0;
-    color: #881337; /* dark-red-900 */
+    background-color: rgba(255, 152, 160, 0.8);
+    color: #881337;
+    border-color: rgba(255, 255, 255, 0.1);
 }
-
-/* 50% - 89% (approx) */
 .score-pill.score-green {
-    background-color: #E9F5D2;
-    color: #365314; /* dark-lime-900 */
+    background-color: rgba(233, 245, 210, 0.8);
+    color: #365314;
+    border-color: rgba(255, 255, 255, 0.1);
 }
-
-/* 90%+ */
 .score-pill.score-green-light {
-    background-color: #E9F5D2;
-    color: #365314; /* dark-lime-900 */
+    background-color: rgba(233, 245, 210, 0.8);
+    color: #365314;
+    border-color: rgba(255, 255, 255, 0.1);
 }
 
-/* OTP Validation Modal styles */
-#otp-validation-modal-backdrop {
-    transition: opacity 0.3s ease-in-out;
+/* Card Styles */
+.card {
+    /* Lighter, more translucent background */
+    background: rgba(255, 255, 255, 0.03);
+    
+    /* Heavy blur for the glass effect */
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
+    
+    /* Thinner, brighter border for the "cut glass" look */
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    
+    /* Add a subtle inner glow */
+    box-shadow: 
+        0 4px 30px rgba(0, 0, 0, 0.1),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+        
+    border-radius: 1.25rem; /* Slightly rounder: 20px */
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
-#otp-validation-modal {
-    transform: translateY(100%);
-    transition: transform 0.3s ease-in-out;
+
+.card:hover {
+    transform: translateY(-2px);
+    /* Outer glow on hover matching the MaxCredible brand colors */
+    box-shadow: 0 10px 30px -10px rgba(163, 230, 53, 0.15); /* Lime hint */
+    border-color: rgba(255, 255, 255, 0.2);
 }
-#otp-validation-modal.visible {
+
+.card-status {
+    padding: 0.25rem 0.75rem; /* py-1 px-3 */
+    font-size: 0.75rem; /* text-xs */
+    font-weight: 700; /* bold */
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    display: inline-block;
+    border-bottom-right-radius: 0.75rem; /* rounded-br-lg */
+    margin-bottom: 0.75rem; /* mb-3 */
+}
+.card-status-overdue {
+    background-color: #ef4444; /* red-500 */
+    color: #ffffff;
+}
+.card-status-due-soon {
+    background-color: #f59e0b; /* amber-500 */
+    color: #422006; /* amber-950 */
+}
+.card-status-pending {
+    background-color: #eab308; /* yellow-500 */
+    color: #422006;
+}
+.card-status-info {
+    background-color: #3b82f6; /* blue-500 */
+    color: #ffffff;
+}
+.card-status-paid {
+    background-color: #84cc16; /* lime-500 */
+    color: #1a2e05; /* lime-950 */
+}
+
+.card-body {
+    padding: 0.5rem 1.25rem 1.25rem 1.25rem; /* px-5 pb-5 pt-2 */
+}
+.card-body.pt-0 {
+    padding-top: 1.25rem; /* Re-add top padding if status is missing */
+}
+
+.card-main {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+}
+.card-title {
+    font-size: 1.125rem; /* text-lg */
+    font-weight: 700; /* bold */
+    color: #ffffff; /* white */
+    line-height: 1.4;
+}
+.card-amount {
+    font-size: 1.25rem; /* text-xl */
+    font-weight: 700; /* bold */
+    color: #f472b6; /* pink-400 */
+    flex-shrink: 0;
+    margin-left: 0.5rem;
+}
+.card-amount.text-lime-400 {
+    color: #a3e635; /* lime-400 */
+}
+
+.card-subtitle {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 0.5rem; /* mt-2 */
+    font-size: 0.875rem; /* text-sm */
+    color: #94a3b8; /* slate-400 */
+}
+
+/* Participant icons for cards */
+.card-participants {
+    display: flex;
+}
+.card-participants span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.75rem; /* w-7 */
+    height: 1.75rem; /* h-7 */
+    border-radius: 9999px; /* rounded-full */
+    background-color: #475569; /* slate-600 */
+    color: #e2e8f0; /* slate-200 */
+    font-size: 0.75rem; /* text-xs */
+    font-weight: 700;
+    border: 2px solid #1e293b; /* slate-800 */
+}
+.card-participants span:not(:first-child) {
+    margin-left: -0.75rem; /* -ml-3 */
+}
+
+
+/* Slick Skip Button for Walkthrough */
+.skip-walkthrough-btn {
+    position: absolute;
+    top: 1.5rem; /* 24px */
+    right: 1.5rem; /* 24px */
+    z-index: 20; /* Above the page content */
+    background-color: rgba(255, 255, 255, 0.1);
+    -webkit-backdrop-filter: blur(5px);
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #cbd5e1; /* slate-300 */
+    font-size: 0.875rem; /* text-sm */
+    font-weight: 600; /* semibold */
+    padding: 0.5rem 1rem; /* py-2 px-4 */
+    border-radius: 9999px; /* rounded-full */
+    transition: all 0.2s ease-in-out;
+}
+.skip-walkthrough-btn:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+}
+
+/* =========================================
+   REFACTORED: Floating Bottom Navigation
+   ========================================= */
+
+/* 1. The Container: Positions the nav at the bottom */
+#bottom-nav-container {
+    position: absolute;
+    bottom: 1.5rem; /* Floats 24px from bottom */
+    left: 1rem;
+    right: 1rem;
+    z-index: 30;
+    padding: 0;
+    border-radius: 2rem;
+    
+    /* Shadow to lift it off the content */
+    box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5);
+    
+    /* Start HIDDEN (pushed down) */
+    transform: translateY(150%);
+    
+    /* Animate the slide up */
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* 2. The Visible State: This brings it onto the screen */
+/* IMPORTANT: This relies on JS adding the 'dashboard-visible' class to #app-container */
+#app-container.dashboard-visible #bottom-nav-container {
     transform: translateY(0);
 }
 
-/* Payment Promise Modal styles */
-#payment-promise-modal-backdrop {
-    transition: opacity 0.3s ease-in-out;
-}
-#payment-promise-modal {
-    transform: translateY(100%);
-    transition: transform 0.3s ease-in-out;
-}
-#payment-promise-modal.visible {
-    transform: translateY(0);
+/* 3. The Glass Bar: Visual style and Grid Layout */
+#major-tabs {
+    /* Visuals: Dark Glass */
+    background-color: rgba(15, 23, 42, 0.85); 
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 9999px;
+
+    /* Layout: 4 Columns Side-by-Side */
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    width: 100%;
+    align-items: center;
+    padding: 0.5rem;
+    position: relative;
 }
 
-/* --- MODIFICATION: Renamed Split Expense Modal --- */
-#add-expense-modal-split-backdrop {
-    transition: opacity 0.3s ease-in-out;
-}
-#add-expense-modal-split {
-    transform: translateY(100%);
-    transition: transform 0.3s ease-in-out;
-}
-#add-expense-modal-split.visible {
-    transform: translateY(0);
-}
-/* --- END MODIFICATION --- */
-
-
-/* --- NEW: Styles for Group Pot Modals --- */
-#add-contribution-modal-backdrop,
-#add-expense-modal-pot-backdrop {
-    transition: opacity 0.3s ease-in-out;
-}
-
-#add-contribution-modal,
-#add-expense-modal-pot {
-    transform: translateY(100%);
+/* 4. The Slider Pill */
+#major-tab-slider {
+    position: absolute;
+    z-index: 1; 
+    top: 4px;
+    bottom: 4px;
+    left: 4px;
+    width: calc(25% - 2px); /* 1/4th width */
+    background-color: rgba(59, 130, 246, 0.3); 
+    border: 1px solid rgba(59, 130, 246, 0.5);
+    border-radius: 9999px;
+    box-shadow: 0 4px 15px -5px rgb(59 130 246 / 0.4);
     transition: transform 0.3s ease-in-out;
 }
 
-#add-contribution-modal.visible,
-#add-expense-modal-pot.visible {
+/* 5. The Buttons */
+.major-tab {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.125rem;
+    font-weight: 600;
+    font-size: 0.75rem;
+    padding: 0.5rem 0.25rem;
+    border-radius: 9999px;
+    color: #94a3b8;
+    background-color: transparent;
+    border: none;
+    transition: color 0.3s ease-in-out;
+}
+
+.major-tab.active {
+    color: #ffffff;
+}
+
+/* * ==========================================================
+ * NEW: Home Dashboard Styles
+ * ==========================================================
+ */
+.home-action-card {
+    border-radius: 1.5rem; /* 24px */
+    padding: 1.5rem; /* 24px */
+    color: white;
+    box-shadow: 0 10px 25px -5px rgba(0,0,0,0.3);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+.home-action-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 15px 30px -5px rgba(0,0,0,0.4);
+}
+
+/* * ==========================================================
+ * NEW: Account Page Styles
+ * ==========================================================
+ */
+.account-link {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem; /* py-4 px-6 */
+    font-size: 1rem; /* text-base */
+    font-weight: 500; /* medium */
+    color: #e2e8f0; /* slate-200 */
+    border-bottom: 1px solid #334155; /* border-slate-700 */
+    transition: background-color 0.2s ease;
+}
+.account-link:last-child {
+    border-bottom: none;
+}
+.account-link:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* * ==========================================================
+ * NEW: "Fun Meter" for Invoice Creation
+ * ==========================================================
+ */
+.fun-item-btn.item-added {
+    border-color: #a3e635; /* lime-400 */
+    background-color: #a3e6351a; /* lime-400 with 10% opacity */
+}
+.fun-item-btn.item-added span {
+    color: #a3e635; /* lime-400 */
+}
+.fun-item-btn.item-added svg {
+    color: #a3e635; /* lime-400 */
+}
+
+/* This slides the nav bar up when the dashboard is active */
+#app-container.dashboard-visible #bottom-nav-container {
     transform: translateY(0);
 }
-/* --- END NEW --- */
+
+/* In style.css */
+
+/* The Container: A floating glass pill */
+.minor-tabs-container {
+    /* Override Tailwind defaults if necessary */
+    background: rgba(0, 0, 0, 0.3) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 9999px; /* Fully rounded */
+    
+    /* Spacing & Layout */
+    margin: 0 1.5rem 1.5rem 1.5rem !important; /* Pull away from edges */
+    padding: 0.35rem;
+    display: flex;
+    justify-content: space-between;
+    gap: 0.5rem;
+    
+    /* Glass effect */
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+}
+
+/* The Buttons: Transparent by default */
+.minor-tab {
+    flex: 1;
+    text-align: center;
+    padding: 0.5rem 0;
+    border-radius: 9999px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #94a3b8; /* Slate 400 */
+    background: transparent;
+    border: 1px solid transparent; /* Prevent layout shift on active */
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Hover state (Subtle) */
+.minor-tab:hover {
+    color: #e2e8f0;
+    background: rgba(255, 255, 255, 0.03);
+}
+
+/* Active State: Lit up */
+.minor-tab.active {
+    background: rgba(255, 255, 255, 0.15); /* Brighter glass */
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    text-shadow: 0 0 10px rgba(255,255,255,0.3); /* Text glow */
+}
+
+/* Modern Input Fields */
+input[type="text"], 
+input[type="number"], 
+textarea, 
+select {
+    /* Glass Background */
+    background-color: rgba(30, 41, 59, 0.4) !important; /* Very transparent slate */
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    color: white !important;
+    
+    /* Smooth transitions */
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+/* The Focus State (The Glow) */
+input:focus, 
+textarea:focus, 
+select:focus {
+    outline: none;
+    border-color: #a3e635 !important; /* MaxCredible Lime */
+    box-shadow: 
+        0 0 0 1px rgba(163, 230, 53, 0.1),
+        0 0 20px rgba(163, 230, 53, 0.15); /* Lime ambient glow */
+    background-color: rgba(30, 41, 59, 0.7) !important;
+    transform: scale(1.01); /* Subtle zoom effect */
+}
+
+/* Placeholder styling */
+::placeholder {
+    color: rgba(148, 163, 184, 0.5) !important; /* Slate 400 at 50% opacity */
+}
+
+/* Define the animation */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Apply to cards automatically */
+.card {
+    animation: fadeInUp 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    opacity: 0; /* Start hidden */
+}
+
+/* Stagger the delays for the first 5 items */
+.card:nth-child(1) { animation-delay: 0.05s; }
+.card:nth-child(2) { animation-delay: 0.1s; }
+.card:nth-child(3) { animation-delay: 0.15s; }
+.card:nth-child(4) { animation-delay: 0.2s; }
+.card:nth-child(5) { animation-delay: 0.25s; }
+
+/* Loading Spinner */
+.loader-spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid rgba(255, 255, 255, 0.1); /* Subtle track */
+    border-radius: 50%;
+    border-top-color: #a3e635; /* MaxCredible Lime */
+    animation: spin 0.8s ease-in-out infinite;
+    margin: 2rem auto; /* Center it vertically/horizontally */
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+
+/* =========================================
+   LOADER STYLES
+   ========================================= */
+
+.loader-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    padding: 3rem 0;
+}
+
+.loader-spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid rgba(255, 255, 255, 0.1); /* Subtle track */
+    border-radius: 50%;
+    border-top-color: #a3e635; /* MaxCredible Lime */
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.split-method-btn {
+    flex: 1;
+    text-align: center;
+    padding: 0.75rem 0.5rem; /* py-3 px-2 */
+    border-radius: 9999px; /* rounded-full */
+    font-size: 0.875rem; /* text-sm */
+    font-weight: 600; /* semibold */
+    color: #94a3b8; /* slate-400 */
+    background: transparent;
+    border: 1px solid transparent;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.split-method-btn:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.split-method-btn.active {
+    background: #a3e635; /* lime-400 */
+    color: #1e293b; /* slate-800 */
+    border-color: #a3e635;
+    box-shadow: 0 4px 15px -5px rgb(163 230 53 / 0.4);
+}
+
+.participant-share-input {
+    background-color: #0f172a !important; /* slate-900 */
+    border: 1px solid #334155 !important; /* slate-700 */
+    text-align: right;
+    font-weight: 700;
+    color: white;
+    border-radius: 0.5rem;
+    padding: 0.5rem;
+    width: 80px;
+}
+.participant-share-input:focus {
+    background-color: #020617 !important; /* slate-950 */
+    border-color: #a3e635 !important;
+    box-shadow: 0 0 0 1px #a3e635;
+}
+
+.participant-share-input.hidden,
+.input-suffix.hidden {
+    display: none;
+}
+
+/* Splitter Control Buttons */
+.split-btn-control {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    transition: all 0.1s ease;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    cursor: pointer;
+    user-select: none;
+}
+
+.split-btn-control:active {
+    transform: scale(0.95);
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.split-btn-control.minus:hover { background: rgba(239, 68, 68, 0.2); color: #fca5a5; }
+.split-btn-control.plus:hover { background: rgba(163, 230, 53, 0.2); color: #bef264; }
+
+/* The Value Display in the middle of buttons */
+.split-value-display {
+    font-variant-numeric: tabular-nums; /* Prevents jitter when numbers change */
+    width: 50px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+/* Force text to stay on one line and show '...' if too long */
+.truncate-name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+    max-width: 100%;
+}
+
+/* Prevent Euro symbol and amount from separating */
+.no-break {
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+}
+
+/* Make the participant rows slightly more compact */
+.participant-row {
+    padding: 0.75rem 1rem; /* Reduced from p-4 */
+}
+
+/* Consolidation Timer Banner */
+.timer-banner {
+    background-color: #eab308; /* yellow-500 */
+    color: #422006; /* yellow-950 */
+    font-weight: 700;
+    text-align: center;
+    padding: 0.75rem;
+    font-variant-numeric: tabular-nums;
+    box-shadow: 0 4px 12px rgba(234, 179, 8, 0.3);
+    position: sticky;
+    top: 0;
+    z-index: 30; /* Above normal headers */
+}
+
+/* Gatekeeper Approval Card */
+.approval-card {
+    background: rgba(30, 41, 59, 0.6); /* slate-800 with opacity */
+    border-left: 4px solid #f59e0b; /* amber-500 */
+}
+
+.pulse-dot {
+    width: 8px;
+    height: 8px;
+    background-color: #ef4444;
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+    70% { box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+}
+
+/* --- NEW: Invoice Creation & Preview Styles --- */
+
+/* Template Picker Cards */
+.template-picker-container {
+    display: flex;
+    gap: 1rem;
+    overflow-x: auto;
+    padding: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.template-option {
+    min-width: 100px;
+    height: 140px;
+    border-radius: 12px;
+    background: rgba(30, 41, 59, 0.6);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    cursor: pointer;
+    position: relative;
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.template-option.selected {
+    border-color: #a3e635; /* Lime */
+    box-shadow: 0 0 15px rgba(163, 230, 53, 0.3);
+}
+
+/* Mini visual representations of templates */
+.tmpl-visual { width: 100%; height: 100%; opacity: 0.5; }
+.tmpl-classic .tmpl-visual { background: linear-gradient(to bottom, #334155 10%, transparent 10%); }
+.tmpl-neon .tmpl-visual { background: linear-gradient(135deg, #000 0%, #111 100%); border: 1px solid #f472b6; }
+.tmpl-minimal .tmpl-visual { background: #fff; } /* Inverted for contrast check */
+
+/* Tone of Voice Chips */
+.tone-chip {
+    padding: 0.5rem 1rem;
+    border-radius: 99px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #94a3b8;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.tone-chip:hover { background: rgba(255, 255, 255, 0.1); color: white; }
+.tone-chip.active {
+    background: #3b82f6; /* Blue */
+    color: white;
+    border-color: #3b82f6;
+    box-shadow: 0 0 10px rgba(59, 130, 246, 0.4);
+}
+
+/* PREVIEW PAGE STYLES */
+.preview-container {
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 24px;
+    padding: 2rem;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    position: relative;
+    overflow: hidden;
+    /* Default 'Classic' Look */
+}
+
+/* Dynamic Template Styles applied to Preview */
+.preview-theme-neon {
+    background: #000000;
+    border: 1px solid #f472b6; /* Pink Border */
+    font-family: 'Courier New', monospace; /* Hacker vibe */
+}
+.preview-theme-neon .preview-amount { color: #a3e635; text-shadow: 0 0 10px #a3e635; }
+
+.preview-theme-minimal {
+    background: #f8fafc; /* Light background */
+    color: #0f172a; /* Dark text */
+}
+.preview-theme-minimal .preview-label { color: #64748b; }
+
+/* AWESOME HOTKEY ICONS (Slick & Sleek) */
+.hotkey-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.hotkey-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 1.25rem;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    text-align: center;
+}
+
+.hotkey-btn:hover {
+    transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.hotkey-icon {
+    font-size: 1.75rem;
+    margin-bottom: 0.25rem;
+    filter: drop-shadow(0 0 8px rgba(255,255,255,0.3));
+}
+
+/* Specific Hotkey Colors */
+.hotkey-pay { color: #a3e635; border-color: rgba(163, 230, 53, 0.3); background: linear-gradient(180deg, rgba(163,230,53,0.05), transparent); }
+.hotkey-promise { color: #3b82f6; border-color: rgba(59, 130, 246, 0.3); }
+.hotkey-snooze { color: #f59e0b; }
+.hotkey-dispute { color: #f43f5e; }
+
+.hotkey-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    opacity: 0.9;
+}
+
+/* Sub-header Tabs (Clickable Fix) */
+.dashboard-filter-tabs {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    padding-bottom: 0.5rem;
+}
+.filter-tab {
+    color: #94a3b8;
+    font-weight: 600;
+    font-size: 0.9rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+.filter-tab.active {
+    color: white;
+    border-bottom-color: #a3e635; /* Lime */
+}
+
+/* Media Buttons */
+.media-btn {
+    position: relative;
+    overflow: hidden;
+}
+/* Active state for media buttons (toggled via JS) */
+.media-btn.ring-2 {
+    background-color: rgba(30, 41, 59, 0.8); /* slate-800 */
+    box-shadow: 0 0 15px rgba(0,0,0,0.3);
+}
+
+.media-btn.ring-blue-400 { box-shadow: 0 0 10px rgba(96, 165, 250, 0.3); }
+.media-btn.ring-pink-400 { box-shadow: 0 0 10px rgba(244, 114, 182, 0.3); }
+.media-btn.ring-amber-400 { box-shadow: 0 0 10px rgba(251, 191, 36, 0.3); }
+.media-btn.ring-cyan-400 { box-shadow: 0 0 10px rgba(34, 211, 238, 0.3); }
+
+/* Date Input Styling to match theme */
+input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+    opacity: 0.5;
+    cursor: pointer;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in {
+    animation: fadeIn 0.3s ease-out forwards;
+}

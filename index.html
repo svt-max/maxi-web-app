@@ -1,1099 +1,1559 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Maxi - Mobile App</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- MODIFICATION: Make sure style.css is linked -->
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Maxi - Unified Dashboard</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
 </head>
-<body class="bg-black">
 
-    <div id="app-container" class="max-w-md mx-auto min-h-screen shadow-2xl overflow-hidden relative text-slate-200">
-
-        <!-- This page is now correctly hidden/shown by the .page and .page.active rules -->
-        <div id="page-welcome" class="page active flex flex-col justify-center items-center p-8 text-center">
-            <h1 class="text-5xl font-bold text-white mb-4">Welcome to Maxi</h1>
-            <p class="text-lg text-slate-300 mb-10">Get paid faster, without the friction.</p>
-            <button class="btn-gradient-blue font-semibold py-4 px-10 rounded-lg shadow-md text-lg" onclick="showOnboardingModal()">
-                Get Started
-            </button>
-        </div>
-
-        <div id="page-walkthrough-1" class="page flex flex-col p-8">
-            <div class="flex-grow flex flex-col justify-center items-center text-center">
-                <div class="walkthrough-image bg-slate-800 w-64 h-64 rounded-full flex items-center justify-center mb-10">
-                    <svg class="w-24 h-24 text-blue-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m.093 18.093a2.25 2.25 0 0 1-2.25-2.25v-6.75a2.25 2.25 0 0 1 2.25-2.25h6.75a2.25 2.25 0 0 1 2.25 2.25v6.75a2.25 2.25 0 0 1-2.25 2.25H8.25Z" />
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.5h.008v.008H3v-.008Zm0-2.81v.008h.008V10.69H3.008Zm0-2.81v.008h.008V7.88H3.008Zm0-2.812v.008h.008V5.068H3.008Zm2.81 10.62v.008H5.818v-.008H5.808Zm0-2.81v.008H5.818v-.008H5.808Zm0-2.81v.008H5.818v-.008H5.808Zm0-2.812v.008H5.818v-.008H5.808Zm2.81 10.62v.008H8.628v-.008H8.618Zm0-2.81v.008H8.628v-.008H8.618Zm0-2.81v.008H8.628v-.008H8.618Zm0-2.812v.008H8.628v-.008H8.618Zm2.81 10.62v.008H11.438v-.008H11.428Zm0-2.81v.008H11.438v-.008H11.428Zm0-2.81v.008H11.438v-.008H11.428Z" />
-                    </svg>
-                </div>
-                <h2 class="text-3xl font-bold text-white mb-4">1. Create Your Request</h2>
-                <p class="text-lg text-slate-300">Upload an existing invoice, take a photo, or create a new split from scratch in seconds.</p>
-            </div>
-            <div class="pb-10">
-                <div class="dot-indicators text-center mb-6">
-                    <span class="dot active"></span>
-                    <span class="dot"></span>
-                    <span class="dot"></span>
-                </div>
-                <button class="w-full btn-gradient-blue font-semibold py-4 rounded-lg shadow-md text-lg" onclick="showPage('page-walkthrough-2')">
-                    Next
-                </button>
-            </div>
-        </div>
-
-        <div id="page-walkthrough-2" class="page flex flex-col p-8">
-            <div class="flex-grow flex flex-col justify-center items-center text-center">
-                <div class="walkthrough-image bg-slate-800 w-64 h-64 rounded-full flex items-center justify-center mb-10">
-                    <svg class="w-24 h-24 text-lime-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A9.065 9.065 0 0 1 6 18.719m12 0a5.002 5.002 0 0 0-11.998 0M12 3.75a3 3 0 0 1 3 3v3.75m-6 0v-3.75a3 3 0 0 1 3-3Z" />
-                    </svg>
-                </div>
-                <h2 class="text-3xl font-bold text-white mb-4">2. Invite Friends</h2>
-                <p class="text-lg text-slate-300">Add people from your contacts or simply enter their phone number or email.</p>
-            </div>
-            <div class="pb-10">
-                <div class="dot-indicators text-center mb-6">
-                    <span class="dot"></span>
-                    <span class="dot active"></span>
-                    <span class="dot"></span>
-                </div>
-                <button class="w-full btn-gradient-blue font-semibold py-4 rounded-lg shadow-md text-lg" onclick="showPage('page-walkthrough-3')">
-                    Next
-                </button>
-            </div>
-        </div>
-
-        <div id="page-walkthrough-3" class="page flex flex-col p-8">
-            <div class="flex-grow flex flex-col justify-center items-center text-center">
-                <div class="walkthrough-image bg-slate-800 w-64 h-64 rounded-full flex items-center justify-center mb-10">
-                    <svg class="w-24 h-24 text-pink-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L6 12Zm0 0h7.5" />
-                    </svg>
-                </div>
-                <h2 class="text-3xl font-bold text-white mb-4">3. Send & Get Paid</h2>
-                <p class="text-lg text-slate-300">We send a beautiful, interactive request and notify you the moment you're paid.</p>
-            </div>
-            <div class="pb-10">
-                <div class="dot-indicators text-center mb-6">
-                    <span class="dot"></span>
-                    <span class="dot"></span>
-                    <span class="dot active"></span>
-                </div>
-                <button class="w-full btn-gradient-blue font-semibold py-4 rounded-lg shadow-md text-lg" onclick="finishOnboarding()">
-                    Finish
-                </button>
-            </div>
-        </div>
-
-        <div id="page-payer-dashboard" class="page">
-             <header class="p-6 sticky top-0 z-10 space-y-4">
-                <!-- Top bar with user & menu -->
-                <div class="flex justify-between items-center">
-                    <div class="flex items-center gap-2">
-                        <span class="text-xs font-semibold bg-gray-900 text-white rounded-full px-2 py-0.5">KB</span>
-                        <span class="font-semibold text-white">Payer Mode</span>
-                    </div>
-                    <div class="flex items-center gap-4">
-                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke-width="2" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"></path></svg>
-                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke-width="2" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"></path></svg>
-                    </div>
-                </div>
-                <!-- Hero Metric -->
-                <div>
-                    <h3 class="text-sm font-semibold text-gray-400">Total outstanding</h3>
-                    <p class="text-4xl font-bold text-pink-400">€ 6.282,50</p>
-                </div>
-                <!-- Secondary Metrics -->
-                <div class="flex justify-between items-center">
-                    <h1 class="text-2xl font-bold text-white">4 pending requests</h1>
-                    <div class="score-pill">
-                        Score: <span class="font-bold">94%</span>
-                    </div>
-                </div>
-            </header>
-
-            <main class="p-6 pb-24">
-                <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 mb-8">
-                    <h2 class="font-bold text-white">You are in payer mode</h2>
-                    <p class="text-sm text-slate-300 mt-1">View and pay your outstanding payment requests.</p>
-                    <p class="text-sm text-slate-300 mt-2">Click the floating button to flip! Switch between PAYER (Pay) and CREATOR (Getting paid) instantly.</p>
-                    
-                    <div class="mt-4 pt-4 border-t border-slate-700">
-                        <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Our Philosophy</h3>
-                        <p class="text-sm text-slate-300 italic mt-2">"Good payers become great creators. Pay on time to build your credibility, then flip to Creator mode to get paid 2x faster."</p>
-                    </div>
-                </div>
-
-                <div class="mb-8">
-                    <h3 class="text-sm font-semibold text-gray-400">Total outstanding</h3>
-                    <p class="text-4xl font-bold text-pink-400">€ 6.282,50</p>
-                    <p class="text-sm text-gray-400">Across 4 requests</p>
-                </div>
-
-                <!-- *** MODIFICATION: This list is now dynamic *** -->
-                <div id="received-requests-list" class="space-y-4">
-                    <!-- The list of received requests will be dynamically injected here by script.js -->
-                </div>
-                
-                <!-- *** NEW: Placeholder for when no requests are present *** -->
-                <div id="no-requests-received-placeholder" class="text-center py-12 hidden">
-                    <svg class="w-12 h-12 text-gray-500 mx-auto" fill="none" stroke-width="1.5" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 9v.906a2.25 2.25 0 0 1-1.183 1.981l-6.468 3.638a2.25 2.25 0 0 0-1.183 1.981V18a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 18V9.528c0-1.171.6-2.24 1.566-2.814l5.25-3.5c.966-.644 2.23.04 2.23 1.149V6.75A2.25 2.25 0 0 1 15 9Z" /></svg>
-                    <h4 class="text-lg font-semibold text-gray-300 mt-4">Inbox Zero</h4>
-                    <p class="text-sm text-gray-500 mt-1">You have no pending payment requests.</p>
-                </div>
-                <!-- *** END MODIFICATION *** -->
-
-                <div class="bg-gradient-to-r from-lime-400 to-green-500 text-black p-5 rounded-xl mt-10 text-center shadow-lg">
-                    <h3 class="font-bold text-lg">Managing multiple payments?</h3>
-                    <p class="text-sm text-lime-900 mt-1">Get your own invoices paid this easily with Max.</p>
-                    <button class="bg-white text-lime-600 font-semibold px-5 py-2 rounded-full mt-4 text-sm shadow-md" onclick="showCreatorDashboard()">
-                        Get started &rarr;
-                    </button>
-                </div>
-            </main>
-        </div>
-
-        <div id="page-social-split" class="page">
-            <header class="p-6 bg-slate-800 sticky top-0 z-10 shadow-sm flex justify-between items-center">
-                <button class="text-gray-200" onclick="showPage('page-payer-dashboard', 'backward')">
-                    <svg class="w-6 h-6" fill="none" stroke-width="2.5" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5"></path></svg>
-                </button>
-                <div class="text-center">
-                    <h1 id="split-detail-title" class="text-lg font-bold text-white">Dinner at Sakura</h1>
-                    <p id="split-detail-creator" class="text-sm text-gray-400">95% Sarah Williams</p>
-                </div>
-                <div class="w-6"></div> 
-            </header>
-
-            <main class="pb-32">
-                <div class="h-52 bg-cover bg-center" style="background-image: url('https://placehold.co/600x400/333/999?text=Dinner+Photo')">
-                </div>
-                
-                <!-- *** NEW: Consolidation Banner (PRD 8.2.1 B) *** -->
-                <!-- Renamed ID for clarity -->
-                <div id="social-consolidation-banner" class="p-4 bg-blue-800 text-center text-blue-100 hidden">
-                    <p class="font-bold text-lg">Consolidation in Progress</p>
-                    <p id="social-consolidation-timer" class="text-sm">Time left to add expenses: 00:00:00</p>
-                </div>
-                
-                <div class="p-6 space-y-8">
-                    <div class="flex justify-between items-center">
-                        <div>
-                            <h2 id="social-detail-title" class="text-2xl font-bold text-white">Dinner at Sakura</h2>
-                            <div class="flex gap-4 text-sm text-slate-400 mt-1">
-                                <span>8 people</span>
-                                <span>5 photos</span>
-                            </div>
-                        </div>
-                        <span id="social-paid-status-pill" class="text-sm font-semibold bg-lime-200 text-lime-800 rounded-full px-3 py-1">5 of 8 have paid</span>
-                    </div>
-
-                    <!-- *** MODIFICATION: Added ID to hide this when consolidating *** -->
-                    <div id="social-your-share-container" class="bg-pink-900/50 border border-pink-700 rounded-xl p-5 my-4">
-                        <div class="flex justify-between items-center">
-                            <span class="text-sm font-semibold text-pink-300">Your share</span>
-                            <span id="social-detail-amount" class="text-3xl font-bold text-pink-300">€ 187,50</span>
-                        </div>
-                    </div>
-                    
-                    <div class="grid grid-cols-2 gap-4 my-4">
-                        <!-- *** MODIFICATION: Added ID to hide this when consolidating *** -->
-                        <button id="social-pay-btn" class="btn-gradient-blue font-semibold py-3 rounded-lg shadow-md" onclick="openHotKeyModal('social')">
-                            Pay your share
-                        </button>
-                        <!-- *** MODIFICATION: Button is now enabled/disabled via JS *** -->
-                        <!-- This button adds *people* to the split, not expenses -->
-                        <button id="social-add-people-btn" class="w-full bg-slate-700 text-slate-200 font-semibold py-3 rounded-lg border border-slate-600">
-                            Add people to split +
-                        </button>
-                    </div>
-
-                    <div class="mt-6">
-                        <!-- *** MODIFICATION: Added ID for dynamic rendering *** -->
-                        <h3 class="font-bold text-white mb-3">Group expenses <span id="social-total-amount" class="font-normal text-slate-400">€ 0.00</span></h3>
-                        <!-- *** MODIFICATION: Added ID for dynamic rendering *** -->
-                        <div id="social-expense-list" class="space-y-4">
-                            <!-- Expenses will be rendered here by JS -->
-                        </div>
-                        <!-- *** MODIFICATION: This button is now enabled/disabled via JS based on consolidation status *** -->
-                        <!-- MODIFICATION: Renamed onclick to openAddSplitExpenseModal() -->
-                        <button id="social-add-expense-btn" class="w-full bg-slate-800 text-slate-300 font-semibold py-3 rounded-lg border border-slate-700 mt-4" onclick="openAddSplitExpenseModal()">
-                            Add expense to group +
-                        </button>
-                    </div>
-
-                    <div class="mt-6">
-                        <h3 class="font-bold text-white mb-4">Comments and activity</h3>
-                        <div class="space-y-5">
-                            <div class="flex gap-3">
-                                <img src="https://placehold.co/32x32/9333ea/FFFFFF?text=SW" alt="Sarah Williams" class="w-8 h-8 rounded-full mt-1">
-                                <div>
-                                    <p class="font-semibold text-sm text-white">Sarah Williams</p>
-                                    <div class="bg-slate-800 p-3 rounded-lg rounded-tl-none mt-1">
-                                        <p class="text-sm text-slate-300">Best sushi ever! Don't leave me hanging</p>
-                                        <img src="https://placehold.co/300x200/555/AAA?text=Sushi+Photo" class="mt-2 rounded-lg max-w-full">
-                                    </div>
-                                    <div class="flex gap-2 items-center mt-2 text-xs text-gray-500">
-                                        <span>3 👍</span>
-                                        <span>1 😂</span>
-                                        <button class="font-semibold">+</button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="flex gap-3">
-                                <img src="https://placehold.co/32x32/f59e0b/FFFFFF?text=ER" alt="Emma Rodriguez" class="w-8 h-8 rounded-full mt-1">
-                                <div>
-                                    <p class="font-semibold text-sm text-white">Emma Rodriguez</p>
-                                    <div class="bg-slate-800 p-3 rounded-lg rounded-tl-none mt-1">
-                                        <p class="text-sm text-slate-300">Already paid! Can't wait for the next one</p>
-                                    </div>
-                                    <div class="flex gap-2 items-center mt-2 text-xs text-gray-500">
-                                        <span>1 ❤️</span>
-                                        <button class="font-semibold">+</button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="flex gap-3">
-                                <img src="https://placehold.co/32x32/10b981/FFFFFF?text=AA" alt="Ana Aragon" class="w-8 h-8 rounded-full mt-1">
-                                <div>
-                                    <p class="font-semibold text-sm text-white">Ana Aragon</p>
-                                    <div class="bg-slate-800 p-3 rounded-lg rounded-tl-none mt-1">
-                                        <p class="text-sm text-slate-300"><span class="font-bold text-blue-400">@You @David</span> please don't forget to add your receipts, so we can all pay you back!</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="mt-4">
-                            <textarea class="w-full bg-slate-800 border border-slate-700 rounded-lg p-3 text-sm text-white placeholder-gray-400" rows="2" placeholder="Add comment, @mention someone..."></textarea>
-                            <div class="flex justify-between items-center mt-2">
-                                <div class="flex gap-2">
-                                    <button class="text-sm font-medium text-slate-300 bg-slate-700 px-3 py-1 rounded-full border border-slate-600">Photo</button>
-                                    <button class="text-sm font-medium text-slate-300 bg-slate-700 px-3 py-1 rounded-full border border-slate-600">GIF</button>
-                                </div>
-                                <button class="btn-gradient-blue text-sm font-semibold px-4 py-1.5 rounded-full">Post</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="mt-6">
-                        <h3 class="font-bold text-white mb-4">Participants</h3>
-                        <div class="space-y-4">
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <svg class="w-5 h-5 text-blue-500" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.707-9.293a1 1 0 0 0-1.414-1.414L9 10.586 7.707 9.293a1 1 0 0 0-1.414 1.414l2 2a1 1 0 0 0 1.414 0l4-4Z" clip-rule="evenodd"></path></svg>
-                                    <img src="https://placehold.co/32x32/9333ea/FFFFFF?text=SW" alt="Sarah Williams" class="w-8 h-8 rounded-full">
-                                    <div>
-                                        <p class="font-medium text-sm text-slate-200">Sarah Williams <span class="text-xs text-slate-400">(95%)</span></p>
-                                        <p class="text-sm text-slate-400">Paid</p>
-                                    </div>
-                                </div>
-                                <span class="font-medium text-sm text-slate-200">€ 187,50</span>
-                            </div>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <svg class="w-5 h-5 text-slate-400" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16ZM9 5a1 1 0 1 1 2 0v5.25a.75.75 0 0 1-1.5 0V5Z" clip-rule="evenodd"></path></svg>
-                                    <img src="https://placehold.co/32x32/3b82f6/FFFFFF?text=LT" alt="Lisa Thompson" class="w-8 h-8 rounded-full">
-                                    <div>
-                                        <p class="font-medium text-sm text-slate-200">Lisa Thompson <span class="text-xs text-slate-400">(95%)</span></p>
-                                        <p class="text-sm text-slate-400">Pending</p>
-                                    </div>
-                                </div>
-                                <button class="text-xs font-semibold text-lime-800 bg-lime-200 px-3 py-1 rounded-full">Send reminder</button>
-                            </div>
-                             <div class="flex items-center justify-between border-2 border-pink-500 bg-pink-900/50 p-3 rounded-xl">
-                                <div class="flex items-center gap-3">
-                                    <svg class="w-5 h-5 text-pink-500" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16ZM9 5a1 1 0 1 1 2 0v5.25a.75.75 0 0 1-1.5 0V5Z" clip-rule="evenodd"></path></svg>
-                                    <img src="https://placehold.co/32x32/gray/FFFFFF?text=KB" alt="You" class="w-8 h-8 rounded-full">
-                                    <div>
-                                        <p class="font-medium text-sm text-pink-200">You <span class="text-xs text-slate-400">(95%)</span></p>
-                                        <p class="text-sm text-pink-300">Pending</p>
-                                    </div>
-                                </div>
-                                <span class="font-medium text-sm text-pink-200">€ 187,50</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="mt-8 border-t border-slate-700 pt-6 flex items-center gap-3">
-                        <svg class="w-5 h-5 text-green-500" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.707-9.293a1 1 0 0 0-1.414-1.414L9 10.586 7.707 9.293a1 1 0 0 0-1.414 1.414l2 2a1 1 0 0 0 1.414 0l4-4Z" clip-rule="evenodd"></path></svg>
-                        <p class="text-sm text-slate-300">
-                            <span class="font-semibold text-white">Trusted sender:</span> 95% Sarah Williams has a 95% MaxCredible score
-                        </p>
-                    </div>
-
-                </div>
-            </main>
-        </div>
-
+<body>
+<div id="app-container" class="max-w-md mx-auto min-h-screen overflow-hidden relative shadow-2xl">
+    
+    <!-- 
+      ==================================================================
+      PAGE: Welcome (PRD 1.1)
+      ==================================================================
+    -->
+<div id="app-container" class="max-w-md mx-auto min-h-screen overflow-hidden relative shadow-2xl">
+    
+    <div id="page-welcome" class="page active flex flex-col justify-center items-center p-8 text-center">
+        <h1 class="text-5xl font-bold text-white mb-4 tracking-tighter">Maxi.</h1>
+        <p class="text-lg text-slate-300 mb-10">Get paid faster, without the friction.</p>
+        <button class="btn-gradient-blue font-semibold py-4 px-10 rounded-full shadow-xl text-lg transition-transform hover:scale-105 active:scale-95" onclick="showOnboardingModal()">Get Started</button>
         
-        
-        <div id="page-sme-invoice" class="page">
-            <header class="p-6 bg-slate-800 sticky top-0 z-10 shadow-sm flex justify-between items-center">
-                <button class="text-gray-200" onclick="showPage('page-payer-dashboard', 'backward')">
-                    <svg class="w-6 h-6" fill="none" stroke-width="2.5" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5"></path></svg>
-                </button>
-                <div class="text-center">
-                    <h1 id="sme-detail-title" class="text-lg font-bold text-white">INV-000-001</h1>
-                    <p id="sme-detail-creator" class="text-sm text-gray-400">98% Adidas</p>
-                </div>
-                <div class="w-6"></div> 
-            </header>
-
-            <main class="p-6 pb-32 space-y-8">
-                <div class="bg-pink-900/50 border border-pink-700 rounded-xl p-5 my-4">
-                    <div class="flex justify-between items-center">
-                        <span class="text-sm font-semibold text-pink-300">You owe</span>
-                        <span id="sme-detail-amount" class="text-3xl font-bold text-pink-300">€ 3.025</span>
-                    </div>
-                    <p id="sme-detail-status" class="text-sm text-red-500 font-medium mt-1">4 days overdue</p>
-                </div>
-                
-                <div class="grid grid-cols-2 gap-4 my-4">
-                    <button class="btn-gradient-blue font-semibold py-3 rounded-lg shadow-md" onclick="openHotKeyModal('sme')">
-                        Pay your invoice
-                    </button>
-                    <!-- *** MODIFICATION *** -->
-                    <!-- Added onclick handler to trigger the Catalyst Splitter flow (PRD 5.3) -->
-                    <button class="w-full bg-slate-700 text-slate-200 font-semibold py-3 rounded-lg border border-slate-600" onclick="triggerCatalystSplitter()">
-                        Add people to split +
-                    </button>
-                    <!-- *** END MODIFICATION *** -->
-                </div>
-
-                <div class="mt-6">
-                    <h3 class="font-bold text-white mb-3">Invoice details</h3>
-                    <!-- *** MODIFICATION: Added ID for dynamic rendering *** -->
-                    <div id="sme-invoice-items-container" class="bg-slate-800 rounded-xl p-4 border border-slate-700">
-                        <div class="space-y-3 border-b border-slate-700 pb-3">
-                            <!-- Items will be injected here -->
-                        </div>
-                        <div class="space-y-2 border-b border-slate-700 py-3">
-                            <div class="flex justify-between items-center text-sm">
-                                <p class="text-slate-400">Subtotal</p>
-                                <p id="sme-subtotal" class="text-slate-400">€ 0.00</p>
-                            </div>
-                            <div class="flex justify-between items-center text-sm">
-                                <p class="text-slate-400">VAT (<span id="sme-vat-percent">0</span>%)</p>
-                                <p id="sme-vat-amount" class="text-slate-400">€ 0.00</p>
-                            </div>
-                        </div>
-                        <div class="flex justify-between items-center font-bold text-white pt-3 text-lg">
-                            <p>Total</p>
-                            <p id="sme-total-amount">€ 0.00</p>
-                        </div>
-                    </div>
-                    <button class="w-full text-lime-400 font-semibold py-3 rounded-lg border border-lime-800 bg-lime-900/50 mt-4">
-                        Download
-                    </button>
-                </div>
-
-                <div class="mt-6">
-                    <h3 class="font-bold text-white mb-4">Comments and activity</h3>
-                    <div class="space-y-5">
-                        <div class="flex gap-3">
-                            <img src="https://placehold.co/32x32/000/FFFFFF?text=A" alt="Adidas" class="w-8 h-8 rounded-full mt-1">
-                            <div>
-                                <p class="font-semibold text-sm text-white">Adidas</p>
-                                <div class="bg-slate-800 p-3 rounded-lg rounded-tl-none mt-1">
-                                    <p class="text-sm text-slate-300">Thank you for the great work this month! Looking forward to continuing our partnership.</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="mt-4">
-                        <textarea class="w-full bg-slate-800 border border-slate-700 rounded-lg p-3 text-sm text-white placeholder-gray-400" rows="2" placeholder="Add comment, @mention someone..."></textarea>
-                        <div class="flex justify-between items-center mt-2">
-                            <div class="flex gap-2">
-                                <button class="text-sm font-medium text-slate-300 bg-slate-700 px-3 py-1 rounded-full border border-slate-600">Photo</button>
-                                <button class="text-sm font-medium text-slate-300 bg-slate-700 px-3 py-1 rounded-full border border-slate-600">GIF</button>
-                            </div>
-                            <button class="btn-gradient-blue text-sm font-semibold px-4 py-1.5 rounded-full">Post</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="mt-8 border-t border-slate-700 pt-6 flex items-center gap-3">
-                    <svg class="w-5 h-5 text-green-500" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.707-9.293a1 1 0 0 0-1.414-1.414L9 10.586 7.707 9.293a1 1 0 0 0-1.414 1.414l2 2a1 1 0 0 0 1.414 0l4-4Z" clip-rule="evenodd"></path></svg>
-                        <p class="text-sm text-slate-300">
-                            <span class="font-semibold text-white">Trusted sender:</span> 98% Adidas has a 98% MaxCredible score
-                        </p>
-                </div>
-            </main>
-        </div>
-
-        <div id="page-payment-confirmed" class="page">
-            <header class="p-6 bg-slate-800 sticky top-0 z-10 shadow-sm">
-                <div class="flex justify-between items-center">
-                    <div class="flex items-center gap-2">
-                        <span class="text-xs font-semibold bg-gray-900 text-white rounded-full px-2 py-0.5">KB</span>
-                        <span class="font-semibold text-white">max.com</span>
-                    </div>
-                    <div class="flex items-center gap-4">
-                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke-width="2" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"></path></svg>
-                    </div>
-                </div>
-                <div class="mt-6 flex justify-between items-center">
-                    <h1 class="text-3xl font-bold text-white">3 pending requests</h1>
-                    <div class="score-pill score-green-light">
-                        Score: <span class="font-bold">97%</span>
-                    </div>
-                </div>
-            </header>
-
-            <main class="p-6 pb-24">
-                <div class="text-center">
-                    <div class="w-20 h-20 bg-lime-200 text-lime-800 rounded-full flex items-center justify-center mx-auto">
-                        <svg class="w-10 h-10" fill="none" stroke-width="2.5" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"></path></svg>
-                    </div>
-                    <h2 class="text-3xl font-bold mt-5 text-white">Payment confirmed!</h2>
-                    <p class="text-4xl font-bold text-pink-400 mt-2">€ 3.025</p>
-                    <p class="text-sm text-slate-400">Paid to Adidas</p>
-                    <button class="text-sm font-semibold text-lime-400 mt-3" onclick="showPage('page-payer-dashboard')">
-                        View next payment request
-                    </button>
-                </div>
-
-                <div class="bg-slate-800 p-5 rounded-xl border border-slate-700 my-8">
-                    <h3 class="font-bold text-white text-lg">Your payment score improved!</h3>
-                    <p class="text-sm text-slate-400 mt-1">You are building trust in the MaxCredible network.</p>
-                    <div class="flex items-center justify-center gap-4 my-4">
-                        <span class="text-3xl font-bold text-gray-500">94%</span>
-                        <span class="text-2xl font-bold text-white">&rarr;</span>
-                        <span class="text-5xl font-bold text-lime-400">97%</span>
-                    </div>
-                    <p class="text-sm font-semibold text-lime-400 text-center">Payment score +3%</p>
-                </div>
-                
-                <div class="text-center">
-                    <h2 class="text-3xl font-bold text-white">You're MaxCredible now!</h2>
-                    <p class="text-base text-slate-400 mt-2">Good payers become great creators. Start sending payment requests and get paid faster with your 97% credibility score.</p>
-                </div>
-
-                <div class="space-y-4 my-8">
-                    <button class="w-full btn-gradient-blue text-white p-5 rounded-xl shadow-lg text-left" onclick="showCreatorDashboard()">
-                        <span class="font-bold text-lg">Send your first invoice</span>
-                        <span class="block text-sm text-blue-200">Get paid 2x faster &rarr;</span>
-                    </button>
-                    <button class="w-full bg-gradient-to-r from-orange-500 to-amber-500 text-black p-5 rounded-xl shadow-lg text-left" onclick="showCreatorDashboard()">
-                        <span class="font-bold text-lg">Split your first bill</span>
-                        <span class="block text-sm text-orange-900">Join 10,000+ creators &rarr;</span>
-                    </button>
-                </div>
-
-                <div class="text-center">
-                    <button class="text-sm font-semibold text-gray-400" onclick="showPage('page-payer-dashboard')">
-                        Back to inbox
-                    </button>
-                </div>
-            </main>
-        </div>
-
-        <div id="page-creator-dashboard" class="page">
-            <header class="p-6 bg-slate-800 sticky top-0 z-10 shadow-sm">
-                <div class="flex justify-between items-center">
-                    <div class="flex items-center gap-2">
-                        <span class="text-xs font-semibold bg-gray-900 text-white rounded-full px-2 py-0.5">KB</span>
-                        <span class="font-semibold text-white">max.com</span>
-                    </div>
-                    <div class="flex items-center gap-4">
-                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke-width="2" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"></path></svg>
-                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke-width="2" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"></path></svg>
-                    </div>
-                </div>
-                <div class="mt-6 flex justify-between items-center">
-                    <h1 class="text-3xl font-bold text-white">Creator Dashboard</h1>
-                    <div class="score-pill score-green-light">
-                        Score: <span class="font-bold">97%</span>
-                    </div>
-                </div>
-            </header>
-
-            <main class="p-6 pb-24">
-                <div class="bg-lime-900/50 p-5 rounded-xl border border-lime-700 mb-8">
-                    <h2 class="font-bold text-lime-200">You are in creator mode</h2>
-                    <p class="text-sm text-lime-300 mt-1">Create and send payment requests.</p>
-                    <p class="text-sm text-lime-300 mt-2">Click the floating button to flip! Switch back to PAYER (Pay) mode instantly.</p>
-                </div>
-
-                <div class="space-y-4">
-                    <button class="w-full btn-gradient-blue text-white p-5 rounded-xl shadow-lg text-left" onclick="showPage('page-create-invoice')">
-                        <span class="font-bold text-lg">Create New Invoice</span>
-                        <span class="block text-sm text-blue-200">Send a professional request &rarr;</span>
-                    </button>
-                    <button class="w-full bg-gradient-to-r from-orange-500 to-amber-500 text-black p-5 rounded-xl shadow-lg text-left" onclick="showPage('page-create-split')">
-                        <span class="font-bold text-lg">Start New Split</span>
-                        <span class="block text-sm text-orange-900">Split a bill with a group &rarr;</span>
-                    </button>
-                    <!-- *** NEW: Group Pot Button (PRD 4.3) *** -->
-                    <button class="w-full bg-gradient-to-r from-teal-500 to-cyan-500 text-white p-5 rounded-xl shadow-lg text-left" onclick="showPage('page-create-pot')">
-                        <span class="font-bold text-lg">Create New Group Pot</span>
-                        <span class="block text-sm text-cyan-200">Start a "Bierpot" for your team &rarr;</span>
-                    </button>
-                    <!-- *** END NEW *** -->
-                </div>
-
-                <div class="mt-10">
-                    <h3 class="text-xl font-bold text-white mb-4">Sent Requests</h3>
-                    <div class="bg-slate-800 border border-slate-700 rounded-xl p-4">
-                        <div id="no-requests-placeholder" class="text-center py-12">
-                            <svg class="w-12 h-12 text-gray-500 mx-auto" fill="none" stroke-width="1.5" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m.093 18.093a2.25 2.25 0 0 1-2.25-2.25v-6.75a2.25 2.25 0 0 1 2.25-2.25h6.75a2.25 2.25 0 0 1 2.25 2.25v6.75a2.25 2.25 0 0 1-2.25 2.25H8.25Z"></path><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.5h.008v.008H3v-.008Zm0-2.81v.008h.008V10.69H3.008Zm0-2.81v.008h.008V7.88H3.008Zm0-2.812v.008h.008V5.068H3.008Zm2.81 10.62v.008H5.818v-.008H5.808Zm0-2.81v.008H5.818v-.008H5.808Zm0-2.81v.008H5.818v-.008H5.808Zm0-2.812v.008H5.818v-.008H5.808Zm2.81 10.62v.008H8.628v-.008H8.618Zm0-2.81v.008H8.628v-.008H8.618Zm0-2.81v.008H8.628v-.008H8.618Zm0-2.812v.008H8.628v-.008H8.618Zm2.81 10.62v.008H11.438v-.008H11.428Zm0-2.81v.008H11.438v-.008H11.428Zm0-2.81v.008H11.438v-.008H11.428Z"></path></svg>
-                            <h4 class="text-lg font-semibold text-gray-300 mt-4">No requests sent yet</h4>
-                            <p class="text-sm text-gray-500 mt-1">Your created invoices and splits will appear here.</p>
-                        </div>
-                        <div id="sent-requests-list" class="space-y-4"></div>
-                    </div>
-                </div>
-                
-                <!-- *** NEW: Group Pot List (PRD 4.3) *** -->
-                <div class="mt-10">
-                    <h3 class="text-xl font-bold text-white mb-4">My Group Pots</h3>
-                    <div class="bg-slate-800 border border-slate-700 rounded-xl p-4">
-                        <div id="no-pots-placeholder" class="text-center py-12">
-                            <svg class="w-12 h-12 text-gray-500 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                              <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375" />
-                            </svg>
-                            <h4 class="text-lg font-semibold text-gray-300 mt-4">No Group Pots yet</h4>
-                            <p class="text-sm text-gray-500 mt-1">Create a "Bierpot" to collect money from your team.</p>
-                        </div>
-                        <div id="group-pots-list" class="space-y-4">
-                            <!-- Group Pots will be rendered here by script.js -->
-                        </div>
-                    </div>
-                </div>
-                <!-- *** END NEW *** -->
-
-            </main>
-        </div>
-
-        <div id="page-create-invoice" class="page">
-            <header class="p-6 bg-slate-900 sticky top-0 z-10 flex justify-between items-center">
-                <button class="text-gray-200" onclick="showPage('page-creator-dashboard', 'backward')">
-                    <svg class="w-6 h-6" fill="none" stroke-width="2.5" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5"></path></svg>
-                </button>
-                <h1 class="text-lg font-bold text-white">Create New Invoice</h1>
-                <div class="w-6"></div> 
-            </header>
-
-            <!-- *** MODIFICATION: Added space-y-8 *** -->
-            <main class="p-6 pb-24 space-y-8">
-                <div>
-                    <label for="invoice-client-name" class="block text-2xl font-bold text-white">Who is this for?</label>
-                    <input type="text" id="invoice-client-name" class="mt-3 block w-full rounded-lg bg-slate-800 border-slate-700 text-white p-4 text-lg" placeholder="Client Name or Email">
-                </div>
-                
-                <!-- *** NEW: Add Logo (PRD 5.2) *** -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-300">Your Logo (PRD 5.2)</label>
-                    <button class="mt-2 w-full flex items-center gap-3 rounded-lg bg-slate-800 border-slate-700 text-slate-400 p-4">
-                        <svg class="w-5 h-5 text-blue-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" /></svg>
-                        <span>Upload logo (e.g., logo.png)</span>
-                    </button>
-                </div>
-                <!-- *** END NEW *** -->
-
-                <div>
-                    <label class="block text-2xl font-bold text-white mb-3">What is this for?</label>
-                    <div id="invoice-items-container" class="space-y-3 mt-1">
-                        <div class="flex gap-3 invoice-item">
-                            <input type="text" class="invoice-item-desc block w-2/3 rounded-lg bg-slate-800 border-slate-700 text-white p-4" placeholder="Item Description">
-                            <input type="number" class="invoice-item-amount block w-1/3 rounded-lg bg-slate-800 border-slate-700 text-white p-4" placeholder="€ Amount">
-                        </div>
-                    </div>
-                    <button id="add-invoice-item" class="text-sm font-semibold text-lime-400 mt-3">+ Add item</button>
-                </div>
-
-                <div>
-                    <label for="invoice-vat" class="block text-sm font-medium text-gray-300">VAT (%)</label>
-                    <input type="number" id="invoice-vat" class="mt-1 block w-full rounded-lg bg-slate-800 border-slate-700 text-white p-4" placeholder="e.g., 21">
-                </div>
-
-                <div>
-                    <label class="block text-2xl font-bold text-white mb-3">Add attachments</label>
-                    <p class="text-sm text-slate-400 mb-4">Add photos of your work, receipts, or other files.</p>
-                    <div class="grid grid-cols-3 gap-4 text-center">
-                        <button class="bg-slate-800 border border-slate-700 rounded-xl p-4 aspect-square flex flex-col items-center justify-center">
-                            <svg class="w-8 h-8 text-blue-400 mb-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                              <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
-                            </svg>
-                            <span class="text-sm font-medium text-slate-300">Upload</span>
-                        </button>
-                        <!-- MODIFICATION: Added OCR scan button -->
-                        <button class="bg-slate-800 border border-slate-700 rounded-xl p-4 aspect-square flex flex-col items-center justify-center" onclick="handleScanInvoice()">
-                            <svg class="w-8 h-8 text-blue-400 mb-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                              <path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.174C2.999 7.58 2.25 8.507 2.25 9.574v8.358c0 1.067.75 1.994 1.802 2.169a47.865 47.865 0 0 0 1.14.035h14.113c.398 0 .783-.01 1.14-.035a2.25 2.25 0 0 0 1.802-2.17V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.14-.035h-1.708c-.144.007-.288.007-.432 0a2.309 2.309 0 0 1-1.64-1.055l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 47.758 47.758 0 0 0-5.732 0 2.192 2.192 0 0 0-1.736 1.04l-.821 1.316Z" />
-                              <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM18.75 10.5h.008v.008h-.008V10.5Z" />
-                            </svg>
-                            <span class="text-sm font-medium text-slate-300">Scan Bill</span>
-                        </button>
-                        <!-- END MODIFICATION -->
-                        <button class="bg-slate-800 border border-slate-700 rounded-xl p-4 aspect-square flex flex-col items-center justify-center">
-                            <svg class="w-8 h-8 text-blue-400 mb-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                              <path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244" />
-                            </svg>
-                            <span class="text-sm font-medium text-slate-300">Link Admin</span>
-                        </button>
-                    </div>
-                </div>
-
-                <div>
-                    <label for="invoice-next-steps" class="block text-2xl font-bold text-white">Add a note (PRD 5.2)</label>
-                    <textarea id="invoice-next-steps" class="mt-3 block w-full rounded-lg bg-slate-800 border-slate-700 text-white p-4" rows="3" placeholder="P.S. I'll call you next week to discuss Q4..."></textarea>
-                </div>
-                
-                <!-- *** NEW: Reminder Profile (PRD 5.4) *** -->
-                <div>
-                    <label for="invoice-reminder-profile" class="block text-2xl font-bold text-white">Reminder Profile (PRD 5.4)</label>
-                    <select id="invoice-reminder-profile" class="mt-3 block w-full rounded-lg bg-slate-800 border-slate-700 text-white p-4 text-lg">
-                        <option value="friendly">My Business Voice (Friendly)</option>
-                        <option value="formal">Formal</option>
-                        <option value="none">No Reminders</option>
-                    </select>
-                </div>
-                <!-- *** END NEW *** -->
-
-                <!-- *** MODIFICATION: Changed ID and onclick *** -->
-                <button id="review-invoice-btn" class="w-full btn-gradient-blue text-white font-semibold py-4 rounded-lg shadow-lg mt-6 text-lg" onclick="handleReviewInvoice()">
-                    Review & Send Invoice
-                </button>
-                <!-- *** END MODIFICATION *** -->
-            </main>
-        </div>
-        
-        <!-- *** NEW PAGE: Review Invoice (for "Slick" flow) *** -->
-        <div id="page-review-invoice" class="page">
-            <header class="p-6 bg-slate-900 sticky top-0 z-10 flex justify-between items-center">
-                <button class="text-gray-200" onclick="showPage('page-create-invoice', 'backward')">
-                    <svg class="w-6 h-6" fill="none" stroke-width="2.5" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5"></path></svg>
-                </button>
-                <h1 class="text-lg font-bold text-white">Review Invoice</h1>
-                <div class="w-6"></div> 
-            </header>
-
-            <main class="p-6 pb-32 space-y-8">
-                <!-- This is the "Payer's View" of the SME invoice, repurposed as a preview -->
-                <div>
-                    <p class="text-sm text-slate-400 text-center mb-4">This is a preview of what your client will see.</p>
-                    
-                    <div class="bg-slate-800 rounded-xl border border-slate-700 p-4">
-                        <div class="flex justify-between items-center mb-4">
-                            <h2 id="review-client-name" class="text-lg font-semibold text-white"></h2>
-                            <img src="https://placehold.co/80x32/1e293b/FFFFFF?text=LOGO" alt="Your Logo" id="review-logo-img">
-                        </div>
-                        
-                        <div class="bg-pink-900/50 border border-pink-700 rounded-xl p-5 my-4">
-                            <div class="flex justify-between items-center">
-                                <span class="text-sm font-semibold text-pink-300">Amount due</span>
-                                <span id="review-total-amount" class="text-3xl font-bold text-pink-300">€ 0.00</span>
-                            </div>
-                        </div>
-                        
-                        <div class="mt-6">
-                            <h3 class="font-bold text-white mb-3">Invoice details</h3>
-                            <div class="bg-slate-900 rounded-xl p-4 border border-slate-700">
-                                <div id="review-items-list" class="space-y-3 border-b border-slate-700 pb-3">
-                                    <!-- Review items will be injected here -->
-                                </div>
-                                <div class="space-y-2 border-b border-slate-700 py-3">
-                                    <div class="flex justify-between items-center text-sm">
-                                        <p class="text-slate-400">Subtotal</p>
-                                        <p id="review-subtotal" class="text-slate-400">€ 0.00</p>
-                                    </div>
-                                    <div class="flex justify-between items-center text-sm">
-                                        <p class="text-slate-400">VAT (<span id="review-vat-percent">0</span>%)</p>
-                                        <p id="review-vat-amount" class="text-slate-400">€ 0.00</p>
-                                    </div>
-                                </div>
-                                <div class="flex justify-between items-center font-bold text-white pt-3 text-lg">
-                                    <p>Total</p>
-                                    <p id="review-grand-total">€ 0.00</p>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="mt-6">
-                            <h3 class="font-bold text-white mb-3">Note (PRD 5.2)</h3>
-                            <div class="bg-slate-900 rounded-xl p-4 border border-slate-700">
-                                <p id="review-next-steps" class="text-slate-300 italic"></p>
-                            </div>
-                        </div>
-                        
-                        <div class="mt-6">
-                            <h3 class="font-bold text-white mb-3">Reminder Profile (PRD 5.4)</h3>
-                            <div class="bg-slate-900 rounded-xl p-4 border border-slate-700">
-                                <p id="review-reminder-profile" class="text-slate-300"></p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <button id="confirm-send-invoice-btn" class="w-full btn-gradient-blue text-white font-semibold py-4 rounded-lg shadow-lg mt-6 text-lg flex items-center justify-center gap-3" onclick="handleSendInvoice()">
-                    <span id="send-btn-text">Confirm & Send Invoice</span>
-                    <div id="send-btn-loader" class="loader hidden"></div>
-                </button>
-            </main>
-        </div>
-        <!-- *** END NEW PAGE *** -->
-        
-        <!-- *** NEW PAGE: Creator's Invoice Detail/Tracking (PRD 5.2.1) *** -->
-        <div id="page-sme-invoice-detail-creator" class="page">
-            <header class="p-6 bg-slate-900 sticky top-0 z-10 flex justify-between items-center">
-                <button class="text-gray-200" onclick="showPage('page-creator-dashboard', 'backward')">
-                    <svg class="w-6 h-6" fill="none" stroke-width="2.5" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5"></path></svg>
-                </button>
-                <h1 id="creator-detail-header-title" class="text-lg font-bold text-white">Tracking Invoice</h1>
-                <div class="w-6"></div> 
-            </header>
-            
-            <main class="p-6 pb-32 space-y-8">
-                <div>
-                    <h2 id="creator-detail-client-name" class="text-3xl font-bold text-white"></h2>
-                    <p id="creator-detail-total-amount" class="text-4xl font-bold text-pink-400 mt-1"></p>
-                </div>
-                
-                <!-- This is the Recipient Status Dashboard (PRD 5.2.1) -->
-                <div>
-                    <h3 class="font-bold text-white mb-4 text-lg">Recipient Status</h3>
-                    <div id="recipient-status-dashboard" class="space-y-4">
-                        <!-- Status steps will be injected here by JS -->
-                    </div>
-                </div>
-                
-                <div class_="mt-6">
-                    <h3 class="font-bold text-white mb-3 text-lg">Invoice details</h3>
-                    <div id="creator-detail-items-container" class="bg-slate-800 rounded-xl p-4 border border-slate-700">
-                        <!-- Creator's view of items will be injected here -->
-                    </div>
-                </div>
-
-                <div class="mt-6">
-                    <h3 class="font-bold text-white mb-4 text-lg">Comments and activity</h3>
-                    <!-- This would be populated from a database in a real app -->
-                    <div class="text-center text-slate-500 py-8">
-                        <p>No comments yet.</p>
-                    </div>
-                    <div class="mt-4">
-                        <textarea class="w-full bg-slate-800 border border-slate-700 rounded-lg p-3 text-sm text-white placeholder-gray-400" rows="2" placeholder="Add a private note or send a follow-up..."></textarea>
-                        <div class="flex justify-end items-center mt-2">
-                            <button class="btn-gradient-blue text-sm font-semibold px-4 py-1.5 rounded-full">Post</button>
-                        </div>
-                    </div>
-                </div>
-            </main>
-        </div>
-        <!-- *** END NEW PAGE *** -->
-        <div id="page-social-split-detail-creator" class="page">
-            <header class="p-6 bg-slate-900 sticky top-0 z-10 flex justify-between items-center">
-                <button class="text-gray-200" onclick="showPage('page-creator-dashboard', 'backward')">
-                    <svg class="w-6 h-6" fill="none" stroke-width="2.5" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5"></path></svg>
-                </button>
-                <h1 id="creator-split-header-title" class="text-lg font-bold text-white">Tracking Split</h1>
-                <div class="w-6"></div> 
-            </header>
-            
-            <main class="p-6 pb-32 space-y-8">
-                <div>
-                    <h2 id="creator-split-title" class="text-3xl font-bold text-white"></h2>
-                    <p id="creator-split-total-amount" class="text-4xl font-bold text-pink-400 mt-1"></p>
-                </div>
-                
-                <!-- This is the Participant Status Dashboard (PRD 4.2.2) -->
-                <div>
-                    <h3 class="font-bold text-white mb-4 text-lg">Participant Status</h3>
-                    <div id="participant-status-dashboard" class="space-y-4">
-                        <!-- Participant status cards will be injected here by JS -->
-                    </div>
-                </div>
-                
-                <div class="mt-6">
-                    <h3 class="font-bold text-white mb-3 text-lg">Expenses Added</h3>
-                    <div id="creator-split-expenses-list" class="bg-slate-800 rounded-xl p-4 border border-slate-700">
-                        <!-- Creator's view of expenses will be injected here -->
-                    </div>
-                </div>
-
-                <div class="mt-6">
-                    <h3 class="font-bold text-white mb-4 text-lg">Comments and activity</h3>
-                    <!-- This would be populated from a database in a real app -->
-                    <div class="text-center text-slate-500 py-8">
-                        <p>No comments yet.</p>
-                    </div>
-                    <div class="mt-4">
-                        <textarea class="w-full bg-slate-800 border border-slate-700 rounded-lg p-3 text-sm text-white placeholder-gray-400" rows="2" placeholder="Add a private note or send a follow-up..."></textarea>
-                        <div class="flex justify-end items-center mt-2">
-                            <button class="btn-gradient-blue text-sm font-semibold px-4 py-1.5 rounded-full">Post</button>
-                        </div>
-                    </div>
-                </div>
-            </main>
-        </div>
-
-        <div id="page-create-split" class="page">
-            <header class="p-6 bg-slate-900 sticky top-0 z-10 flex justify-between items-center">
-                <button class="text-gray-200" onclick="showPage('page-creator-dashboard', 'backward')">
-                    <svg class="w-6 h-6" fill="none" stroke-width="2.5" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5"></path></svg>
-                </button>
-                <h1 class="text-lg font-bold text-white">Start New Split</h1>
-                <div class="w-6"></div> 
-            </header>
-
-            <main class="p-6 pb-24 space-y-10">
-                <div>
-                    <label for="split-title" class="block text-2xl font-bold text-white">What's the occasion?</label>
-                    <input type="text" id="split-title" class="mt-3 block w-full rounded-lg bg-slate-800 border-slate-700 text-white p-4 text-lg" placeholder="e.g., Dinner at Sakura">
-                    
-                    <button id="add-split-photo" class="mt-4 w-full flex justify-center items-center gap-2 rounded-lg border-2 border-dashed border-slate-700 text-slate-400 p-8">
-                        <svg class="w-6 h-6" fill="none" stroke-width="1.5" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm1.5-6m-1.5 0a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0Z"></path></svg>
-                        <span>Add a fun photo</span>
-                    </button>
-                </div>
-
-                <div>
-                    <label for="split-participants" class="block text-2xl font-bold text-white">Who's invited?</label>
-                    <input type="text" id="split-participants" class="mt-3 block w-full rounded-lg bg-slate-800 border-slate-700 text-white p-4 text-lg" placeholder="Add names or phone numbers...">
-                </div>
-
-                <div>
-                    <label class="block text-2xl font-bold text-white mb-3">Add your expenses</label>
-                    <div id="split-expense-container" class="space-y-3 mt-1">
-                        <div class="flex gap-3 split-expense-item">
-                            <input type="text" class="split-expense-desc block w-2/3 rounded-lg bg-slate-800 border-slate-700 text-white p-4" placeholder="e.g., Sushi dinner">
-                            <input type="number" class="split-expense-amount block w-1/3 rounded-lg bg-slate-800 border-slate-700 text-white p-4" placeholder="€ Amount">
-                        </div>
-                    </div>
-                    <button id="add-split-expense" class="text-sm font-semibold text-lime-400 mt-3">+ Add expense</button>
-                </div>
-
-                <div>
-                    <label class="block text-2xl font-bold text-white">Set the rules</label>
-                    <p class="text-sm text-slate-400 mt-1 mb-3">How long do friends have to add their receipts?</p>
-                    <div id="deadline-options" class="flex gap-3">
-                        <button class="deadline-btn text-sm font-semibold bg-slate-700 text-white py-2 px-4 rounded-full" data-value="24">24 Hours</button>
-                        <button class="deadline-btn text-sm font-semibold bg-lime-500 text-black py-2 px-4 rounded-full selected" data-value="48">48 Hours</button>
-                        <button class="deadline-btn text-sm font-semibold bg-slate-700 text-white py-2 px-4 rounded-full" data-value="0">No Deadline</button>
-                    </div>
-                </div>
-
-                <button id="send-split-btn" class="w-full bg-gradient-to-r from-orange-500 to-amber-500 text-black font-semibold py-4 rounded-lg shadow-lg mt-6 text-lg">
-                    Review & Send Split
-                </button>
-            </main>
-        </div>
-
-        <!-- *** NEW PAGE: Share Link (PRD 4.2) *** -->
-        <div id="page-split-share-link" class="page flex flex-col p-8">
-            <header class="p-6 bg-slate-900 sticky top-0 z-10 flex justify-between items-center -m-8 mb-8">
-                <button class="text-gray-200" onclick="showPage('page-creator-dashboard', 'backward')">
-                    <svg class="w-6 h-6" fill="none" stroke-width="2.5" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5"></path></svg>
-                </button>
-                <h1 class="text-lg font-bold text-white">Split is Live!</h1>
-                <div class="w-6"></div> 
-            </header>
-            
-            <div class="flex-grow flex flex-col justify-center items-center text-center">
-                <div class="walkthrough-image bg-slate-800 w-64 h-64 rounded-full flex items-center justify-center mb-10">
-                    <svg class="w-24 h-24 text-lime-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 1 0 0 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186 9.566-5.314m-9.566 5.314 9.566 5.314m0 0a2.25 2.25 0 1 0 0-2.186m0 2.186c-.18-.324-.283-.696-.283-1.093s.103-.77.283-1.093m0 2.186-9.566-5.314" />
-                    </svg>
-                </div>
-                <h2 id="share-split-title" class="text-3xl font-bold text-white mb-4">Your Split is Consolidating!</h2>
-                <p class="text-lg text-slate-300 mb-6">Share this link with participants so they can add their expenses.</p>
-                
-                <div class="w-full bg-slate-800 border border-slate-700 rounded-lg p-4 text-left mb-4">
-                    <p class="text-sm text-slate-400">Shareable Project Link (PRD 4.2):</p>
-                    <input id="share-split-link" type="text" class="text-white font-mono break-all w-full bg-transparent" readonly>
-                </div>
-                <button class="w-full btn-gradient-blue font-semibold py-3 rounded-lg shadow-md text-lg" onclick="copyShareLink()">
-                    Copy Link
-                </button>
-            </div>
-
-            <div class="pb-10 mt-8">
-                <button class="w-full bg-slate-700 text-white font-semibold py-4 rounded-lg shadow-md" onclick="showPage('page-creator-dashboard', 'backward')">
-                    Go to Dashboard
-                </button>
-            </div>
-        </div>
-        <!-- *** END NEW PAGE *** -->
-
-        <!-- --- BEGIN NEW PAGES FOR GROUP POT (PRD 4.3) --- -->
-
-        <div id="page-create-pot" class="page">
-            <header class="p-6 bg-slate-900 sticky top-0 z-10 flex justify-between items-center">
-                <button class="text-gray-200" onclick="showPage('page-creator-dashboard', 'backward')">
-                    <svg class="w-6 h-6" fill="none" stroke-width="2.5" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5"></path></svg>
-                </button>
-                <h1 class="text-lg font-bold text-white">Create New Group Pot</h1>
-                <div class="w-6"></div> 
-            </header>
-
-            <form id="create-pot-form" onsubmit="handleCreatePot(event)">
-                <main class="p-6 pb-24 space-y-10">
-                    <div>
-                        <label for="pot-name" class="block text-2xl font-bold text-white">What's the pot for?</label>
-                        <input type="text" id="pot-name" name="name" class="mt-3 block w-full rounded-lg bg-slate-800 border-slate-700 text-white p-4 text-lg" placeholder="e.g., FC Lions Team Fees" required>
-                    </div>
-
-                    <div>
-                        <label for="pot-members" class="block text-2xl font-bold text-white">Who's in the pot?</label>
-                        <input type="text" id="pot-members" name="members" class="mt-3 block w-full rounded-lg bg-slate-800 border-slate-700 text-white p-4 text-lg" placeholder="Add phone numbers (e.g., +1...)" required>
-                    </div>
-                    
-                    <div>
-                        <label class="block text-2xl font-bold text-white">Contribution Rules (PRD 4.3.2)</label>
-                        <p class="text-sm text-slate-400 mt-1 mb-3">Set a recurring financial obligation.</p>
-                        
-                        <div class="flex gap-3">
-                            <div class="w-2/3">
-                                <label for="pot-schedule-amount" class="block text-sm font-medium text-slate-400 mb-1">Amount</label>
-                                <input type="number" id="pot-schedule-amount" name="schedule_amount" class="block w-full rounded-lg bg-slate-800 border-slate-700 text-white p-4" placeholder="€ Amount" required>
-                            </div>
-                            <div class="w-1/3">
-                                <label for="pot-schedule-day" class="block text-sm font-medium text-slate-400 mb-1">Day</label>
-                                <input type="number" id="pot-schedule-day" name="schedule_day" class="block w-full rounded-lg bg-slate-800 border-slate-700 text-white p-4" placeholder="1">
-                            </div>
-                        </div>
-                        <div class="mt-3">
-                            <label for="pot-schedule-frequency" class="block text-sm font-medium text-slate-400 mb-1">Frequency</label>
-                            <select id="pot-schedule-frequency" name="schedule_frequency" class="block w-full rounded-lg bg-slate-800 border-slate-700 text-white p-4" required>
-                                <option value="Monthly">Monthly (e.g., day 1)</option>
-                                <option value="Weekly">Weekly (e.g., day 1=Mon)</option>
-                                <option value="One-Time">One-Time (e.g., day 30)</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <button type="submit" class="w-full bg-gradient-to-r from-teal-500 to-cyan-500 text-white font-semibold py-4 rounded-lg shadow-lg mt-6 text-lg">
-                        Create Group Pot
-                    </button>
-                </main>
-            </form>
-        </div>
-        
-        <div id="page-group-pot-dashboard" class="page">
-            <header class="p-6 bg-slate-900 sticky top-0 z-10 flex justify-between items-center">
-                <button class="text-gray-200" onclick="showPage('page-creator-dashboard', 'backward')">
-                    <svg class="w-6 h-6" fill="none" stroke-width="2.5" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5"></path></svg>
-                </button>
-                <h1 id="pot-dashboard-title" class="text-lg font-bold text-white">Group Pot</h1>
-                <div class="w-6"></div> 
-            </header>
-            
-            <main class="p-6 pb-32 space-y-8">
-                <!-- Module 1: Total Pot Balance (PRD 8.2.4) -->
-                <div class="text-center">
-                    <h3 class="text-sm font-semibold text-gray-400">Total Pot Balance</h3>
-                    <p id="pot-total-balance" class="text-5xl font-bold text-lime-400 mt-1">€ 0.00</p>
-                </div>
-                
-                <!-- Action Buttons -->
-                <div class="grid grid-cols-2 gap-4 my-4">
-                    <button class="btn-gradient-blue font-semibold py-3 rounded-lg shadow-md" onclick="openAddContributionModal()">
-                        Add Contribution
-                    </button>
-                    <!-- Admin Only Button -->
-                    <button id="pot-add-expense-btn" class="w-full bg-slate-700 text-slate-200 font-semibold py-3 rounded-lg border border-slate-600 hidden" onclick="openAddPotExpenseModal()">
-                        Add Expense
-                    </button>
-                </div>
-                
-                <!-- Module 2: Scheduled Contribution (PRD 8.2.4) -->
-                <div>
-                    <h3 class="font-bold text-white mb-3 text-lg">Contribution Rules</h3>
-                    <div class="bg-slate-800 rounded-xl p-4 border border-slate-700">
-                        <div class="flex justify-between items-center">
-                            <span id="pot-schedule-details" class="text-lg font-medium text-slate-200"></span>
-                            <span id="pot-schedule-amount" class="text-2xl font-bold text-white"></span>
-                        </div>
-                        <p id="pot-schedule-next-due" class="text-sm text-slate-400 mt-1"></p>
-                    </div>
-                </div>
-
-                <!-- Module 3: Contribution Tally (PRD 8.2.4 / 4.3.3) -->
-                <div>
-                    <h3 class="font-bold text-white mb-3 text-lg">Member Contribution Tally</h3>
-                    <div id="pot-contribution-tally" class="bg-slate-800 rounded-xl p-4 border border-slate-700 space-y-3">
-                        <!-- Tally will be rendered here by JS -->
-                        <p class="text-slate-400">Loading tally...</p>
-                    </div>
-                </div>
-                
-                <!-- Module 4: Transaction Feed (PRD 8.2.4 / 4.3.3) -->
-                <div>
-                    <h3 class="font-bold text-white mb-3 text-lg">Transaction Feed</h3>
-                    <div id="pot-transaction-feed" class="space-y-4">
-                        <!-- Feed will be rendered here by JS -->
-                         <p class="text-slate-400 text-center">Loading transactions...</p>
-                    </div>
-                </div>
-                
-            </main>
-        </div>
-
-        <!-- --- END NEW PAGES FOR GROUP POT --- -->
-
-
-        <button id="flip-button" class="fixed z-20 bottom-8 right-6 bg-gradient-to-r from-lime-400 to-green-500 text-black rounded-full p-4 shadow-lg" onclick="toggleMode()">
-            <div id="icon-payer">
-                <svg class="w-6 h-6" fill="none" stroke-width="2.5" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.992 0 3.182 3.182m-3.182-3.182L6.167 11.46m0 0 3.182 3.182m0 0-3.182 3.182m0 0h4.992v.001M2.985 4.356v4.992m0 0h4.992m-4.992 0 3.182-3.182M5.167 7.53m0 0 3.182-3.182m0 0-3.182-3.182m3.182 3.182h4.992v-.001m2.985 15.288v-4.992m0 0h4.992m-4.992 0 3.182 3.182m-3.182-3.182L18.833 11.46m0 0-3.182 3.182m0 0 3.182 3.182m0 0h-4.992v.001M16.023 4.356v4.992m0 0h4.992m-4.992 0-3.182-3.182m3.182 3.182-3.182-3.182m0 0 3.182-3.182m-3.182 3.182h-4.992v-.001"></path></svg>
-            </div>
-            <div id="icon-creator" class="hidden">
-                <svg class="w-6 h-6" fill="none" stroke-width="2.5" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"></path></svg>
-            </div>
+        <button class="text-slate-500 font-semibold mt-8 text-sm hover:text-white transition-colors" onclick="finishOnboarding()">
+            Skip for now
         </button>
     </div>
 
+    <!-- 
+      ==================================================================
+      PAGE: Walkthrough 1 (PRD 2.1)
+      ==================================================================
+    -->
+<div id="page-walkthrough-1" class="page flex flex-col p-8">
+        <button class="skip-walkthrough-btn" onclick="finishOnboarding()">Skip</button>
+        <div class="flex-grow flex flex-col justify-center items-center text-center">
+            <div class="walkthrough-image bg-slate-800/50 border border-slate-700 w-64 h-64 rounded-full flex items-center justify-center mb-10 relative overflow-hidden group">
+                <div class="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-purple-500/20 blur-xl"></div>
+                <svg class="w-28 h-28 text-blue-400 relative z-10 drop-shadow-[0_0_15px_rgba(96,165,250,0.6)]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456ZM16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z" />
+                </svg>
+            </div>
+            <h2 class="text-3xl font-bold text-white mb-4">Style Your Request</h2>
+            <p class="text-lg text-slate-300">Don't send boring bills. Pick a template, add your vibe, and create an invoice they actually want to open.</p>
+        </div>
+        <div class="pb-10">
+            <div class="dot-indicators text-center mb-6">
+                <span class="dot active"></span><span class="dot"></span><span class="dot"></span>
+            </div>
+            <button class="w-full btn-gradient-blue font-semibold py-4 rounded-full shadow-md text-lg" onclick="showPage('page-walkthrough-2')">Next</button>
+        </div>
+    </div>
+
+    <!-- 
+      ==================================================================
+      PAGE: Walkthrough 2 (PRD 2.1)
+      ==================================================================
+    -->
+    <div id="page-walkthrough-2" class="page bg-slate-900">
+        <div class="h-full flex flex-col relative">
+            <button class="skip-walkthrough-btn" onclick="finishOnboarding()">Skip</button>
+            
+            <div class="h-1/2 bg-cover bg-center relative" style="background-image: url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop');">
+                <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/50 to-transparent"></div>
+            </div>
+
+            <div class="h-1/2 px-8 pt-4 flex flex-col items-center text-center -mt-10 relative z-10">
+                <h1 class="text-3xl font-bold text-white mb-3">Choose Your Vibe</h1>
+                <p class="text-slate-400 mb-8">From "Strictly Business" to "Neon Nights". Pick a style that fits the mood.</p>
+
+                <div class="flex gap-3 mb-8 w-full justify-center">
+                    <div id="wk-tmpl-classic" onclick="selectWalkthroughTemplate('classic')" class="walkthrough-tmpl w-24 h-32 bg-slate-800 rounded-xl border border-slate-700 flex flex-col items-center justify-center cursor-pointer transition-all hover:scale-105">
+                        <div class="w-14 h-16 bg-slate-600 rounded mb-2 opacity-30"></div>
+                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wide">Classic</span>
+                    </div>
+                    <div id="wk-tmpl-neon" onclick="selectWalkthroughTemplate('neon')" class="walkthrough-tmpl w-24 h-32 bg-black rounded-xl border border-pink-500 shadow-[0_0_15px_rgba(236,72,153,0.3)] flex flex-col items-center justify-center cursor-pointer transition-all hover:scale-105 ring-2 ring-lime-400 selected">
+                        <div class="text-2xl mb-1">⚡️</div>
+                        <span class="text-[10px] font-bold text-pink-400 uppercase tracking-wide">Neon</span>
+                    </div>
+                    <div id="wk-tmpl-minimal" onclick="selectWalkthroughTemplate('minimal')" class="walkthrough-tmpl w-24 h-32 bg-slate-100 rounded-xl border border-white flex flex-col items-center justify-center cursor-pointer transition-all hover:scale-105">
+                        <div class="w-14 h-1 bg-black mb-2"></div>
+                        <div class="w-8 h-1 bg-black mb-2 opacity-50"></div>
+                        <span class="text-[10px] font-bold text-slate-900 uppercase tracking-wide">Minimal</span>
+                    </div>
+                </div>
+                <button onclick="showPage('page-walkthrough-3')" class="w-full py-4 bg-lime-400 text-black font-bold rounded-full text-lg shadow-[0_0_20px_rgba(163,230,53,0.4)] transition-transform active:scale-95">Next</button>
+                
+                <div class="dot-indicators mt-6">
+                    <div class="dot"></div>
+                    <div class="dot active"></div>
+                    <div class="dot"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 
+      ==================================================================
+      PAGE: Walkthrough 3 (PRD 2.1)
+      ==================================================================
+    -->
+<div id="page-walkthrough-3" class="page flex flex-col p-8">
+        <button class="skip-walkthrough-btn" onclick="finishOnboarding()">Skip</button>
+        <div class="flex-grow flex flex-col justify-center items-center text-center">
+            <div class="walkthrough-image bg-slate-800/50 border border-slate-700 w-64 h-64 rounded-full flex items-center justify-center mb-10 relative">
+                <div class="absolute inset-0 bg-gradient-to-t from-pink-500/20 to-transparent rounded-full"></div>
+                <svg class="w-24 h-24 text-pink-400 relative z-10" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L6 12Zm0 0h7.5" />
+                </svg>
+            </div>
+            <h2 class="text-3xl font-bold text-white mb-4">Send & Get Paid</h2>
+            <p class="text-lg text-slate-300">We send a beautiful, interactive request and notify you the moment you're paid.</p>
+        </div>
+        <div class="pb-10">
+            <div class="dot-indicators text-center mb-6">
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot active"></span>
+            </div>
+            <button class="w-full btn-gradient-blue font-semibold py-4 rounded-full shadow-md text-lg" onclick="finishOnboarding()">
+                Let's Go
+            </button>
+        </div>
+    </div>
+
+    <!-- 
+      ==================================================================
+      PAGE: NEW HOME DASHBOARD
+      This is the new "Home" screen, replacing the old dashboard as the
+      primary landing page.
+      ==================================================================
+    -->
+<div id="page-home-dashboard" class="page">
+        <header class="p-6 space-y-4 sticky top-0 z-20">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center gap-2">
+                    <span class="text-xs font-bold bg-slate-700 text-white rounded-full px-2.5 py-1.5">KB</span>
+                    <span class="font-semibold text-white">max.com</span>
+                </div>
+                <div class="score-pill score-green">
+                    <span class="font-bold user-score-display">97%</span>
+                </div>
+            </div>
+            <div>
+                <h1 class="text-3xl font-bold text-white">Welcome, Admin</h1>
+                <p class="text-base text-slate-400">Here's your financial overview.</p>
+            </div>
+        </header>
+
+        <main class="p-6 pb-32 space-y-6">
+            <div class="home-action-card bg-gradient-to-br from-pink-500 to-rose-600 group" onclick="switchMajorTab(document.getElementById('nav-btn-receive'), 'receive')">
+                <div class="mb-4 flex justify-between items-start">
+                    <div class="w-12 h-12 rounded-full bg-black/20 flex items-center justify-center backdrop-blur-sm group-hover:scale-110 transition-transform">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke-width="2.5" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 13.5 12 21m0 0-7.5-7.5M12 21V3"></path></svg>
+                    </div>
+                    <span class="bg-white/20 text-white text-xs font-bold px-2 py-1 rounded-lg backdrop-blur-md">3 Pending</span>
+                </div>
+                <h2 class="text-2xl font-bold text-white mb-1">Receive</h2>
+                <p class="text-lg font-medium text-white/80 mb-4">You need to pay</p>
+                <div class="text-3xl font-bold text-white tracking-tight">€ 3.257,50</div>
+            </div>
+
+            <div class="home-action-card bg-gradient-to-br from-blue-500 to-cyan-500 group" onclick="switchMajorTab(document.getElementById('nav-btn-send'), 'send')">
+                 <div class="mb-4 flex justify-between items-start">
+                    <div class="w-12 h-12 rounded-full bg-black/20 flex items-center justify-center backdrop-blur-sm group-hover:scale-110 transition-transform">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke-width="2.5" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 10.5 12 3m0 0 7.5 7.5M12 3v18"></path></svg>
+                    </div>
+                </div>
+                <h2 class="text-2xl font-bold text-white mb-1">Send</h2>
+                <p class="text-lg font-medium text-white/80 mb-4">You are owed</p>
+                <div class="text-3xl font-bold text-white tracking-tight">€ 0.00</div>
+                <p class="text-sm text-white/70 mt-1">Across 0 items</p>
+            </div>
+            
+            <button class="w-full btn-gradient-blue text-white font-semibold py-4 px-5 rounded-2xl shadow-lg text-lg flex items-center justify-center gap-2 transition-transform active:scale-95" onclick="openCreateNewModal()">
+                <svg class="w-6 h-6" fill="none" stroke-width="2.5" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"></path></svg>
+                <span>Create New Request</span>
+            </button>
+        </main>
+    </div>
+    <!-- 
+      ==================================================================
+      PAGE: RECEIVE DASHBOARD (Money In / You Owe)
+      ==================================================================
+    -->
+<div id="page-receive-dashboard" class="page">
+        <header class="p-6 space-y-4 sticky top-0 z-20">
+            <div class="flex justify-between items-center">
+                <h1 class="text-3xl font-bold text-white">Receive</h1>
+                <div class="score-pill score-green">
+                    <span class="font-bold user-score-display">97%</span>
+                </div>
+            </div>
+            <div>
+                <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wider">Total Outstanding</h3>
+                <p class="text-4xl font-bold text-pink-400 tracking-tight">€ 3.257,50</p>
+                <p class="text-sm text-slate-400">Across 3 payment requests</p>
+            </div>
+            <div class="relative">
+                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke-width="2" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" /></svg>
+                </div>
+                <input type="text" class="w-full bg-slate-800 border border-slate-700 rounded-xl py-3 pl-9 pr-3 text-sm text-white placeholder-slate-400 focus:border-pink-400 transition-colors" placeholder="Search requests...">
+            </div>
+        </header>
+
+        <main class="pb-24">
+            <div id="incoming-view" class="dashboard-view space-y-6">
+                <div class="dashboard-filter-tabs px-6 mt-2">
+                    <div class="filter-tab active" onclick="DashboardController.filterRequests('all')">All</div>
+                    <div class="filter-tab" onclick="DashboardController.filterRequests('pending')">Pending</div>
+                    <div class="filter-tab" onclick="DashboardController.filterRequests('overdue')">Overdue</div>
+                    <div class="filter-tab" onclick="DashboardController.filterRequests('paid')">Paid</div>
+                </div>
+
+                <div id="no-requests-received-placeholder" class="text-center py-12 px-6" style="display: none;">
+                    <div class="w-16 h-16 bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-8 h-8 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
+                    </div>
+                    <h4 class="text-lg font-semibold text-gray-300">All caught up!</h4>
+                    <p class="text-sm text-gray-500 mt-1">You have no pending requests.</p>
+                </div>
+                
+                <div id="received-requests-list" class="space-y-4 px-6">
+                    <div class="loader-container">
+                        <div class="loader-spinner"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- 
+      ==================================================================
+      PAGE: SEND DASHBOARD (Money Out / You Are Owed)
+      ==================================================================
+    -->
+<div id="page-send-dashboard" class="page">
+        <header class="p-6 space-y-4 sticky top-0 z-20">
+            <div class="flex justify-between items-center">
+                <h1 class="text-3xl font-bold text-white">Send</h1>
+                <div class="score-pill score-green">
+                    <span class="font-bold user-score-display">97%</span>
+                </div>
+            </div>
+            <div>
+                <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wider">Total Owed to You</h3>
+                <p class="text-4xl font-bold text-lime-400 tracking-tight">€ 0.00</p>
+                <p class="text-sm text-slate-400">Across 0 items</p>
+            </div>
+            <div class="flex gap-3">
+                <button class="flex-1 btn-gradient-blue text-white font-semibold py-3 px-4 rounded-xl shadow-lg text-sm flex items-center justify-center gap-1.5 transition-transform active:scale-95" onclick="openCreateNewModal()">
+                    <svg class="w-5 h-5" fill="none" stroke-width="2.5" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"></path></svg>
+                    New Request
+                </button>
+                <div class="relative flex-1">
+                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke-width="2" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" /></svg>
+                    </div>
+                    <input type="text" class="w-full bg-slate-800 border border-slate-700 rounded-xl py-3 pl-9 pr-3 text-sm text-white placeholder-slate-400 focus:border-lime-400 transition-colors" placeholder="Search...">
+                </div>
+            </div>
+        </header>
+
+        <main class="pb-24">
+            <div id="outgoing-view" class="dashboard-view space-y-6">
+                <div class="minor-tabs-container">
+                    <button class="minor-tab active" onclick="switchMinorTab(this, 'outgoing', 'all')">All</button>
+                    <button class="minor-tab" onclick="switchMinorTab(this, 'outgoing', 'invoices')">Invoices</button>
+                    <button class="minor-tab" onclick="switchMinorTab(this, 'outgoing', 'splits')">Splits</button>
+                    <button class="minor-tab" onclick="switchMinorTab(this, 'outgoing', 'pots')">Pots</button>
+                </div>
+                
+                <div id="no-requests-placeholder" class="text-center py-12 px-6" style="display: none;">
+                    <div class="w-16 h-16 bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-8 h-8 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L6 12Zm0 0h7.5" /></svg>
+                    </div>
+                    <h4 class="text-lg font-semibold text-gray-300">Nothing sent yet</h4>
+                    <p class="text-sm text-gray-500 mt-1">Create an invoice, split, or pot to get started.</p>
+                </div>
+                
+                <div id="sent-requests-list" class="space-y-4 px-6">
+                    <div class="loader-container"><div class="loader-spinner"></div></div>
+                </div>
+                <div id="group-pots-list" class="space-y-4 px-6"></div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- 
+      ==================================================================
+      PAGE: NEW ACCOUNT (Settings)
+      ==================================================================
+    -->
+    <div id="page-account" class="page">
+        <!-- Sticky header -->
+        <header class="p-6 space-y-4 sticky top-0 z-20">
+            <div class="flex justify-between items-center">
+                <h1 class="text-3xl font-bold text-white">Account</h1>
+                <div class="score-pill score-green">
+                    <span class="font-bold">97%</span>
+                </div>
+            </div>
+            
+            <!-- User Profile -->
+            <div class="flex items-center gap-4 pt-4">
+                <span class="text-2xl font-bold bg-slate-700 text-white rounded-full w-16 h-16 flex items-center justify-center">KB</span>
+                <div>
+                    <h2 class="text-2xl font-bold text-white">Kevin B.</h2>
+                    <p class="text-base text-slate-400">max.com</p>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main content area -->
+        <main class="p-6 pb-24 space-y-6">
+            <h3 class="text-sm font-semibold text-slate-400 uppercase tracking-wider">Settings</h3>
+            <div class="bg-slate-800/50 border border-slate-700 rounded-xl overflow-hidden">
+                <a href="#" class="account-link">
+                    <span>Personal Information</span>
+                    <svg class="w-5 h-5 text-slate-500" fill="none" stroke-width="2.5" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"></path></svg>
+                </a>
+                <a href="#" class="account-link">
+                    <span>Payment Methods</span>
+                    <svg class="w-5 h-5 text-slate-500" fill="none" stroke-width="2.5" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"></path></svg>
+                </a>
+                <a href="#" class="account-link">
+                    <span>Security & Privacy</span>
+                    <svg class="w-5 h-5 text-slate-500" fill="none" stroke-width="2.5" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"></path></svg>
+                </a>
+            </div>
+            
+            <h3 class="text-sm font-semibold text-slate-400 uppercase tracking-wider">Sender Tools</h3>
+            <div class="bg-slate-800/50 border border-slate-700 rounded-xl overflow-hidden">
+                <a href="#" class="account-link">
+                    <span>Reminder Profiles</span>
+                    <svg class="w-5 h-5 text-slate-500" fill="none" stroke-width="2.5" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"></path></svg>
+                </a>
+                <a href="#" class="account-link">
+                    <span>My Logo & Branding</span>
+                    <svg class="w-5 h-5 text-slate-500" fill="none" stroke-width="2.5" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"></path></svg>
+                </a>
+            </div>
+            
+            <button class="w-full bg-slate-800/50 text-rose-400 font-semibold py-3 rounded-lg border border-slate-700 mt-8">
+                Log Out
+            </button>
+        </main>
+    </div>
+
+    <!-- 
+      ==================================================================
+      PAGE: Social Split (Payer View) (PRD 3.2)
+      ==================================================================
+    -->
+    <div id="page-social-split" class="page">
+        <header class="p-6 sticky top-0 z-10 flex justify-between items-center">
+            <button class="text-gray-200" onclick="showPage('page-receive-dashboard', 'backward')">
+                <svg class="w-6 h-6" fill="none" stroke-width="2.5" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5"></path></svg>
+            </button>
+            <div class="text-center">
+                <h1 id="split-detail-title" class="text-lg font-bold text-white">...</h1>
+                <p id="split-detail-creator" class="text-sm text-gray-400">...</p>
+            </div>
+            <div class="w-6"></div> 
+        </header>
+        <!-- This <main> tag will be replaced by the template -->
+        <main class="pb-32">
+            <div class="loader-container">
+                <div class="loader-spinner"></div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 
+      ==================================================================
+      PAGE: SME Invoice (Payer View) (PRD 3.3)
+      ==================================================================
+    -->
+    <div id="page-sme-invoice" class="page">
+        <header class="p-6 sticky top-0 z-10 flex justify-between items-center">
+            <button class="text-gray-200" onclick="showPage('page-receive-dashboard', 'backward')">
+                <svg class="w-6 h-6" fill="none" stroke-width="2.5" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5"></path></svg>
+            </button>
+            <div class="text-center">
+                <h1 id="sme-detail-title" class="text-lg font-bold text-white">...</h1>
+                <p id="sme-detail-creator" class="text-sm text-gray-400">...</p>
+            </div>
+            <div class="w-6"></div> 
+        </header>
+        <!-- This <main> tag will be replaced by the template -->
+        <main class="p-6 pb-32 space-y-8">
+            <div class="loader-container">
+                <div class="loader-spinner"></div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 
+      ==================================================================
+      PAGE: Payment Confirmed (Conversion Flow) (PRD 6.1)
+      ==================================================================
+    -->
+    <div id="page-payment-confirmed" class="page">
+        <header class="p-6 sticky top-0 z-10 shadow-sm">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center gap-2">
+                    <span class="text-xs font-semibold bg-gray-900 text-white rounded-full px-2 py-0.5">KB</span>
+                    <span class="font-semibold text-white">max.com</span>
+                </div>
+            </div>
+        </header>
+
+        <main class="p-6 pb-24">
+            <div class="text-center">
+                <div class="w-20 h-20 bg-lime-200 text-lime-800 rounded-full flex items-center justify-center mx-auto">
+                    <svg class="w-10 h-10" fill="none" stroke-width="2.5" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"></path></svg>
+                </div>
+                <h2 class="text-3xl font-bold mt-5 text-white">Payment confirmed!</h2>
+                <p class="text-4xl font-bold text-pink-400 mt-2">€ 3.025</p>
+                <p class="text-sm text-slate-400">Paid to Adidas</p>
+                <button class="text-sm font-semibold text-lime-400 mt-3" onclick="showPage('page-receive-dashboard')">
+                    View next payment request
+                </button>
+            </div>
+
+            <div class="bg-slate-800 p-5 rounded-xl border border-slate-700 my-8">
+                <h3 class="font-bold text-white text-lg">Your payment score improved!</h3>
+                <p class="text-sm text-slate-400 mt-1">You are building trust in the MaxCredible network.</p>
+                <div class="flex items-center justify-center gap-4 my-4">
+                    <span class="text-3xl font-bold text-gray-500">94%</span>
+                    <span class="text-2xl font-bold text-white">&rarr;</span>
+                    <span class="text-5xl font-bold text-lime-400">97%</span>
+                </div>
+                <p class="text-sm font-semibold text-lime-400 text-center">Payment score +3%</p>
+            </div>
+            
+            <div class="text-center">
+                <h2 class="text-3xl font-bold text-white">You're MaxCredible now!</h2>
+                <p class="text-base text-slate-400 mt-2">Good payers become great creators. Start sending payment requests and get paid faster with your 97% credibility score.</p>
+            </div>
+
+            <div class="space-y-4 my-8">
+                <button class="w-full btn-gradient-blue text-white p-5 rounded-xl shadow-lg text-left" onclick="createNewInvoice()">
+                    <span class="font-bold text-lg">Send your first invoice</span>
+                    <span class="block text-sm text-blue-200">Get paid 2x faster &rarr;</span>
+                </button>
+                <button class="w-full bg-gradient-to-r from-orange-500 to-amber-500 text-black p-5 rounded-xl shadow-lg text-left" onclick="createNewSplit()">
+                    <span class="font-bold text-lg">Split your first bill</span>
+                    <span class="block text-sm text-orange-900">Join 10,000+ creators &rarr;</span>
+                </button>
+            </div>
+
+            <div class="text-center">
+                <button class="text-sm font-semibold text-gray-400" onclick="showPage('page-home-dashboard')">
+                    Back to Home
+                </button>
+            </div>
+        </main>
+    </div>
+
+     <!-- 
+      ==================================================================
+      PAGE: Create Invoice (UPDATED with Templates & Reminders)
+      ==================================================================
+    -->
+    <div id="page-create-invoice" class="page">
+        <header class="p-6 flex justify-between items-center sticky top-0 z-20 bg-slate-900/90 backdrop-blur-md border-b border-slate-800">
+            <button class="text-gray-400 hover:text-white transition-colors" onclick="showPage('page-send-dashboard', 'backward')">Cancel</button>
+            <h2 class="font-bold text-lg text-white">New Invoice</h2>
+            <button onclick="handleReviewInvoice()" class="text-lime-400 font-bold hover:text-lime-300 transition-colors">Preview</button>
+        </header>
+
+        <main class="p-6 pb-40 space-y-8">
+            
+            <section>
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider">Identity & Style</h3>
+                    <div class="flex items-center gap-2">
+                        <div class="h-1.5 w-16 bg-slate-700 rounded-full overflow-hidden">
+                            <div id="fun-meter-bar" class="h-full bg-gradient-to-r from-lime-400 to-green-500 w-[10%] transition-all duration-500"></div>
+                        </div>
+                        <span id="fun-meter-text" class="text-[10px] text-lime-400 font-bold">10% Fun</span>
+                    </div>
+                </div>
+
+                <div class="template-picker-container mb-6">
+                    <div id="tmpl-classic" onclick="InvoiceController.setTemplate('classic')" class="template-option selected flex flex-col items-center justify-center group">
+                        <div class="w-full h-24 bg-slate-800 mb-2 rounded-lg border border-slate-600 relative overflow-hidden group-hover:border-lime-400 transition-colors">
+                            <div class="absolute top-2 left-2 w-8 h-1 bg-slate-600 rounded"></div>
+                            <div class="absolute top-4 left-2 w-5 h-1 bg-slate-700 rounded"></div>
+                        </div>
+                        <span class="text-xs font-bold text-slate-300">Classic</span>
+                    </div>
+                    <div id="tmpl-neon" onclick="InvoiceController.setTemplate('neon')" class="template-option flex flex-col items-center justify-center group">
+                        <div class="w-full h-24 bg-black mb-2 rounded-lg border border-pink-500 relative overflow-hidden shadow-[0_0_10px_rgba(236,72,153,0.2)] group-hover:shadow-[0_0_15px_rgba(236,72,153,0.5)] transition-all">
+                            <div class="absolute inset-0 bg-gradient-to-br from-purple-900/20 to-transparent"></div>
+                            <div class="absolute bottom-2 right-2 text-pink-500 font-mono text-xs">$$$</div>
+                        </div>
+                        <span class="text-xs font-bold text-pink-400">Neon</span>
+                    </div>
+                    <div id="tmpl-minimal" onclick="InvoiceController.setTemplate('minimal')" class="template-option flex flex-col items-center justify-center group">
+                        <div class="w-full h-24 bg-slate-100 mb-2 rounded-lg border border-white relative overflow-hidden group-hover:border-lime-400 transition-colors">
+                            <div class="absolute inset-0 flex items-center justify-center text-slate-300 text-xs tracking-widest">MINIMAL</div>
+                        </div>
+                        <span class="text-xs font-bold text-white">Minimal</span>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <label class="block text-sm font-bold text-slate-400 mb-3">Add Media & Personal Touches</label>
+                <div class="grid grid-cols-4 gap-2">
+                    <button id="btn-add-logo" onclick="triggerFunAction('logo')" class="media-btn flex flex-col items-center justify-center p-3 rounded-xl bg-slate-800 border border-slate-700 hover:bg-slate-700 transition-all">
+                        <div class="w-8 h-8 rounded-full bg-blue-500/10 flex items-center justify-center mb-1 text-blue-400">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" /></svg>
+                        </div>
+                        <span class="text-[10px] font-bold text-slate-300">Logo</span>
+                        <input type="hidden" id="has-logo" value="">
+                    </button>
+
+                    <button id="btn-add-gif" onclick="triggerFunAction('gif')" class="media-btn flex flex-col items-center justify-center p-3 rounded-xl bg-slate-800 border border-slate-700 hover:bg-slate-700 transition-all">
+                        <div class="w-8 h-8 rounded-full bg-pink-500/10 flex items-center justify-center mb-1 text-pink-400">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12.75 8.25v7.5m6-7.5h-3V12m0 0v3.75m0-3.75H18M9.75 9.348c-1.03-1.464-2.698-1.464-3.728 0-1.03 1.465-1.03 3.84 0 5.304 1.03 1.464 2.699 1.464 3.728 0V12h-1.5M9 12h1.5" /></svg>
+                        </div>
+                        <span class="text-[10px] font-bold text-slate-300">GIF</span>
+                        <input type="hidden" id="has-gif" value="">
+                    </button>
+
+                    <button id="btn-add-voice" onclick="triggerFunAction('voice')" class="media-btn flex flex-col items-center justify-center p-3 rounded-xl bg-slate-800 border border-slate-700 hover:bg-slate-700 transition-all">
+                        <div class="w-8 h-8 rounded-full bg-amber-500/10 flex items-center justify-center mb-1 text-amber-400">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18.75a6 6 0 0 0 6-6v-1.5m-6 7.5a6 6 0 0 1-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 0 1-3-3V4.5a3 3 0 1 1 6 0v8.25a3 3 0 0 1-3 3Z" /></svg>
+                        </div>
+                        <span class="text-[10px] font-bold text-slate-300">Voice</span>
+                        <input type="hidden" id="has-voice" value="">
+                    </button>
+
+                    <button id="btn-add-attachment" onclick="triggerFunAction('attachment')" class="media-btn flex flex-col items-center justify-center p-3 rounded-xl bg-slate-800 border border-slate-700 hover:bg-slate-700 transition-all">
+                        <div class="w-8 h-8 rounded-full bg-cyan-500/10 flex items-center justify-center mb-1 text-cyan-400">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m18.375 12.739-7.693 7.693a4.5 4.5 0 0 1-6.364-6.364l10.94-10.94A3 3 0 1 1 19.5 7.372L8.552 18.32m.009-.01-.01.01m5.699-9.941-7.81 7.81a1.5 1.5 0 0 0 2.112 2.13" /></svg>
+                        </div>
+                        <span class="text-[10px] font-bold text-slate-300">File</span>
+                        <input type="hidden" id="has-attachment" value="">
+                    </button>
+                </div>
+                <input type="hidden" id="has-photo" value="">
+            </section>
+
+            <section class="space-y-4">
+                <div>
+                    <label class="text-xs text-slate-500 uppercase font-bold ml-1">Client</label>
+                    <input type="text" id="invoice-client-name" class="w-full p-4 rounded-xl bg-slate-800 border border-slate-700 text-white text-lg font-bold focus:border-lime-400 focus:ring-0 transition-all placeholder-slate-500" placeholder="Client Name or Email">
+                </div>
+                
+                <div>
+                    <label class="text-xs text-slate-500 uppercase font-bold ml-1 mb-2 block">Items</label>
+                    <div id="invoice-items-container" class="space-y-3">
+                        <div class="flex gap-3 invoice-item">
+                            <input type="text" class="invoice-item-desc block w-2/3 rounded-lg bg-slate-800 border border-slate-700 text-white p-3 focus:border-lime-400" placeholder="Description">
+                            <input type="number" class="invoice-item-amount block w-1/3 rounded-lg bg-slate-800 border border-slate-700 text-white p-3 font-mono focus:border-lime-400" placeholder="€">
+                        </div>
+                    </div>
+                    <button onclick="addInvoiceItem()" class="mt-3 text-xs font-bold text-lime-400 hover:text-white flex items-center gap-1 transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                        ADD ITEM
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="text-xs text-slate-500 uppercase font-bold ml-1">Due Date</label>
+                        <input type="date" id="invoice-due-date" onchange="toggleRemindersVisibility()" class="w-full p-3 rounded-lg bg-slate-800 border border-slate-700 text-white text-sm focus:border-lime-400">
+                    </div>
+                    <div>
+                        <label class="text-xs text-slate-500 uppercase font-bold ml-1">VAT %</label>
+                        <input type="number" id="invoice-vat" class="w-full p-3 rounded-lg bg-slate-800 border border-slate-700 text-white text-sm focus:border-lime-400" placeholder="0">
+                    </div>
+                </div>
+            </section>
+
+            <section id="reminder-section-container" class="hidden transition-all duration-300">
+                <div class="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="text-sm font-bold text-orange-400 flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.31 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" /></svg>
+                            Automated Reminders
+                        </h3>
+                        <span class="text-[10px] bg-slate-700 text-slate-300 px-2 py-0.5 rounded">Active</span>
+                    </div>
+                    <p class="text-xs text-slate-400 mb-4">We'll gently nudge them if they forget.</p>
+                    
+                    <div class="flex justify-between items-center px-2">
+                        <div class="text-center opacity-50 hover:opacity-100 cursor-pointer">
+                            <div class="w-8 h-8 rounded-full bg-slate-700 border border-slate-600 flex items-center justify-center text-xs font-bold mb-1">-3</div>
+                            <span class="text-[10px]">Days</span>
+                        </div>
+                        <div class="h-0.5 flex-grow bg-slate-700 mx-2"></div>
+                        <div class="text-center">
+                            <div class="w-8 h-8 rounded-full bg-orange-500 border border-orange-400 text-black flex items-center justify-center text-xs font-bold mb-1 shadow-[0_0_10px_rgba(249,115,22,0.4)]">Due</div>
+                            <span class="text-[10px] text-orange-400">Date</span>
+                        </div>
+                        <div class="h-0.5 flex-grow bg-slate-700 mx-2"></div>
+                        <div class="text-center opacity-50 hover:opacity-100 cursor-pointer">
+                            <div class="w-8 h-8 rounded-full bg-slate-700 border border-slate-600 flex items-center justify-center text-xs font-bold mb-1">+3</div>
+                            <span class="text-[10px]">Days</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <div class="flex justify-between items-center mb-2">
+                    <label class="text-sm font-bold text-slate-400">Intro & Tone</label>
+                    <span class="text-[10px] text-blue-400 bg-blue-400/10 px-2 py-0.5 rounded">AI Assisted</span>
+                </div>
+                <div class="flex gap-2 mb-3 overflow-x-auto no-scrollbar pb-1">
+                    <button class="tone-chip bg-slate-800 border border-slate-700 text-xs text-slate-300 px-3 py-1.5 rounded-full hover:border-blue-400 hover:text-white transition-all" onclick="InvoiceController.setTone('friendly')">😊 Friendly</button>
+                    <button class="tone-chip bg-slate-800 border border-slate-700 text-xs text-slate-300 px-3 py-1.5 rounded-full hover:border-blue-400 hover:text-white transition-all" onclick="InvoiceController.setTone('formal')">👔 Formal</button>
+                    <button class="tone-chip bg-slate-800 border border-slate-700 text-xs text-slate-300 px-3 py-1.5 rounded-full hover:border-blue-400 hover:text-white transition-all" onclick="InvoiceController.setTone('urgent')">⚡ Urgent</button>
+                </div>
+                <textarea id="invoice-intro-text" class="w-full p-4 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 text-sm h-24 focus:border-blue-400 transition-all placeholder-slate-500" placeholder="Type a message or select a tone..."></textarea>
+            </section>
+
+        </main>
+
+        <div class="fixed bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-slate-900 via-slate-900 to-transparent z-20">
+            <button onclick="InvoiceController.handleReview()" class="w-full btn-gradient-blue font-semibold py-4 rounded-xl shadow-lg text-lg flex items-center justify-center gap-2 transition-transform active:scale-95">
+                <span>Review Invoice</span>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
+            </button>
+        </div>
+    </div>
+    
+    <!-- 
+      ==================================================================
+      PAGE: Review Invoice (PRD 5.2)
+      ==================================================================
+    -->
+ <div id="page-review-invoice" class="page">
+        <header class="p-6 sticky top-0 z-10 flex justify-between items-center bg-slate-900/90 backdrop-blur-md">
+            <button class="text-gray-200" onclick="showPage('page-create-invoice', 'backward')">Back</button>
+            <h1 class="text-lg font-bold text-white">Review</h1>
+            <div class="w-6"></div>
+        </header>
+
+        <main class="p-6 pb-32 space-y-8">
+            <div class="text-center mb-6">
+                <p class="text-sm text-slate-400">Double check everything before sending.</p>
+            </div>
+
+            <div class="bg-slate-800 rounded-2xl border border-slate-700 p-5 shadow-2xl">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 id="review-client-name" class="text-xl font-bold text-white">Client Name</h2>
+                    <span class="text-xs bg-slate-700 text-slate-300 px-2 py-1 rounded">Classic Theme</span>
+                </div>
+                
+                <div class="bg-slate-900/50 rounded-xl p-4 mb-4">
+                    <div class="flex justify-between text-sm text-slate-400 mb-1">
+                        <span>Total Amount</span>
+                        <span>Due Date</span>
+                    </div>
+                    <div class="flex justify-between items-end">
+                        <span id="review-total-amount" class="text-3xl font-bold text-white">€ 0.00</span>
+                        <span id="preview-due-date-val" class="text-white font-medium">On Receipt</span>
+                    </div>
+                </div>
+
+                <div id="review-items-list" class="space-y-2 text-sm text-slate-300 border-t border-slate-700 pt-4 mb-4">
+                    </div>
+
+                <p id="review-next-steps" class="text-sm text-slate-400 italic border-t border-slate-700 pt-4">No additional notes.</p>
+                
+                <div class="mt-6 pt-4 border-t border-slate-700">
+                    <p class="text-xs text-center text-slate-500 uppercase font-bold mb-3">Active Reactions</p>
+                    <div class="flex justify-between px-4 opacity-50">
+                        <span class="text-xl">🚀</span>
+                        <span class="text-xl">📅</span>
+                        <span class="text-xl">💤</span>
+                        <span class="text-xl">🤔</span>
+                    </div>
+                </div>
+            </div>
+
+            <button id="confirm-send-invoice-btn" class="w-full btn-gradient-blue text-white font-semibold py-4 rounded-xl shadow-lg text-lg flex items-center justify-center gap-3 transition-transform active:scale-95" onclick="handleSendInvoice()">
+                <span>Confirm & Send</span>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L6 12zm0 0h7.5"/></svg>
+            </button>
+        </main>
+    </div>
+
+    <!-- 
+      ==================================================================
+      PAGE: SME Invoice (Payer View) (PRD 3.3)
+      ==================================================================
+    -->
+    <div id="page-sme-invoice" class="page">
+        <header class="p-6 sticky top-0 z-10 flex justify-between items-center">
+            <button class="text-gray-200" onclick="showPage('page-receive-dashboard', 'backward')">
+                <svg class="w-6 h-6" fill="none" stroke-width="2.5" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5"></path></svg>
+            </button>
+            <div class="text-center">
+                <h1 id="sme-detail-title" class="text-lg font-bold text-white">INV-000-001</h1>
+                <p id="sme-detail-creator" class="text-sm text-gray-400">98% Adidas</p>
+            </div>
+            <div class="w-6"></div> 
+        </header>
+
+        <main class="p-6 pb-32 space-y-8">
+            <div class="bg-pink-900/50 border border-pink-700 rounded-xl p-5 my-4">
+                <div class="flex justify-between items-center">
+                    <span class="text-sm font-semibold text-pink-300">You owe</span>
+                    <span id="sme-detail-amount" class="text-3xl font-bold text-pink-300">€ 3.025</span>
+                </div>
+                <p id="sme-detail-status" class="text-sm text-red-500 font-medium mt-1">4 days overdue</p>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4 my-4">
+                <button class="btn-gradient-blue font-semibold py-3 rounded-lg shadow-md" onclick="openHotKeyModal('sme')">
+                    Pay your invoice
+                </button>
+                <button class="w-full bg-slate-700 text-slate-200 font-semibold py-3 rounded-lg border border-slate-600" onclick="triggerCatalystSplitter()">
+                    Add people to split +
+                </button>
+                </div>
+
+            <div class="mt-6">
+                <h3 class="font-bold text-white mb-3">Invoice details</h3>
+                <div id="sme-invoice-items-container" class="bg-slate-800 rounded-xl p-4 border border-slate-700">
+                    <div class="space-y-3 border-b border-slate-700 pb-3">
+                        </div>
+                    <div class="space-y-2 border-b border-slate-700 py-3">
+                        <div class="flex justify-between items-center text-sm">
+                            <p class="text-slate-400">Subtotal</p>
+                            <p id="sme-subtotal" class="text-slate-400">€ 0.00</p>
+                        </div>
+                        <div class="flex justify-between items-center text-sm">
+                            <p class="text-slate-400">VAT (<span id="sme-vat-percent">0</span>%)</p>
+                            <p id="sme-vat-amount" class="text-slate-400">€ 0.00</p>
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-center font-bold text-white pt-3 text-lg">
+                        <p>Total</p>
+                        <p id="sme-total-amount">€ 0.00</p>
+                    </div>
+                </div>
+                <button class="w-full text-lime-400 font-semibold py-3 rounded-lg border border-lime-800 bg-lime-900/50 mt-4">
+                    Download
+                </button>
+            </div>
+
+            <div class="mt-6">
+                <h3 class="font-bold text-white mb-4">Comments and activity</h3>
+                
+                <div class="bg-slate-800 border border-slate-700 rounded-xl p-4 mb-5">
+                    <h4 class="text-sm font-semibold text-white mb-3">Recipient Status</h4>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="flex items-center gap-1.5 bg-slate-700 text-slate-200 text-sm font-medium px-3 py-1 rounded-full">
+                            <svg class="w-4 h-4 text-lime-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16zm3.707-9.293a1 1 0 0 0-1.414-1.414L9 10.586 7.707 9.293a1 1 0 0 0-1.414 1.414l2 2a1 1 0 0 0 1.414 0l4-4Z" clip-rule="evenodd"></path></svg>
+                            1 (Paid)
+                        </span>
+                        <span class="flex items-center gap-1.5 bg-slate-700 text-slate-200 text-sm font-medium px-3 py-1 rounded-full">
+                            <svg class="w-4 h-4 text-orange-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16zM9.555 3.168A.75.75 0 0 0 9 3.75v5.5a.75.75 0 0 0 1.5 0V4.45l4.72 8.97a.75.75 0 0 0 1.32-.698l-5-9.5a.75.75 0 0 0-.965-.353z" clip-rule="evenodd"></path></svg>
+                            1 (Promised)
+                        </span>
+                        <span class="flex items-center gap-1.5 bg-slate-900 border border-slate-700 text-slate-400 text-sm font-medium px-3 py-1 rounded-full">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0zM9 5a1 1 0 1 1 2 0v1a1 1 0 1 1-2 0V5zM9 9a1 1 0 1 1 2 0v5a1 1 0 1 1-2 0V9z" clip-rule="evenodd"></path></svg>
+                            1 not reacted
+                        </span>
+                    </div>
+                </div>
+                <div class="space-y-5">
+                    <div class="flex gap-3">
+                        <img src="https://placehold.co/32x32/000/FFFFFF?text=A" alt="Adidas" class="w-8 h-8 rounded-full mt-1">
+                        <div>
+                            <p class="font-semibold text-sm text-white">Adidas (Sender)</p>
+                            <div class="bg-slate-800 p-3 rounded-lg rounded-tl-none mt-1">
+                                <p class="text-sm text-slate-300">Thank you for the great work this month! Here's that photo of the final design you requested.</p>
+                                <img src="https://images.unsplash.com/photo-1572044162444-7026a76b7e32?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" class="mt-2 rounded-lg max-w-full" alt="Design photo">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex gap-3">
+                        <img src="https://placehold.co/32x32/gray/FFFFFF?text=KB" alt="You" class="w-8 h-8 rounded-full mt-1">
+                        <div>
+                            <p class="font-semibold text-sm text-white">You</p>
+                            <div class="bg-slate-700 p-3 rounded-lg rounded-tl-none mt-1">
+                                <p class="text-sm text-slate-300">Looks great! Quick question, can we move the "Consulting" hours to next month's invoice?</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex gap-3">
+                        <img src="https://placehold.co/32x32/000/FFFFFF?text=A" alt="Adidas" class="w-8 h-8 rounded-full mt-1">
+                        <div>
+                            <p class="font-semibold text-sm text-white">Adidas (Sender)</p>
+                            <div class="bg-slate-800 p-3 rounded-lg rounded-tl-none mt-1">
+                                <p class="text-sm text-slate-300"><span class="font-bold text-blue-400">@You</span> Absolutely, consider it done. I'll send a revised invoice shortly. You can just pay the difference for now if that's easier.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-4">
+                    <textarea class="w-full bg-slate-800 border border-slate-700 rounded-lg p-3 text-sm text-white placeholder-gray-400" rows="2" placeholder="Add comment, @mention someone..."></textarea>
+                    <div class="flex justify-between items-center mt-2">
+                        <div class="flex gap-2">
+                            <button class="text-sm font-medium text-slate-300 bg-slate-700 px-3 py-1 rounded-full border border-slate-600">Photo</button>
+                            <button class="text-sm font-medium text-slate-300 bg-slate-700 px-3 py-1 rounded-full border border-slate-600">GIF</button>
+                        </div>
+                        <button class="btn-gradient-blue text-sm font-semibold px-4 py-1.5 rounded-full" onclick="handlePostComment('page-sme-invoice')">Post</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-8 border-t border-slate-700 pt-6 flex items-center gap-3">
+                <svg class="w-5 h-5 text-green-500" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.707-9.293a1 1 0 0 0-1.414-1.414L9 10.586 7.707 9.293a1 1 0 0 0-1.414 1.414l2 2a1 1 0 0 0 1.414 0l4-4Z" clip-rule="evenodd"></path></svg>
+                    <p class="text-sm text-slate-300">
+                        <span class="font-semibold text-white">Trusted sender:</span> 98% Adidas has a 98% MaxCredible score
+                    </p>
+            </div>
+        </main>
+    </div>
+
+    <!-- 
+      ==================================================================
+      PAGE: Payment Confirmed (Conversion Flow) (PRD 6.1)
+      ==================================================================
+    -->
+    <div id="page-payment-confirmed" class="page">
+        <header class="p-6 sticky top-0 z-10 shadow-sm">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center gap-2">
+                    <span class="text-xs font-semibold bg-gray-900 text-white rounded-full px-2 py-0.5">KB</span>
+                    <span class="font-semibold text-white">max.com</span>
+                </div>
+            </div>
+        </header>
+
+        <main class="p-6 pb-24">
+            <div class="text-center">
+                <div class="w-20 h-20 bg-lime-200 text-lime-800 rounded-full flex items-center justify-center mx-auto">
+                    <svg class="w-10 h-10" fill="none" stroke-width="2.5" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"></path></svg>
+                </div>
+                <h2 class="text-3xl font-bold mt-5 text-white">Payment confirmed!</h2>
+                <p class="text-4xl font-bold text-pink-400 mt-2">€ 3.025</p>
+                <p class="text-sm text-slate-400">Paid to Adidas</p>
+                <button class="text-sm font-semibold text-lime-400 mt-3" onclick="showPage('page-receive-dashboard')">
+                    View next payment request
+                </button>
+            </div>
+
+            <div class="bg-slate-800 p-5 rounded-xl border border-slate-700 my-8">
+                <h3 class="font-bold text-white text-lg">Your payment score improved!</h3>
+                <p class="text-sm text-slate-400 mt-1">You are building trust in the MaxCredible network.</p>
+                <div class="flex items-center justify-center gap-4 my-4">
+                    <span class="text-3xl font-bold text-gray-500">94%</span>
+                    <span class="text-2xl font-bold text-white">&rarr;</span>
+                    <span class="text-5xl font-bold text-lime-400">97%</span>
+                </div>
+                <p class="text-sm font-semibold text-lime-400 text-center">Payment score +3%</p>
+            </div>
+            
+            <div class="text-center">
+                <h2 class="text-3xl font-bold text-white">You're MaxCredible now!</h2>
+                <p class="text-base text-slate-400 mt-2">Good payers become great creators. Start sending payment requests and get paid faster with your 97% credibility score.</p>
+            </div>
+
+            <div class="space-y-4 my-8">
+                <button class="w-full btn-gradient-blue text-white p-5 rounded-xl shadow-lg text-left" onclick="showCreatorDashboard()">
+                    <span class="font-bold text-lg">Send your first invoice</span>
+                    <span class="block text-sm text-blue-200">Get paid 2x faster &rarr;</span>
+                </button>
+                <button class="w-full bg-gradient-to-r from-orange-500 to-amber-500 text-black p-5 rounded-xl shadow-lg text-left" onclick="showCreatorDashboard()">
+                    <span class="font-bold text-lg">Split your first bill</span>
+                    <span class="block text-sm text-orange-900">Join 10,000+ creators &rarr;</span>
+                </button>
+            </div>
+
+            <div class="text-center">
+                <button class="text-sm font-semibold text-gray-400" onclick="showPage('page-home-dashboard')">
+                    Back to Home
+                </button>
+            </div>
+        </main>
+    </div>
+    
+    <!-- 
+      ==================================================================
+      PAGE: Review Invoice (PRD 5.2)
+      ==================================================================
+    -->
+    <div id="page-review-invoice" class="page">
+        <header class="p-6 sticky top-0 z-10 flex justify-between items-center">
+            <button class="text-gray-200" onclick="showPage('page-create-invoice', 'backward')">
+                <svg class="w-6 h-6" fill="none" stroke-width="2.5" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5"></path></svg>
+            </button>
+            <h1 class="text-lg font-bold text-white">Review Invoice</h1>
+            <div class="w-6"></div> 
+        </header>
+
+        <main class="p-6 pb-32 space-y-8">
+            <div>
+                <p class="text-sm text-slate-400 text-center mb-4">This is a preview of what your client will see.</p>
+                
+                <div class="bg-slate-800 rounded-xl border border-slate-700 p-4">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 id="review-client-name" class="text-lg font-semibold text-white"></h2>
+                        <img src="https://placehold.co/80x32/1e293b/FFFFFF?text=LOGO" alt="Your Logo" id="review-logo-img" class="hidden">
+                    </div>
+
+                    <!-- NEW: Fun GIF preview -->
+                    <img id="review-gif-img" src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbGl1eDZrN2I4c3E1ZWNqN3E4N2l6ZzR5bXo1aGp5a2d6NW9zNWhyZCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3oEdva9BUHPIs2SkGk/giphy.gif" class="mt-2 rounded-lg max-w-full hidden" alt="Fun GIF">
+                    
+                    <div class="bg-pink-900/50 border border-pink-700 rounded-xl p-5 my-4">
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm font-semibold text-pink-300">Amount due</span>
+                            <span id="review-total-amount" class="text-3xl font-bold text-pink-300">€ 0.00</span>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6">
+                        <h3 class="font-bold text-white mb-3">Invoice details</h3>
+                        <div class="bg-slate-900 rounded-xl p-4 border border-slate-700">
+                            <div id="review-items-list" class="space-y-3 border-b border-slate-700 pb-3">
+                                </div>
+                            <div class="space-y-2 border-b border-slate-700 py-3">
+                                <div class="flex justify-between items-center text-sm">
+                                    <p class="text-slate-400">Subtotal</p>
+                                    <p id="review-subtotal" class="text-slate-400">€ 0.00</p>
+                                </div>
+                                <div class="flex justify-between items-center text-sm">
+                                    <p class="text-slate-400">VAT (<span id="review-vat-percent">0</span>%)</p>
+                                    <p id="review-vat-amount" class="text-slate-400">€ 0.00</p>
+                                </div>
+                            </div>
+                            <div class="flex justify-between items-center font-bold text-white pt-3 text-lg">
+                                <p>Total</p>
+                                <p id="review-grand-total">€ 0.00</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6">
+                        <h3 class="font-bold text-white mb-3">Note (PRD 5.2)</h3>
+                        <div class="bg-slate-900 rounded-xl p-4 border border-slate-700">
+                            <p id="review-next-steps" class="text-slate-300 italic"></p>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6">
+                        <h3 class="font-bold text-white mb-3">Reminder Profile (PRD 5.4)</h3>
+                        <div class="bg-slate-900 rounded-xl p-4 border border-slate-700">
+                            <p id="review-reminder-profile" class="text-slate-300"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button id="confirm-send-invoice-btn" class="w-full btn-gradient-blue text-white font-semibold py-4 rounded-lg shadow-lg mt-6 text-lg flex items-center justify-center gap-3" onclick="handleSendInvoice()">
+                <span id="send-btn-text">Confirm & Send Invoice</span>
+                <div id="send-btn-loader" class="loader hidden"></div>
+            </button>
+        </main>
+    </div>
+
+    <!-- 
+      ==================================================================
+      PAGE: SME Invoice (Creator Detail View) (PRD 5.2.1)
+      ==================================================================
+    -->
+    <div id="page-sme-invoice-detail-creator" class="page">
+        <header class="p-6 sticky top-0 z-10 flex justify-between items-center">
+            <button class="text-gray-200" onclick="showPage('page-send-dashboard', 'backward')">
+                <svg class="w-6 h-6" fill="none" stroke-width="2.5" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5"></path></svg>
+            </button>
+            <h1 id="creator-detail-header-title" class="text-lg font-bold text-white">Tracking Invoice</h1>
+            <div class="w-6"></div> 
+        </header>
+        
+        <main class="p-6 pb-32 space-y-8">
+            <div>
+                <h2 id="creator-detail-client-name" class="text-3xl font-bold text-white"></h2>
+                <p id="creator-detail-total-amount" class="text-4xl font-bold text-pink-400 mt-1"></p>
+            </div>
+            
+            <div>
+                <h3 class="font-bold text-white mb-4 text-lg">Recipient Status</h3>
+                <div id="recipient-status-dashboard" class="space-y-4">
+                    </div>
+            </div>
+            
+            <div class_="mt-6">
+                <h3 class="font-bold text-white mb-3 text-lg">Invoice details</h3>
+                <div id="creator-detail-items-container" class="bg-slate-800 rounded-xl p-4 border border-slate-700">
+                    </div>
+            </div>
+
+            <div class="mt-6">
+                <h3 class="font-bold text-white mb-4 text-lg">Comments and activity</h3>
+                <div class="text-center text-slate-500 py-8">
+                    <p>No comments yet.</p>
+                </div>
+                <div class="mt-4">
+                    <textarea class="w-full bg-slate-800 border border-slate-700 rounded-lg p-3 text-sm text-white placeholder-gray-400" rows="2" placeholder="Add a private note or send a follow-up..."></textarea>
+                    <div class="flex justify-end items-center mt-2">
+                        <button class="btn-gradient-blue text-sm font-semibold px-4 py-1.5 rounded-full">Post</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 
+      ==================================================================
+      PAGE: Social Split (Creator Detail View) (PRD 4.2.2)
+      ==================================================================
+    -->
+    <div id="page-social-split-detail-creator" class="page">
+        <header class="p-6 sticky top-0 z-10 flex justify-between items-center">
+            <button class="text-gray-200" onclick="showPage('page-send-dashboard', 'backward')">
+                <svg class="w-6 h-6" fill="none" stroke-width="2.5" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5"></path></svg>
+            </button>
+            <h1 id="creator-split-header-title" class="text-lg font-bold text-white">Tracking Split</h1>
+            <div class="w-6"></div> 
+        </header>
+        
+        <main class="p-6 pb-32 space-y-8">
+            <div>
+                <h2 id="creator-split-title" class="text-3xl font-bold text-white"></h2>
+                <p id="creator-split-total-amount" class="text-4xl font-bold text-pink-400 mt-1"></p>
+            </div>
+            
+            <div>
+                <h3 class="font-bold text-white mb-4 text-lg">Participant Status</h3>
+                <div id="participant-status-dashboard" class="space-y-4">
+                    </div>
+            </div>
+            
+            <div class="mt-6">
+                <h3 class="font-bold text-white mb-3 text-lg">Expenses Added</h3>
+                <div id="creator-split-expenses-list" class="bg-slate-800 rounded-xl p-4 border border-slate-700">
+                    </div>
+            </div>
+
+            <div class="mt-6">
+                <h3 class="font-bold text-white mb-4 text-lg">Comments and activity</h3>
+                <div class="text-center text-slate-500 py-8">
+                    <p>No comments yet.</p>
+                </div>
+                <div class="mt-4">
+                    <textarea class="w-full bg-slate-800 border border-slate-700 rounded-lg p-3 text-sm text-white placeholder-gray-400" rows="2" placeholder="Add a private note or send a follow-up..."></textarea>
+                    <div class="flex justify-end items-center mt-2">
+                        <button class="btn-gradient-blue text-sm font-semibold px-4 py-1.5 rounded-full">Post</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 
+      ==================================================================
+      PAGE: Create Split (PRD 4.2)
+      ==================================================================
+    -->
+    <div id="page-create-split" class="page">
+        <header class="p-6 sticky top-0 z-10 flex justify-between items-center">
+            <button class="text-gray-200" onclick="showPage('page-send-dashboard', 'backward')">
+                <svg class="w-6 h-6" fill="none" stroke-width="2.5" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5"></path></svg>
+            </button>
+            <h1 class="text-lg font-bold text-white">Start New Split</h1>
+            <div class="w-6"></div> 
+        </header>
+
+        <main class="p-6 pb-24 space-y-10">
+            <div>
+                <label for="split-title" class="block text-2xl font-bold text-white">What's the occasion?</label>
+                <input type="text" id="split-title" class="mt-3 block w-full rounded-lg bg-slate-800 border-slate-700 text-white p-4 text-lg" placeholder="e.g., Dinner at Sakura">
+                
+                <button id="add-split-photo" class="mt-4 w-full flex justify-center items-center gap-2 rounded-lg border-2 border-dashed border-slate-700 text-slate-400 p-8" onclick="handleAddSplitPhoto(this)">
+                    <svg class="w-6 h-6" fill="none" stroke-width="1.5" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm1.5-6m-1.5 0a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0Z"></path></svg>
+                    <span>Add a fun photo</span>
+                </button>
+            </div>
+
+            <div>
+                <label for="split-participants" class="block text-2xl font-bold text-white">Who's invited?</label>
+                <input type="text" id="split-participants" class="mt-3 block w-full rounded-lg bg-slate-800 border-slate-700 text-white p-4 text-lg" placeholder="Add names or phone numbers...">
+            </div>
+
+            <div>
+                <label class="block text-2xl font-bold text-white mb-3">Add your expenses</label>
+                <div id="split-expense-container" class="space-y-3 mt-1">
+                    <div class="flex gap-3 split-expense-item">
+                        <input type="text" class="split-expense-desc block w-2/3 rounded-lg bg-slate-800 border-slate-700 text-white p-4" placeholder="e.g., Sushi dinner">
+                        <input type="number" class="split-expense-amount block w-1/3 rounded-lg bg-slate-800 border-slate-700 text-white p-4" placeholder="€ Amount">
+                    </div>
+                </div>
+                <button id="add-split-expense" class="text-sm font-semibold text-lime-400 mt-3">+ Add expense</button>
+            </div>
+
+            <div>
+                <label class="block text-2xl font-bold text-white">Set the rules</label>
+                <p class="text-sm text-slate-400 mt-1 mb-3">How long do friends have to add their receipts?</p>
+                <div id="deadline-options" class="flex gap-3">
+                    <button class="deadline-btn text-sm font-semibold bg-slate-700 text-white py-2 px-4 rounded-full" data-value="24">24 Hours</button>
+                    <button class="deadline-btn text-sm font-semibold bg-lime-500 text-black py-2 px-4 rounded-full selected" data-value="48">48 Hours</button>
+                    <button class="deadline-btn text-sm font-semibold bg-slate-700 text-white py-2 px-4 rounded-full" data-value="0">No Deadline</button>
+                </div>
+            </div>
+
+            <button id="send-split-btn" class="w-full bg-gradient-to-r from-orange-500 to-amber-500 text-black font-semibold py-4 rounded-lg shadow-lg mt-6 text-lg" onclick="handleSendSplit()">
+                Review & Send Split
+            </button>
+        </main>
+    </div>
+
+        <!-- 
+      ==================================================================
+      PAGE: NEW Review Split (Distribution)
+      ==================================================================
+    -->
+    <div id="page-review-split" class="page">
+        <header class="p-6 sticky top-0 z-10 flex justify-between items-center">
+            <button class="text-gray-200" onclick="showPage('page-create-split', 'backward')">
+                <svg class="w-6 h-6" fill="none" stroke-width="2.5" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5"></path></svg>
+            </button>
+            <h1 class="text-lg font-bold text-white">Review & Distribute</h1>
+            <div class="w-6"></div> 
+        </header>
+
+        <main class="p-6 pb-24 space-y-8">
+            <div>
+                <img id="review-split-photo" src="" alt="Split Photo" class="w-full h-40 object-cover rounded-xl mb-4">
+                <h2 id="review-split-title" class="text-3xl font-bold text-white"></h2>
+                <p class="text-sm text-slate-400">Total to be split:</p>
+                <p id="review-split-total" class="text-4xl font-bold text-lime-400">€ 0.00</p>
+            </div>
+
+            <div class="space-y-4">
+                <label class="block text-2xl font-bold text-white">How to split?</label>
+                <div class="flex gap-2 bg-slate-800 p-1 rounded-full border border-slate-700">
+                    <button id="split-method-equally" class="split-method-btn active" onclick="switchSplitMethod('equally')">Equally</button>
+                    <button id="split-method-percentage" class="split-method-btn" onclick="switchSplitMethod('percentage')">Percentage</button>
+                    <button id="split-method-amount" class="split-method-btn" onclick="switchSplitMethod('amount')">Amount</button>
+                </div>
+                 <div class="flex gap-2">
+                    <button class="w-full text-center text-sm font-semibold text-slate-400 bg-slate-800/50 rounded-lg p-3 border border-slate-700 opacity-60">
+                        Itemized (Pro)
+                    </button>
+                    <button class="w-full text-center text-sm font-semibold text-slate-400 bg-slate-800/50 rounded-lg p-3 border border-slate-700 opacity-60">
+                        Time-Based (Pro)
+                    </button>
+                 </div>
+            </div>
+
+            <div class="space-y-4">
+                <label class="block text-2xl font-bold text-white">Participants</label>
+                <div id="review-participant-list" class="space-y-3">
+                    <div class="loader-container">
+                        <div class="loader-spinner"></div>
+                    </div>
+                </div>
+                <p id="review-split-validation-error" class="text-sm text-red-400 text-center hidden"></p>
+            </div>
+
+            <button id="finalize-send-split-btn" class="w-full bg-gradient-to-r from-orange-500 to-amber-500 text-black font-semibold py-4 rounded-lg shadow-lg mt-6 text-lg" onclick="handleSendSplit()">
+                Finalize & Send Split
+            </button>
+
+        </main>
+    </div>
+    <!-- 
+      ==================================================================
+      PAGE: Split Share Link (PRD 4.2)
+      ==================================================================
+    -->
+    <div id="page-split-share-link" class="page flex flex-col p-8">
+        <header class="p-6 sticky top-0 z-10 flex justify-between items-center -m-8 mb-8">
+            <button class="text-gray-200" onclick="showPage('page-send-dashboard', 'backward')">
+                <svg class="w-6 h-6" fill="none" stroke-width="2.5" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5"></path></svg>
+            </button>
+            <h1 class="text-lg font-bold text-white">Split is Live!</h1>
+            <div class="w-6"></div> 
+        </header>
+        
+        <div class="flex-grow flex flex-col justify-center items-center text-center">
+            <div class="walkthrough-image bg-slate-800 w-64 h-64 rounded-full flex items-center justify-center mb-10">
+                <svg class="w-24 h-24 text-lime-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 1 0 0 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186 9.566-5.314m-9.566 5.314 9.566 5.314m0 0a2.25 2.25 0 1 0 0-2.186m0 2.186c-.18-.324-.283-.696-.283-1.093s.103-.77.283 1.093m0 2.186-9.566-5.314" />
+                </svg>
+            </div>
+            <h2 id="share-split-title" class="text-3xl font-bold text-white mb-4">Your Split is Consolidating!</h2>
+            <p class="text-lg text-slate-300 mb-6">Share this link with participants so they can add their expenses.</p>
+            
+            <div class="w-full bg-slate-800 border border-slate-700 rounded-lg p-4 text-left mb-4">
+                <p class="text-sm text-slate-400">Shareable Project Link (PRD 4.2):</p>
+                <input id="share-split-link" type="text" class="text-white font-mono break-all w-full bg-transparent" readonly>
+            </div>
+            <button class="w-full btn-gradient-blue font-semibold py-3 rounded-lg shadow-md text-lg" onclick="copyShareLink()">
+                Copy Link
+            </button>
+        </div>
+        <div class="pb-10 mt-8">
+            <button class="w-full bg-slate-700 text-white font-semibold py-4 rounded-lg shadow-md" onclick="ActiveSplitController.load('new-split')">
+                Go to Active Dashboard
+            </button>
+        </div>
+    </div>
+
+    <div id="page-active-split-dashboard" class="page">
+        <div id="consolidation-timer-banner" class="timer-banner hidden">
+            <span class="uppercase text-xs tracking-wider mr-2">Consolidation Active</span>
+            <span id="timer-countdown" class="text-lg">00:00:00</span>
+        </div>
+
+        <header class="p-6 flex justify-between items-center">
+            <button class="text-gray-200" onclick="showPage('page-send-dashboard', 'backward')">
+                <svg class="w-6 h-6" fill="none" stroke-width="2.5" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5"></path></svg>
+            </button>
+            <div class="text-center">
+                <h1 id="active-split-title" class="text-lg font-bold text-white">Loading...</h1>
+                <p class="text-sm text-gray-400">Consolidation Phase</p>
+            </div>
+            <div class="w-6"></div> 
+        </header>
+
+        <main class="p-6 pb-32 space-y-6">
+            
+            <div class="bg-slate-800/50 border border-slate-700 rounded-2xl p-6 text-center">
+                <p class="text-sm text-slate-400 mb-1">Your share (so far)</p>
+                <p id="active-split-my-share" class="text-4xl font-bold text-white">€ 0.00</p>
+                <div class="mt-4 flex justify-center gap-2">
+                    <span class="text-xs bg-slate-700 text-slate-300 px-2 py-1 rounded-md">Total: <span id="active-split-total" class="font-bold">€ 0.00</span></span>
+                    <span class="text-xs bg-slate-700 text-slate-300 px-2 py-1 rounded-md"><span id="active-split-participant-count">0</span> People</span>
+                </div>
+            </div>
+
+            <div id="gatekeeper-section" class="hidden space-y-3">
+                <div class="flex items-center gap-2 mb-2">
+                    <div class="pulse-dot"></div>
+                    <h3 class="font-bold text-white text-lg">Needs Approval</h3>
+                </div>
+                <div id="gatekeeper-list" class="space-y-3">
+                    </div>
+            </div>
+
+            <div>
+                <h3 class="font-bold text-white mb-3 text-lg">Group Expenses</h3>
+                <div id="active-expenses-list" class="space-y-3">
+                    </div>
+            </div>
+            
+            <button class="w-full btn-gradient-blue font-semibold py-4 rounded-xl shadow-lg flex items-center justify-center gap-2" onclick="openAddSplitExpenseModal()">
+                <svg class="w-5 h-5" fill="none" stroke-width="2.5" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"></path></svg>
+                Add Expense to Group
+            </button>
+
+            <div class="text-center pt-4">
+                <button class="text-sm text-rose-400 font-medium" onclick="alert('This ends the timer early and locks the split.')">
+                    End Consolidation & Finalize Now
+                </button>
+            </div>
+        </main>
+    </div>
+
+    <!-- 
+      ==================================================================
+      PAGE: Create Group Pot (PRD 4.3)
+      ==================================================================
+    -->
+    <div id="page-create-pot" class="page">
+        <header class="p-6 sticky top-0 z-10 flex justify-between items-center">
+            <button class="text-gray-200" onclick="showPage('page-send-dashboard', 'backward')">
+                <svg class="w-6 h-6" fill="none" stroke-width="2.5" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5"></path></svg>
+            </button>
+            <h1 class="text-lg font-bold text-white">Create New Group Pot</h1>
+            <div class="w-6"></div> 
+        </header>
+
+        <form id="create-pot-form" onsubmit="handleCreatePot(event)">
+            <main class="p-6 pb-24 space-y-10">
+                <div>
+                    <label for="pot-name" class="block text-2xl font-bold text-white">What's the pot for?</label>
+                    <input type="text" id="pot-name" name="name" class="mt-3 block w-full rounded-lg bg-slate-800 border-slate-700 text-white p-4 text-lg" placeholder="e.g., FC Lions Team Fees" required>
+                </div>
+
+                <div>
+                    <label for="pot-members" class="block text-2xl font-bold text-white">Who's in the pot?</label>
+                    <input type="text" id="pot-members" name="members" class="mt-3 block w-full rounded-lg bg-slate-800 border-slate-700 text-white p-4 text-lg" placeholder="Add phone numbers (e.g., +1...)" required>
+                </div>
+                
+                <div>
+                    <label class="block text-2xl font-bold text-white">Contribution Rules (PRD 4.3.2)</label>
+                    <p class="text-sm text-slate-400 mt-1 mb-3">Set a recurring financial obligation.</p>
+                    
+                    <div class="flex gap-3">
+                        <div class="w-2/3">
+                            <label for="pot-schedule-amount" class="block text-sm font-medium text-slate-400 mb-1">Amount</label>
+                            <input type="number" id="pot-schedule-amount" name="schedule_amount" class="block w-full rounded-lg bg-slate-800 border-slate-700 text-white p-4" placeholder="€ Amount" required>
+                        </div>
+                        <div class="w-1/3">
+                            <label for="pot-schedule-day" class="block text-sm font-medium text-slate-400 mb-1">Day</label>
+                            <input type="number" id="pot-schedule-day" name="schedule_day" class="block w-full rounded-lg bg-slate-800 border-slate-700 text-white p-4" placeholder="1">
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <label for="pot-schedule-frequency" class="block text-sm font-medium text-slate-400 mb-1">Frequency</label>
+                        <select id="pot-schedule-frequency" name="schedule_frequency" class="block w-full rounded-lg bg-slate-800 border-slate-700 text-white p-4" required>
+                            <option value="Monthly">Monthly (e.g., day 1)</option>
+                            <option value="Weekly">Weekly (e.g., day 1=Mon)</option>
+                            <option value="One-Time">One-Time (e.g., day 30)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full bg-gradient-to-r from-teal-500 to-cyan-500 text-white font-semibold py-4 rounded-lg shadow-lg mt-6 text-lg">
+                    Create Group Pot
+                </button>
+            </main>
+        </form>
+    </div>
+    
+    <!-- 
+      ==================================================================
+      PAGE: Group Pot Dashboard (PRD 4.3.1)
+      ==================================================================
+    -->
+    <div id="page-group-pot-dashboard" class="page">
+        <header class="p-6 sticky top-0 z-10 flex justify-between items-center">
+            <button class="text-gray-200" onclick="showPage('page-send-dashboard', 'backward')">
+                <svg class="w-6 h-6" fill="none" stroke-width="2.5" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5"></path></svg>
+            </button>
+            <h1 id="pot-dashboard-title" class="text-lg font-bold text-white">Group Pot</h1>
+            <div class="w-6"></div> 
+        </header>
+        
+        <main class="p-6 pb-32 space-y-8">
+            <div class="text-center">
+                <h3 class="text-sm font-semibold text-gray-400">Total Pot Balance</h3>
+                <p id="pot-total-balance" class="text-5xl font-bold text-lime-400 mt-1">€ 0.00</p>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4 my-4">
+                <button class="btn-gradient-blue font-semibold py-3 rounded-lg shadow-md" onclick="openAddContributionModal()">
+                    Add Contribution
+                </button>
+                <button id="pot-add-expense-btn" class="w-full bg-slate-700 text-slate-200 font-semibold py-3 rounded-lg border border-slate-600 hidden" onclick="openAddPotExpenseModal()">
+                    Add Expense
+                </button>
+            </div>
+            
+            <div>
+                <h3 class="font-bold text-white mb-3 text-lg">Contribution Rules</h3>
+                <div class="bg-slate-800 rounded-xl p-4 border border-slate-700">
+                    <div class="flex justify-between items-center">
+                        <span id="pot-schedule-details" class="text-lg font-medium text-slate-200"></span>
+                        <span id="pot-schedule-amount" class="text-2xl font-bold text-white"></span>
+                    </div>
+                    <p id="pot-schedule-next-due" class="text-sm text-slate-400 mt-1"></p>
+                </div>
+            </div>
+
+            <div>
+                <h3 class="font-bold text-white mb-3 text-lg">Member Contribution Tally</h3>
+                <div id="pot-contribution-tally" class="bg-slate-800 rounded-xl p-4 border border-slate-700 space-y-3">
+                    <p class="text-slate-400">Loading tally...</p>
+                </div>
+            </div>
+            
+            <div>
+                <h3 class="font-bold text-white mb-3 text-lg">Transaction Feed</h3>
+                <div id="pot-transaction-feed" class="space-y-4">
+                    <p class="text-slate-400 text-center">Loading transactions...</p>
+                </div>
+            </div>
+            
+        </main>
+    </div>
+<!-- 
+      ==================================================================
+      PAGE: QR Code Link Generator
+      ==================================================================
+    -->
+    <div id="page-qr-generator" class="page">
+        <header class="p-6 sticky top-0 z-10 flex justify-between items-center">
+            <button class="text-gray-200" onclick="showPage('page-home-dashboard', 'backward')">
+                <svg class="w-6 h-6" fill="none" stroke-width="2.5" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5"></path></svg>
+            </button>
+            <h1 class="text-lg font-bold text-white">Payment Link Generator</h1>
+            <div class="w-6"></div> 
+        </header>
+
+        <form id="qr-form" onsubmit="handleGenerateQrCode(event)">
+            <main class="p-6 pb-24 space-y-6">
+                <div class="text-center">
+                    <h2 class="text-2xl font-bold text-white">Create an EPC QR Code</h2>
+                    <p class="text-slate-400 mt-1">Fill in your details to generate a SEPA payment QR code and link.</p>
+                </div>
+
+                <div>
+                    <label for="qr-name" class="block text-sm font-medium text-slate-300 mb-1">Your Name (Beneficiary)</label>
+                    <input type="text" id="qr-name" class="block w-full rounded-lg bg-slate-800 border-slate-700 text-white p-3" value="Kredietbank N.V." required>
+                </div>
+                
+                <div>
+                    <label for="qr-iban" class="block text-sm font-medium text-slate-300 mb-1">Your IBAN</label>
+                    <input type="text" id="qr-iban" class="block w-full rounded-lg bg-slate-800 border-slate-700 text-white p-3" value="BE68539007547034" required>
+                </div>
+                
+                <div>
+                    <label for="qr-bic" class="block text-sm font-medium text-slate-300 mb-1">Your BIC (Optional)</label>
+                    <input type="text" id="qr-bic" class="block w-full rounded-lg bg-slate-800 border-slate-700 text-white p-3" value="BPGFBGSF">
+                </div>
+
+                <div class="flex gap-4">
+                    <div class="flex-1">
+                        <label for="qr-amount" class="block text-sm font-medium text-slate-300 mb-1">Amount</label>
+                        <input type="number" id="qr-amount" step="0.01" class="block w-full rounded-lg bg-slate-800 border-slate-700 text-white p-3" placeholder="e.g., 25.50" required>
+                    </div>
+                     <div class="w-20">
+                        <label for="qr-currency" class="block text-sm font-medium text-slate-300 mb-1">Currency</label>
+                        <input type="text" id="qr-currency" class="block w-full rounded-lg bg-slate-700 border-slate-600 text-slate-400 p-3" value="EUR" readonly>
+                    </div>
+                </div>
+                
+                <div>
+                    <label for="qr-remittance" class="block text-sm font-medium text-slate-300 mb-1">Payment Reference</label>
+                    <input type="text" id="qr-remittance" class="block w-full rounded-lg bg-slate-800 border-slate-700 text-white p-3" placeholder="e.g., Dinner split" required>
+                </div>
+
+                <button type="submit" class="w-full btn-gradient-blue text-white font-semibold py-3 rounded-lg shadow-lg mt-4 text-lg">
+                    Generate My Code
+                </button>
+                
+                <!-- === RESULTS CONTAINER === -->
+                <div id="qr-result-container" class="hidden mt-8 space-y-4">
+                    <div class="text-center">
+                        <h3 class="text-xl font-bold text-white">Your Code is Ready!</h3>
+                        <p class="text-slate-400">Others can scan this with their banking app.</p>
+                    </div>
+                    
+                    <!-- This will show the QR code you uploaded -->
+                    <div class="p-4 bg-white rounded-lg max-w-[250px] mx-auto">
+                        <img id="qr-code-image" src="QR-code.png" alt="Generated Payment QR Code" class="w-full h-auto">
+                    </div>
+                    
+                    <div>
+                        <label for="qr-payment-link" class="block text-sm font-medium text-slate-300 mb-1">Mock Payment Link (for Tikkie, etc.)</label>
+                        <div class="flex gap-2">
+                            <input type="text" id="qr-payment-link" class="block w-full rounded-lg bg-slate-700 border-slate-600 text-slate-400 p-3 text-sm" readonly>
+                            <button type="button" class="bg-slate-700 text-lime-400 font-semibold px-4 rounded-lg border border-slate-600" onclick="copyQrData('qr-payment-link')">Copy</button>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label for="qr-epc-data" class="block text-sm font-medium text-slate-300 mb-1">EPC Data String (for Banking Apps)</label>
+                        <div class="flex gap-2">
+                            <textarea id="qr-epc-data" class="block w-full rounded-lg bg-slate-700 border-slate-600 text-slate-400 p-3 text-xs" rows="4" readonly></textarea>
+                            <button type="button" class="bg-slate-700 text-lime-400 font-semibold px-4 rounded-lg border border-slate-600" onclick="copyQrData('qr-epc-data')">Copy</button>
+                        </div>
+                    </div>
+                </div>
+                
+            </main>
+        </form>
+    </div>
+
+    <!-- 
+      ==================================================================
+      BOTTOM NAVIGATION BAR
+      *** REFACTORED to 4-column layout ***
+      ==================================================================
+    -->
+    <div id="bottom-nav-container">
+        <!-- Main glass bar -->
+        <div id="major-tabs" class="relative grid grid-cols-4 w-full p-1 mx-auto">
+            
+            <!-- Sliding pill -->
+            <div id="major-tab-slider"></div>
+
+            <!-- Button 1: Home (New) -->
+            <button id="nav-btn-home" class="major-tab active" onclick="switchMajorTab(this, 'home')">
+                <svg class="w-6 h-6" fill="none" stroke-width="2" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"></path>
+                </svg>
+                <span>Home</span>
+            </button>
+            
+            <!-- Button 2: Receive (Was "Money in") -->
+            <button id="nav-btn-receive" class="major-tab" onclick="switchMajorTab(this, 'receive')">
+                <svg class="w-6 h-6" fill="none" stroke-width="2" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 13.5 12 21m0 0-7.5-7.5M12 21V3"></path></svg>
+                <span>Receive</span>
+            </button>
+            
+            <!-- Button 3: Send (Was "Money out") -->
+            <button id="nav-btn-send" class="major-tab" onclick="switchMajorTab(this, 'send')">
+                <svg class="w-6 h-6" fill="none" stroke-width="2" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 10.5 12 3m0 0 7.5 7.5M12 3v18"></path></svg>
+                <span>Send</span>
+            </button>
+            
+            <!-- Button 4: Account (Was "Settings") -->
+            <button id="nav-btn-account" class="major-tab" onclick="switchMajorTab(this, 'account')">
+                <svg class="w-6 h-6" fill="none" stroke-width="2" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"></path></svg>
+                <span>Account</span>
+            </button>
+
+        </div>
+    </div>
+
+    <!-- 
+      ==================================================================
+      MODALS (Unaltered, except for "Create New" modal)
+      ==================================================================
+    -->
+
+    <!-- Hotkey Modal -->
     <div id="hotkey-modal-backdrop" class="fixed inset-0 bg-black bg-opacity-70 z-30 hidden opacity-0" onclick="closeHotKeyModal()"></div>
     <div id="hotkey-modal" class="fixed bottom-0 left-0 right-0 z-40 bg-slate-800 rounded-t-2xl shadow-2xl p-6 max-w-md mx-auto hidden">
         <div class="w-12 h-1.5 bg-slate-600 rounded-full mx-auto mb-5"></div>
         <h3 class="font-bold text-lg text-white mb-5">How would you like to respond?</h3>
-        
         <div class="space-y-3">
             <button class="w-full text-left bg-slate-700 hover:bg-slate-600 border border-slate-600 p-4 rounded-lg transition-colors" onclick="triggerPayment()">
                 <p class="font-bold text-lime-400">Pay & feel the relief</p>
                 <p class="text-sm text-slate-400">"Goodbye pending, hello peace of mind."</p>
             </button>
-            
             <button class="w-full text-left bg-slate-700 hover:bg-slate-600 border border-slate-600 p-4 rounded-lg transition-colors" onclick="handlePromiseClick()" aria-label="Choose a payment promise date">
                 <p class="font-bold text-orange-400">Payment Promise</p>
                 <p class="text-sm text-slate-400">""I'll pay on [date]"."</p>
             </button>
-            <p class="text-xs text-slate-400 mt-1 ml-2">Select this to choose a date and make a payment promise. A modal will open for you to pick when you'll pay.</p>
-            
-            <!-- MODIFICATION: Added onclick handler -->
             <button class="w-full text-left bg-slate-700 hover:bg-slate-600 border border-slate-600 p-4 rounded-lg transition-colors" onclick="handleOneClickPromise('tomorrow')">
                 <p class="font-bold text-orange-400">Remind me tomorrow</p>
                 <p class="text-sm text-slate-400">"Future-me will totally handle this."</p>
             </button>
-            
-            <!-- MODIFICATION: Added onclick handler -->
             <button class="w-full text-left bg-slate-700 hover:bg-slate-600 border border-slate-600 p-4 rounded-lg transition-colors" onclick="handleAlreadyPaid()">
                 <p class="font-bold text-orange-400">Already paid!</p>
                 <p class="text-sm text-slate-400">"I'm faster than your system."</p>
             </button>
-            
-            <!-- MODIFICATION: Added onclick handler -->
             <button class="w-full text-left bg-slate-700 hover:bg-slate-600 border border-slate-600 p-4 rounded-lg transition-colors" onclick="handleDisputeClick()">
                 <p class="font-bold text-rose-500">Wait, what's this for?</p>
                 <p class="text-sm text-slate-400">"I think something doesn't add up."</p>
             </button>
         </div>
-        
         <button class="w-full text-center text-sm font-semibold text-gray-400 mt-5" onclick="closeHotKeyModal()">
             Cancel
         </button>
     </div>
 
+    <!-- Onboarding Modal -->
     <div id="onboarding-modal-backdrop" class="fixed inset-0 bg-black bg-opacity-70 z-30 hidden opacity-0" onclick="hideOnboardingModal()"></div>
     <div id="onboarding-modal" class="fixed bottom-0 left-0 right-0 z-40 bg-slate-800 rounded-t-2xl shadow-2xl p-6 max-w-md mx-auto hidden">
         <div class="w-12 h-1.5 bg-slate-600 rounded-full mx-auto mb-5"></div>
         <h2 class="text-2xl font-bold text-white mb-6 text-center">Get Paid in 3 Steps</h2>
-        
         <div class="space-y-5 mb-8">
             <div class="flex items-center gap-4">
                 <div class="step-icon bg-blue-500">
@@ -1123,21 +1583,19 @@
                 </div>
             </div>
         </div>
-
         <button class="w-full btn-gradient-blue font-semibold py-3 rounded-lg shadow-md" onclick="startWalkthrough()">
             Start Walkthrough
         </button>
     </div>
 
+    <!-- OTP Modal -->
     <div id="otp-validation-modal-backdrop" class="fixed inset-0 bg-black bg-opacity-70 z-30 hidden opacity-0" onclick="hideOtpModal()"></div>
     <div id="otp-validation-modal" class="fixed bottom-0 left-0 right-0 z-40 bg-slate-800 rounded-t-2xl shadow-2xl p-6 max-w-md mx-auto hidden">
         <div class="w-12 h-1.5 bg-slate-600 rounded-full mx-auto mb-5"></div>
-        
         <div class="text-center">
             <h2 class="text-2xl font-bold text-white mb-3">Please Verify It's You</h2>
             <p class="text-slate-300 mb-6">To securely view this request, please enter the 6-digit code we sent to your phone.</p>
         </div>
-        
         <div class="space-y-4 mb-8">
              <div>
                 <label for="otp-code" class="block text-sm font-medium text-slate-400 mb-2">Verification Code</label>
@@ -1147,7 +1605,6 @@
                 Verify & View Request
             </button>
         </div>
-        
         <div class="text-center">
             <button class="text-sm font-semibold text-gray-400" onclick="hideOtpModal()">
                 Cancel
@@ -1155,13 +1612,12 @@
         </div>
     </div>
 
+    <!-- Payment Promise Modal -->
     <div id="payment-promise-modal-backdrop" class="fixed inset-0 bg-black bg-opacity-70 z-30 hidden opacity-0" onclick="hidePaymentPromiseModal()"></div>
     <div id="payment-promise-modal" class="fixed bottom-0 left-0 right-0 z-40 bg-slate-800 rounded-t-2xl shadow-2xl p-6 max-w-md mx-auto hidden">
         <div class="w-12 h-1.5 bg-slate-600 rounded-full mx-auto mb-5"></div>
-        
         <h2 class="text-2xl font-bold text-white mb-6 text-center">Make a Payment Promise</h2>
         <p class="text-slate-300 mb-6 text-center">This tells the creator you're on it. Your Credibility Score will thank you!</p>
-
         <div class="space-y-3 mb-6">
             <button class="w-full text-left bg-slate-700 hover:bg-slate-600 border border-slate-600 p-4 rounded-lg transition-colors" onclick="confirmPaymentPromise('tomorrow')">
                 <p class="font-bold text-orange-400">Tomorrow</p>
@@ -1173,20 +1629,17 @@
                 <p class="font-bold text-orange-400">End of the Month</p>
             </button>
         </div>
-        
         <button class="w-full text-center text-sm font-semibold text-gray-400 mt-5" onclick="hidePaymentPromiseModal()">
             Cancel
         </button>
     </div>
 
-    <!-- *** MODIFICATION: Renamed ID to be specific to Splits *** -->
+    <!-- Add Expense Modal (Split) -->
     <div id="add-expense-modal-split-backdrop" class="fixed inset-0 bg-black bg-opacity-70 z-30 hidden opacity-0" onclick="closeAddSplitExpenseModal()"></div>
     <div id="add-expense-modal-split" class="fixed bottom-0 left-0 right-0 z-40 bg-slate-800 rounded-t-2xl shadow-2xl p-6 max-w-md mx-auto hidden">
         <div class="w-12 h-1.5 bg-slate-600 rounded-full mx-auto mb-5"></div>
-        
         <h2 class="text-2xl font-bold text-white mb-6">Add Your Expense (Split)</h2>
         <p class="text-slate-300 mb-6">Add an expense to the group split. This will be visible to all participants.</p>
-
         <div class="space-y-4 mb-6">
             <div>
                 <label for="new-expense-desc" class="block text-sm font-medium text-slate-400 mb-2">Description</label>
@@ -1196,24 +1649,21 @@
                 <label for="new-expense-amount" class="block text-sm font-medium text-slate-400 mb-2">Amount</label>
                 <input type="number" id="new-expense-amount" class="block w-full rounded-lg bg-slate-900 border-slate-700 text-white p-4" placeholder="€ Amount">
             </div>
-            <!-- MODIFICATION: Renamed onclick handleAddSplitExpense() -->
             <button class="w-full btn-gradient-blue font-semibold py-3 rounded-lg shadow-md" onclick="handleAddSplitExpense()">
                 Add Expense to Split
             </button>
         </div>
-        
         <button class="w-full text-center text-sm font-semibold text-gray-400 mt-5" onclick="closeAddSplitExpenseModal()">
             Cancel
         </button>
     </div>
-    <!-- *** END MODIFICATION *** -->
+
+    <!-- Dispute Modal -->
     <div id="dispute-modal-backdrop" class="fixed inset-0 bg-black bg-opacity-70 z-30 hidden opacity-0" onclick="hideDisputeModal()"></div>
     <div id="dispute-modal" class="fixed bottom-0 left-0 right-0 z-40 bg-slate-800 rounded-t-2xl shadow-2xl p-6 max-w-md mx-auto hidden">
         <div class="w-12 h-1.5 bg-slate-600 rounded-full mx-auto mb-5"></div>
-        
         <h2 class="text-2xl font-bold text-white mb-6 text-center">What's the issue?</h2>
         <p class="text-slate-300 mb-6 text-center">Send a message to the creator. This will be added to the request's activity feed (PDR 3.4).</p>
-
         <div class="space-y-4 mb-6">
             <div>
                 <label for="dispute-message" class="block text-sm font-medium text-slate-400 mb-2">Your Message</label>
@@ -1223,19 +1673,17 @@
                 Send Message & Mark as Disputed
             </button>
         </div>
-        
         <button class="w-full text-center text-sm font-semibold text-gray-400 mt-5" onclick="hideDisputeModal()">
             Cancel
         </button>
     </div>
-    <!-- --- BEGIN NEW MODALS FOR GROUP POT --- -->
+
+    <!-- Add Contribution Modal (Pot) -->
     <div id="add-contribution-modal-backdrop" class="fixed inset-0 bg-black bg-opacity-70 z-30 hidden opacity-0" onclick="closeAddContributionModal()"></div>
     <div id="add-contribution-modal" class="fixed bottom-0 left-0 right-0 z-40 bg-slate-800 rounded-t-2xl shadow-2xl p-6 max-w-md mx-auto hidden">
         <div class="w-12 h-1.5 bg-slate-600 rounded-full mx-auto mb-5"></div>
-        
         <h2 class="text-2xl font-bold text-white mb-6">Add Contribution</h2>
         <p class="text-slate-300 mb-6">Add funds to the pot. This will be visible to all members.</p>
-
         <div class="space-y-4 mb-6">
             <div>
                 <label for="new-contribution-amount" class="block text-sm font-medium text-slate-400 mb-2">Amount</label>
@@ -1245,19 +1693,17 @@
                 Add Contribution
             </button>
         </div>
-        
         <button class="w-full text-center text-sm font-semibold text-gray-400 mt-5" onclick="closeAddContributionModal()">
             Cancel
         </button>
     </div>
     
+    <!-- Add Expense Modal (Pot) -->
     <div id="add-expense-modal-pot-backdrop" class="fixed inset-0 bg-black bg-opacity-70 z-30 hidden opacity-0" onclick="closeAddPotExpenseModal()"></div>
     <div id="add-expense-modal-pot" class="fixed bottom-0 left-0 right-0 z-40 bg-slate-800 rounded-t-2xl shadow-2xl p-6 max-w-md mx-auto hidden">
         <div class="w-12 h-1.5 bg-slate-600 rounded-full mx-auto mb-5"></div>
-        
         <h2 class="text-2xl font-bold text-white mb-6">Log Pot Expense (Admin)</h2>
         <p class="text-slate-300 mb-6">Log an expense paid from the pot's funds. This will update the total balance for everyone.</p>
-
         <div class="space-y-4 mb-6">
             <div>
                 <label for="new-pot-expense-desc" class="block text-sm font-medium text-slate-400 mb-2">Description</label>
@@ -1271,15 +1717,89 @@
                 Log Expense
             </button>
         </div>
-        
         <button class="w-full text-center text-sm font-semibold text-gray-400 mt-5" onclick="closeAddPotExpenseModal()">
             Cancel
         </button>
     </div>
-    <!-- --- END NEW MODALS --- -->
 
+    <!-- Claim Balance Modal -->
+    <div id="claim-balance-modal-backdrop" class="fixed inset-0 bg-black bg-opacity-70 z-30 hidden opacity-0" onclick="closeClaimBalanceModal()"></div>
+    <div id="claim-balance-modal" class="fixed bottom-0 left-0 right-0 z-40 bg-slate-800 rounded-t-2xl shadow-2xl p-6 max-w-md mx-auto hidden">
+        <div class="w-12 h-1.5 bg-slate-600 rounded-full mx-auto mb-5"></div>
+        <div class="text-center">
+            <h2 class="text-2xl font-bold text-white mb-3">Your split is finalized!</h2>
+            <p class="text-slate-300 mb-6">The split is closed and all balances have been calculated.</p>
+        </div>
+        <div class="bg-lime-900/50 border border-lime-700 rounded-xl p-5 my-4 text-center">
+            <span class="text-sm font-semibold text-lime-300">You are owed</span>
+            <span id="claim-balance-amount" class="block text-5xl font-bold text-lime-300 mt-1">€ 0.00</span>
+        </div>
+        <p class="text-slate-300 mb-6 text-center">To manage your balance and receive funds, please secure your free MAXI account.</p>
+        <div class="space-y-4 mb-6">
+            <button class="w-full btn-gradient-blue font-semibold py-3 rounded-lg shadow-md" onclick="handleClaimBalance()">
+                Secure My Account & Claim Funds
+            </button>
+        </div>
+        <button class="w-full text-center text-sm font-semibold text-gray-400 mt-5" onclick="closeClaimBalanceModal()">
+            Maybe Later
+        </button>
+    </div>
 
-    <!-- MODIFICATION: Make sure script.js is loaded -->
-    <script src="script.js" defer></script>
+    <!-- Create New Modal (replaces FAB) -->
+    <div id="create-new-modal-backdrop" class="fixed inset-0 bg-black bg-opacity-70 z-30 hidden opacity-0" onclick="closeCreateNewModal()"></div>
+    <div id="create-new-modal" class="fixed bottom-0 left-0 right-0 z-40 bg-slate-800 rounded-t-2xl shadow-2xl p-6 max-w-md mx-auto hidden">
+        <div class="w-12 h-1.5 bg-slate-600 rounded-full mx-auto mb-5"></div>
+        <h3 class="font-bold text-lg text-white mb-5 text-center">What would you like to create?</h3>
+        
+        <div class="space-y-4">
+            <button class="w-full text-left bg-slate-700 hover:bg-slate-600 border border-slate-600 p-4 rounded-lg transition-colors flex items-center gap-4" onclick="openQrGenerator()">
+                <div class="step-icon bg-lime-500">
+                    <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 4.875c0-1.036.84-1.875 1.875-1.875h4.5c1.036 0 1.875.84 1.875 1.875v4.5c0 1.036-.84 1.875-1.875 1.875h-4.5A1.875 1.875 0 0 1 3.75 9.375v-4.5zM3.75 14.625c0-1.036.84-1.875 1.875-1.875h4.5c1.036 0 1.875.84 1.875 1.875v4.5c0 1.036-.84 1.875-1.875 1.875h-4.5A1.875 1.875 0 0 1 3.75 19.125v-4.5zM13.5 4.875c0-1.036.84-1.875 1.875-1.875h4.5c1.036 0 1.875.84 1.875 1.875v4.5c0 1.036-.84 1.875-1.875 1.875h-4.5A1.875 1.875 0 0 1 13.5 9.375v-4.5zM13.5 14.625c0-1.036.84-1.875 1.875-1.875h4.5c1.036 0 1.875.84 1.875 1.875v4.5c0 1.036-.84 1.875-1.875 1.875h-4.5A1.875 1.875 0 0 1 13.5 19.125v-4.5z" /></svg>
+                </div>
+                <div>
+                    <p class="font-bold text-white text-lg">Generate Payment Link</p>
+                    <p class="text-sm text-slate-400">Create a simple QR/Link (P2P)</p>
+                </div>
+            </button>
+
+            <button class="w-full text-left bg-slate-700 hover:bg-slate-600 border border-slate-600 p-4 rounded-lg transition-colors flex items-center gap-4" onclick="createNewInvoice()">
+                <div class="step-icon bg-blue-500">
+                    <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m.093 18.093a2.25 2.25 0 0 1-2.25-2.25v-6.75a2.25 2.25 0 0 1 2.25-2.25h6.75a2.25 2.25 0 0 1 2.25 2.25v6.75a2.25 2.25 0 0 1-2.25 2.25H8.25Z" /></svg>
+                </div>
+                <div>
+                    <p class="font-bold text-white text-lg">New Invoice</p>
+                    <p class="text-sm text-slate-400">Send a professional bill (SME)</p>
+                </div>
+            </button>
+            
+            <button class="w-full text-left bg-slate-700 hover:bg-slate-600 border border-slate-600 p-4 rounded-lg transition-colors flex items-center gap-4" onclick="createNewSplit()">
+                <div class="step-icon bg-orange-500">
+                    <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A9.065 9.065 0 0 1 6 18.719m12 0a5.002 5.002 0 0 0-11.998 0M12 3.75a3 3 0 0 1 3 3v3.75m-6 0v-3.75a3 3 0 0 1 3-3Z" /></svg>
+                </div>
+                <div>
+                    <p class="font-bold text-white text-lg">New Social Split</p>
+                    <p class="text-sm text-slate-400">Split a bill with friends (P2P)</p>
+                </div>
+            </button>
+            
+            <button class="w-full text-left bg-slate-700 hover:bg-slate-600 border border-slate-600 p-4 rounded-lg transition-colors flex items-center gap-4" onclick="createNewPot()">
+                <div class="step-icon bg-cyan-500">
+                    <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375" /></svg>
+                </div>
+                <div>
+                    <p class="font-bold text-white text-lg">New Group Pot</p>
+                    <p class="text-sm text-slate-400">Collect for a shared goal (P2P)</p>
+                </div>
+            </button>
+        </div>
+        <button class="w-full text-center text-sm font-semibold text-gray-400 mt-6" onclick="closeCreateNewModal()">
+            Cancel
+        </button>
+        </button>
+    </div>
+
+</div> <!-- End #app-container -->
+
+<script src="script.js" defer></script>
 </body>
 </html>
