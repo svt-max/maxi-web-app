@@ -34,17 +34,23 @@
       PAGE: Walkthrough 1 (PRD 2.1)
       ==================================================================
     -->
-<div id="page-walkthrough-1" class="page flex flex-col p-8">
+    <div id="page-walkthrough-1" class="page flex flex-col p-8">
         <button class="skip-walkthrough-btn" onclick="finishOnboarding()">Skip</button>
         <div class="flex-grow flex flex-col justify-center items-center text-center">
-            <div class="walkthrough-image bg-slate-800/50 border border-slate-700 w-64 h-64 rounded-full flex items-center justify-center mb-10 relative overflow-hidden group">
-                <div class="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-purple-500/20 blur-xl"></div>
-                <svg class="w-28 h-28 text-blue-400 relative z-10 drop-shadow-[0_0_15px_rgba(96,165,250,0.6)]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456ZM16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z" />
-                </svg>
+            <div class="walkthrough-image bg-slate-800/50 border border-slate-700 w-64 h-64 rounded-3xl flex items-center justify-center mb-10 relative overflow-hidden group shadow-2xl shadow-blue-900/20">
+                <div class="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-purple-500/10"></div>
+                <div class="relative z-10 transform transition-transform group-hover:scale-110 duration-500">
+                    <svg class="w-32 h-32 text-blue-400 drop-shadow-[0_0_15px_rgba(96,165,250,0.5)]" fill="none" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 48.774 48.774 0 0 0-5.232 0 2.192 2.192 0 0 0-1.736 1.039l-.821 1.316Z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM18.75 10.5h.008v.008h-.008V10.5Z" />
+                    </svg>
+                    <div class="absolute -bottom-4 -right-4 bg-slate-900 border border-slate-600 rounded-xl p-2 shadow-lg rotate-12">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"></path></svg>
+                    </div>
+                </div>
             </div>
-            <h2 class="text-3xl font-bold text-white mb-4">Style Your Request</h2>
-            <p class="text-lg text-slate-300">Don't send boring bills. Pick a template, add your vibe, and create an invoice they actually want to open.</p>
+            <h2 class="text-3xl font-bold text-white mb-4">Snap & Create</h2>
+            <p class="text-lg text-slate-300">Upload a photo of a bill, snap a receipt, or create a request in seconds. We'll handle the awkward math.</p>
         </div>
         <div class="pb-10">
             <div class="dot-indicators text-center mb-6">
@@ -105,20 +111,30 @@
 <div id="page-walkthrough-3" class="page flex flex-col p-8">
         <button class="skip-walkthrough-btn" onclick="finishOnboarding()">Skip</button>
         <div class="flex-grow flex flex-col justify-center items-center text-center">
-            <div class="walkthrough-image bg-slate-800/50 border border-slate-700 w-64 h-64 rounded-full flex items-center justify-center mb-10 relative">
-                <div class="absolute inset-0 bg-gradient-to-t from-pink-500/20 to-transparent rounded-full"></div>
-                <svg class="w-24 h-24 text-pink-400 relative z-10" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L6 12Zm0 0h7.5" />
-                </svg>
+            <div class="walkthrough-image bg-slate-800 border border-slate-700 w-64 h-72 rounded-3xl flex flex-col items-center justify-center mb-8 relative overflow-hidden p-4 gap-3 shadow-2xl">
+               <div class="w-full bg-slate-700/50 h-10 rounded-lg flex items-center px-3 gap-2 border border-slate-600/50">
+                    <div class="w-6 h-6 rounded-full bg-green-500/20 text-green-400 flex items-center justify-center text-xs">✓</div>
+                    <div class="h-2 w-20 bg-slate-500 rounded-full"></div>
+                    <div class="ml-auto h-2 w-12 bg-slate-500 rounded-full"></div>
+               </div>
+               <div class="w-full bg-slate-700/50 h-10 rounded-lg flex items-center px-3 gap-2 border border-slate-600/50">
+                    <div class="w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center text-[10px]">🤝</div>
+                    <div class="h-2 w-16 bg-slate-500 rounded-full"></div>
+                    <div class="ml-auto h-2 w-12 bg-slate-500 rounded-full"></div>
+               </div>
+               <div class="w-full bg-slate-700/50 h-10 rounded-lg flex items-center px-3 gap-2 border border-slate-600/50 opacity-60">
+                    <div class="w-6 h-6 rounded-full bg-slate-600 flex items-center justify-center text-[10px]">👀</div>
+                    <div class="h-2 w-24 bg-slate-500 rounded-full"></div>
+               </div>
+               
+               <div class="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-slate-900 to-transparent"></div>
             </div>
-            <h2 class="text-3xl font-bold text-white mb-4">Send & Get Paid</h2>
-            <p class="text-lg text-slate-300">We send a beautiful, interactive request and notify you the moment you're paid.</p>
+            <h2 class="text-3xl font-bold text-white mb-4">Track & Relax</h2>
+            <p class="text-lg text-slate-300">See who paid, who promised, and who's seen it. Total peace of mind for your friendships.</p>
         </div>
         <div class="pb-10">
             <div class="dot-indicators text-center mb-6">
-                <span class="dot"></span>
-                <span class="dot"></span>
-                <span class="dot active"></span>
+                <span class="dot"></span><span class="dot"></span><span class="dot active"></span>
             </div>
             <button class="w-full btn-gradient-blue font-semibold py-4 rounded-full shadow-md text-lg" onclick="finishOnboarding()">
                 Let's Go
@@ -134,7 +150,7 @@
       ==================================================================
     -->
 <div id="page-home-dashboard" class="page">
-        <header class="p-6 space-y-4 sticky top-0 z-20">
+        <header class="p-6 space-y-4 sticky top-0 z-20 bg-slate-900/90 backdrop-blur-md border-b border-slate-800 transition-all duration-300" id="home-header">
             <div class="flex justify-between items-center">
                 <div class="flex items-center gap-2">
                     <span class="text-xs font-bold bg-slate-700 text-white rounded-full px-2.5 py-1.5">KB</span>
@@ -144,41 +160,113 @@
                     <span class="font-bold user-score-display">97%</span>
                 </div>
             </div>
-            <div>
-                <h1 class="text-3xl font-bold text-white">Welcome, Admin</h1>
-                <p class="text-base text-slate-400">Here's your financial overview.</p>
+            <div id="home-header-text">
+                <h1 class="text-2xl font-bold text-white">Good afternoon, Kevin</h1>
+                <p class="text-sm text-slate-400">You have <span class="text-white font-bold">2</span> active happenings.</p>
             </div>
         </header>
 
-        <main class="p-6 pb-32 space-y-6">
-            <div class="home-action-card bg-gradient-to-br from-pink-500 to-rose-600 group" onclick="switchMajorTab(document.getElementById('nav-btn-receive'), 'receive')">
-                <div class="mb-4 flex justify-between items-start">
-                    <div class="w-12 h-12 rounded-full bg-black/20 flex items-center justify-center backdrop-blur-sm group-hover:scale-110 transition-transform">
+        <main class="p-4 pb-32 space-y-6">
+            
+            <div id="home-top-actions" class="grid grid-cols-2 gap-4 transition-all duration-500 ease-out origin-top">
+                
+                <div class="bg-gradient-to-br from-pink-500 to-rose-600 rounded-2xl p-4 shadow-lg shadow-pink-900/20 active:scale-95 transition-transform cursor-pointer" onclick="switchMajorTab(document.getElementById('nav-btn-receive'), 'receive')">
+                    <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center mb-3 backdrop-blur-sm">
                         <svg class="w-6 h-6 text-white" fill="none" stroke-width="2.5" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 13.5 12 21m0 0-7.5-7.5M12 21V3"></path></svg>
                     </div>
-                    <span class="bg-white/20 text-white text-xs font-bold px-2 py-1 rounded-lg backdrop-blur-md">3 Pending</span>
+                    <h2 class="text-lg font-bold text-white leading-none">Receive</h2>
+                    <p class="text-xs text-pink-200 mt-1 mb-2">You owe</p>
+                    <div class="text-xl font-bold text-white tracking-tight">€ 3.257</div>
                 </div>
-                <h2 class="text-2xl font-bold text-white mb-1">Receive</h2>
-                <p class="text-lg font-medium text-white/80 mb-4">You need to pay</p>
-                <div class="text-3xl font-bold text-white tracking-tight">€ 3.257,50</div>
-            </div>
 
-            <div class="home-action-card bg-gradient-to-br from-blue-500 to-cyan-500 group" onclick="switchMajorTab(document.getElementById('nav-btn-send'), 'send')">
-                 <div class="mb-4 flex justify-between items-start">
-                    <div class="w-12 h-12 rounded-full bg-black/20 flex items-center justify-center backdrop-blur-sm group-hover:scale-110 transition-transform">
+                <div class="bg-gradient-to-br from-blue-500 to-cyan-500 rounded-2xl p-4 shadow-lg shadow-blue-900/20 active:scale-95 transition-transform cursor-pointer" onclick="switchMajorTab(document.getElementById('nav-btn-send'), 'send')">
+                    <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center mb-3 backdrop-blur-sm">
                         <svg class="w-6 h-6 text-white" fill="none" stroke-width="2.5" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 10.5 12 3m0 0 7.5 7.5M12 3v18"></path></svg>
                     </div>
+                    <h2 class="text-lg font-bold text-white leading-none">Send</h2>
+                    <p class="text-xs text-blue-200 mt-1 mb-2">You are owed</p>
+                    <div class="text-xl font-bold text-white tracking-tight">€ 850</div>
                 </div>
-                <h2 class="text-2xl font-bold text-white mb-1">Send</h2>
-                <p class="text-lg font-medium text-white/80 mb-4">You are owed</p>
-                <div class="text-3xl font-bold text-white tracking-tight">€ 0.00</div>
-                <p class="text-sm text-white/70 mt-1">Across 0 items</p>
+
             </div>
-            
-            <button class="w-full btn-gradient-blue text-white font-semibold py-4 px-5 rounded-2xl shadow-lg text-lg flex items-center justify-center gap-2 transition-transform active:scale-95" onclick="openCreateNewModal()">
-                <svg class="w-6 h-6" fill="none" stroke-width="2.5" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"></path></svg>
-                <span>Create New Request</span>
+            <div class="border-2 border-dashed border-slate-700/50 rounded-3xl p-4 bg-slate-900/30">
+                 <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4 ml-2">Attention Required</h3>
+                 <div class="social-banner banner-urgent mb-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <span class="bg-red-500/20 text-red-400 border border-red-500/30 text-[10px] font-bold px-2 py-1 rounded-lg flex items-center gap-1">
+                            <div class="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse"></div> Overdue!
+                        </span>
+                        <span class="text-[10px] text-slate-400 font-medium">Final reminder #3</span>
+                    </div>
+                    <div class="flex justify-between items-start mb-3">
+                        <div class="flex items-center gap-3">
+                            <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=100&q=80" class="w-12 h-12 rounded-2xl object-cover shadow-lg border border-slate-600" alt="Luigi's">
+                            <div>
+                                <h2 class="text-lg font-bold text-white leading-tight">Dinner at Luigi's</h2>
+                                <div class="flex items-center gap-2 mt-0.5">
+                                    <span class="bg-lime-400/20 text-lime-400 text-[10px] px-1.5 rounded font-bold">95% Match</span>
+                                    <span class="text-xs text-slate-400">from Tom Garcia</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-xl font-bold text-pink-400">€ 62,50</div>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="flex -space-x-2">
+                                <div class="w-8 h-8 rounded-full bg-slate-700 border-2 border-slate-800 flex items-center justify-center text-[10px] text-white font-bold">KB</div>
+                                <div class="w-8 h-8 rounded-full bg-white text-slate-900 border-2 border-slate-800 flex items-center justify-center text-[10px] font-bold">DR</div>
+                                <div class="w-8 h-8 rounded-full bg-slate-700 border-2 border-slate-800 flex items-center justify-center text-[10px] text-white font-bold">+6</div>
+                            </div>
+                            <span class="text-xs text-slate-400 font-medium">7/8 paid</span>
+                        </div>
+                        <div class="h-1.5 w-full bg-slate-700 rounded-full overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-red-500 to-pink-500 w-[85%]"></div>
+                        </div>
+                    </div>
+                    <div class="bg-slate-900/50 rounded-2xl p-1 border border-slate-700/50 mb-4">
+                        <div class="h-48 w-full rounded-xl bg-black relative overflow-hidden group">
+                            <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNmRxcjZ3bnZ0ODF4Y3B6ZzR5bXo1aGp5a2d6NW9zNWhyZCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/12zV7u6Bh0vHpu/giphy.gif" class="w-full h-full object-cover opacity-80" alt="Siren">
+                        </div>
+                        <div class="p-4">
+                             <p class="text-slate-300 text-sm">"This payment is seriously overdue. Tom Garcia is really angry."</p>
+                        </div>
+                    </div>
+                    <button class="w-full btn-gradient-blue py-3 rounded-xl font-bold shadow-lg text-white" onclick="openHotKeyModal('urgent')">Reply & Pay</button>
+                 </div>
+            </div>
+
+            <div>
+                <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4 ml-2">Happening Now</h3>
+                <div class="social-banner banner-fun">
+                    <div class="flex justify-between items-center mb-4">
+                        <span class="bg-lime-400/20 text-lime-400 border border-lime-500/30 text-[10px] font-bold px-2 py-1 rounded-lg">Goal: €1.500</span>
+                    </div>
+                    <div class="flex justify-between items-start mb-3">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center text-2xl">🏝️</div>
+                            <div>
+                                <h2 class="text-lg font-bold text-white leading-tight">Summer Holiday</h2>
+                                <div class="text-xs text-slate-400 mt-0.5">Collected: <span class="text-white font-bold">€ 850</span></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="h-32 w-full rounded-xl bg-black relative overflow-hidden mb-4 group">
+                        <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbmZ5Z3V2aXg1aGp5a2d6NW9zNWhyZCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3o6vXI8UXFWXq7tbby/giphy.gif" class="w-full h-full object-cover opacity-70" alt="Holiday">
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <button class="bg-slate-800 border border-slate-700 text-white font-semibold py-2.5 rounded-xl text-sm" onclick="openAddContributionModal()">Contribute</button>
+                        <button class="bg-lime-500 text-slate-900 font-bold py-2.5 rounded-xl text-sm" onclick="PotController.viewPot('pot-1')">View Pot</button>
+                    </div>
+                </div>
+            </div>
+
+            <button class="fixed bottom-24 right-6 w-14 h-14 bg-lime-400 text-slate-900 rounded-full shadow-[0_0_20px_rgba(163,230,53,0.5)] flex items-center justify-center z-30 transition-transform hover:scale-110 active:scale-90" onclick="openCreateNewModal()">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"></path></svg>
             </button>
+
         </main>
     </div>
     <!-- 
@@ -197,23 +285,17 @@
             <div>
                 <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wider">Total Outstanding</h3>
                 <p class="text-4xl font-bold text-pink-400 tracking-tight">€ 3.257,50</p>
-                <p class="text-sm text-slate-400">Across 3 payment requests</p>
-            </div>
-            <div class="relative">
-                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke-width="2" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" /></svg>
-                </div>
-                <input type="text" class="w-full bg-slate-800 border border-slate-700 rounded-xl py-3 pl-9 pr-3 text-sm text-white placeholder-slate-400 focus:border-pink-400 transition-colors" placeholder="Search requests...">
+                <p class="text-sm text-slate-400">Across 3 requests</p>
             </div>
         </header>
 
         <main class="pb-24">
             <div id="incoming-view" class="dashboard-view space-y-6">
-                <div class="dashboard-filter-tabs px-6 mt-2">
-                    <div class="filter-tab active" onclick="DashboardController.filterRequests('all')">All</div>
-                    <div class="filter-tab" onclick="DashboardController.filterRequests('pending')">Pending</div>
-                    <div class="filter-tab" onclick="DashboardController.filterRequests('overdue')">Overdue</div>
-                    <div class="filter-tab" onclick="DashboardController.filterRequests('paid')">Paid</div>
+                <div class="minor-tabs-container">
+                    <button class="minor-tab active" onclick="switchMinorTab(this, 'incoming', 'all')">All</button>
+                    <button class="minor-tab" onclick="switchMinorTab(this, 'incoming', 'pending')">Pending</button>
+                    <button class="minor-tab" onclick="switchMinorTab(this, 'incoming', 'overdue')">Overdue</button>
+                    <button class="minor-tab" onclick="switchMinorTab(this, 'incoming', 'paid')">Paid</button>
                 </div>
 
                 <div id="no-requests-received-placeholder" class="text-center py-12 px-6" style="display: none;">
@@ -232,7 +314,6 @@
             </div>
         </main>
     </div>
-    
     <!-- 
       ==================================================================
       PAGE: SEND DASHBOARD (Money Out / You Are Owed)
@@ -356,23 +437,59 @@
       PAGE: Social Split (Payer View) (PRD 3.2)
       ==================================================================
     -->
-    <div id="page-social-split" class="page">
-        <header class="p-6 sticky top-0 z-10 flex justify-between items-center">
-            <button class="text-gray-200" onclick="showPage('page-receive-dashboard', 'backward')">
-                <svg class="w-6 h-6" fill="none" stroke-width="2.5" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5"></path></svg>
+<!-- 
+      ==================================================================
+      PAGE: Social Split Detail (The "Chat Log" View)
+      ==================================================================
+    -->
+    <div id="page-social-split" class="page flex flex-col bg-slate-900">
+        <!-- Fixed Header -->
+        <header class="p-4 sticky top-0 z-20 bg-slate-900/95 backdrop-blur-md border-b border-slate-800 flex justify-between items-center shadow-lg">
+            <button class="text-slate-400 hover:text-white transition-colors" onclick="showPage('page-receive-dashboard', 'backward')">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5"></path></svg>
             </button>
-            <div class="text-center">
-                <h1 id="split-detail-title" class="text-lg font-bold text-white">...</h1>
-                <p id="split-detail-creator" class="text-sm text-gray-400">...</p>
+            
+            <div class="flex flex-col items-center">
+                <h1 id="split-header-title" class="text-base font-bold text-white">Dinner at Sakura</h1>
+                <span class="text-[10px] text-slate-400">8 Participants • <span class="text-lime-400">5 Paid</span></span>
             </div>
-            <div class="w-6"></div> 
+
+            <button class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-slate-400">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 12.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 18.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5Z"></path></svg>
+            </button>
         </header>
-        <!-- This <main> tag will be replaced by the template -->
-        <main class="pb-32">
-            <div class="loader-container">
-                <div class="loader-spinner"></div>
-            </div>
+
+        <!-- Scrollable Chat Feed -->
+        <main id="social-chat-feed" class="flex-grow p-4 space-y-6 overflow-y-auto pb-32">
+            <!-- Content injected by ChatController -->
         </main>
+
+        <!-- Sticky Input Area -->
+        <div class="fixed bottom-0 left-0 right-0 bg-slate-900 border-t border-slate-800 p-4 pb-6 z-30">
+            <!-- Quick Reactions -->
+            <div class="flex gap-3 mb-3 overflow-x-auto no-scrollbar">
+                <button class="text-xl bg-slate-800 hover:bg-slate-700 p-2 rounded-full transition-colors" onclick="ChatController.sendReaction('❤️')">❤️</button>
+                <button class="text-xl bg-slate-800 hover:bg-slate-700 p-2 rounded-full transition-colors" onclick="ChatController.sendReaction('😂')">😂</button>
+                <button class="text-xl bg-slate-800 hover:bg-slate-700 p-2 rounded-full transition-colors" onclick="ChatController.sendReaction('💸')">💸</button>
+                <button class="text-xl bg-slate-800 hover:bg-slate-700 p-2 rounded-full transition-colors" onclick="ChatController.sendReaction('👀')">👀</button>
+                <button class="bg-slate-800 hover:bg-slate-700 px-3 py-1 rounded-full text-xs font-bold text-lime-400 border border-lime-500/30" onclick="openHotKeyModal()">
+                    ⚡️ Reply with Hotkey
+                </button>
+            </div>
+
+            <!-- Input Bar -->
+            <div class="flex items-end gap-2">
+                <button class="p-3 text-slate-400 hover:text-white transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm1.5-6h.008v.008H3.75V12Zm0 0h.008v.008H3.75V12Z" /></svg>
+                </button>
+                <div class="flex-grow bg-slate-800 rounded-2xl flex items-center p-1 border border-slate-700 focus-within:border-lime-400 transition-colors">
+                    <textarea id="chat-input" rows="1" class="w-full bg-transparent border-none text-white px-3 py-2 focus:ring-0 resize-none max-h-24 text-sm placeholder-slate-500" placeholder="Say something..."></textarea>
+                </div>
+                <button class="p-3 bg-gradient-to-br from-lime-400 to-green-500 text-slate-900 rounded-full font-bold shadow-lg hover:scale-105 transition-transform" onclick="ChatController.sendMessage()">
+                    <svg class="w-5 h-5 ml-0.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L6 12zm0 0h7.5" /></svg>
+                </button>
+            </div>
+        </div>
     </div>
 
     <!-- 
@@ -467,171 +584,155 @@
       PAGE: Create Invoice (UPDATED with Templates & Reminders)
       ==================================================================
     -->
-    <div id="page-create-invoice" class="page">
+<div id="page-create-invoice" class="page">
         <header class="p-6 flex justify-between items-center sticky top-0 z-20 bg-slate-900/90 backdrop-blur-md border-b border-slate-800">
             <button class="text-gray-400 hover:text-white transition-colors" onclick="showPage('page-send-dashboard', 'backward')">Cancel</button>
-            <h2 class="font-bold text-lg text-white">New Invoice</h2>
-            <button onclick="handleReviewInvoice()" class="text-lime-400 font-bold hover:text-lime-300 transition-colors">Preview</button>
+            <h2 class="font-bold text-lg text-white">New Request</h2>
+            <button onclick="handleSendInvoice()" class="text-lime-400 font-bold hover:text-lime-300 transition-colors">Send</button>
         </header>
 
-        <main class="p-6 pb-40 space-y-8">
+        <main class="p-4 pb-40 space-y-6">
             
-            <section>
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider">Identity & Style</h3>
-                    <div class="flex items-center gap-2">
-                        <div class="h-1.5 w-16 bg-slate-700 rounded-full overflow-hidden">
-                            <div id="fun-meter-bar" class="h-full bg-gradient-to-r from-lime-400 to-green-500 w-[10%] transition-all duration-500"></div>
+            <div class="relative w-full flex justify-center mb-2">
+                <div id="builder-preview-card" class="w-full max-w-[320px] bg-slate-800 rounded-2xl border border-slate-700 shadow-2xl overflow-hidden transition-all duration-500 group">
+                    
+                    <div id="prev-header-bg" class="h-28 bg-gradient-to-br from-slate-700 to-slate-800 relative transition-colors duration-500">
+                        <div class="absolute top-3 right-3 flex gap-1">
+                            <div id="icon-receipt" class="w-6 h-6 bg-black/30 backdrop-blur-md rounded-full flex items-center justify-center text-[10px] text-white hidden">📸</div>
+                            <div id="icon-gif" class="w-6 h-6 bg-pink-500/80 backdrop-blur-md rounded-full flex items-center justify-center text-[10px] text-white hidden">👾</div>
+                            <div id="icon-voice" class="w-6 h-6 bg-amber-500/80 backdrop-blur-md rounded-full flex items-center justify-center text-[10px] text-white hidden">🎤</div>
                         </div>
-                        <span id="fun-meter-text" class="text-[10px] text-lime-400 font-bold">10% Fun</span>
+
+                        <div class="absolute -bottom-6 left-5">
+                             <div class="w-14 h-14 rounded-full bg-slate-900 border-4 border-slate-800 flex items-center justify-center text-2xl shadow-lg">👋</div>
+                        </div>
                     </div>
-                </div>
 
-                <div class="template-picker-container mb-6">
-                    <div id="tmpl-classic" onclick="InvoiceController.setTemplate('classic')" class="template-option selected flex flex-col items-center justify-center group">
-                        <div class="w-full h-24 bg-slate-800 mb-2 rounded-lg border border-slate-600 relative overflow-hidden group-hover:border-lime-400 transition-colors">
-                            <div class="absolute top-2 left-2 w-8 h-1 bg-slate-600 rounded"></div>
-                            <div class="absolute top-4 left-2 w-5 h-1 bg-slate-700 rounded"></div>
+                    <div class="pt-8 px-5 pb-5">
+                        <h3 id="prev-title" class="text-white font-bold text-xl leading-tight mb-1">Bill Title</h3>
+                        <p id="prev-subtitle" class="text-slate-400 text-xs font-medium mb-4">Requested by You</p>
+                        
+                        <div id="prev-note-box" class="bg-slate-900/50 p-3 rounded-xl mb-4 border border-slate-700/50 hidden">
+                            <p id="prev-note-text" class="text-slate-300 text-sm italic">"Hey! Here is the bill..."</p>
                         </div>
-                        <span class="text-xs font-bold text-slate-300">Classic</span>
+
+                        <div class="flex justify-between items-end border-t border-slate-700 pt-4">
+                            <div>
+                                <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider block mb-1">Due Date</span>
+                                <span id="prev-date" class="text-sm font-medium text-slate-300">On Receipt</span>
+                            </div>
+                            <span id="prev-total" class="text-3xl font-bold text-white tracking-tight">€ 0.00</span>
+                        </div>
                     </div>
-                    <div id="tmpl-neon" onclick="InvoiceController.setTemplate('neon')" class="template-option flex flex-col items-center justify-center group">
-                        <div class="w-full h-24 bg-black mb-2 rounded-lg border border-pink-500 relative overflow-hidden shadow-[0_0_10px_rgba(236,72,153,0.2)] group-hover:shadow-[0_0_15px_rgba(236,72,153,0.5)] transition-all">
-                            <div class="absolute inset-0 bg-gradient-to-br from-purple-900/20 to-transparent"></div>
-                            <div class="absolute bottom-2 right-2 text-pink-500 font-mono text-xs">$$$</div>
-                        </div>
-                        <span class="text-xs font-bold text-pink-400">Neon</span>
-                    </div>
-                    <div id="tmpl-minimal" onclick="InvoiceController.setTemplate('minimal')" class="template-option flex flex-col items-center justify-center group">
-                        <div class="w-full h-24 bg-slate-100 mb-2 rounded-lg border border-white relative overflow-hidden group-hover:border-lime-400 transition-colors">
-                            <div class="absolute inset-0 flex items-center justify-center text-slate-300 text-xs tracking-widest">MINIMAL</div>
-                        </div>
-                        <span class="text-xs font-bold text-white">Minimal</span>
-                    </div>
+                    <div id="prev-theme-strip" class="h-1.5 w-full bg-slate-600"></div>
                 </div>
-            </section>
+            </div>
 
-            <section>
-                <label class="block text-sm font-bold text-slate-400 mb-3">Add Media & Personal Touches</label>
-                <div class="grid grid-cols-4 gap-2">
-                    <button id="btn-add-logo" onclick="triggerFunAction('logo')" class="media-btn flex flex-col items-center justify-center p-3 rounded-xl bg-slate-800 border border-slate-700 hover:bg-slate-700 transition-all">
-                        <div class="w-8 h-8 rounded-full bg-blue-500/10 flex items-center justify-center mb-1 text-blue-400">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" /></svg>
-                        </div>
-                        <span class="text-[10px] font-bold text-slate-300">Logo</span>
-                        <input type="hidden" id="has-logo" value="">
-                    </button>
-
-                    <button id="btn-add-gif" onclick="triggerFunAction('gif')" class="media-btn flex flex-col items-center justify-center p-3 rounded-xl bg-slate-800 border border-slate-700 hover:bg-slate-700 transition-all">
-                        <div class="w-8 h-8 rounded-full bg-pink-500/10 flex items-center justify-center mb-1 text-pink-400">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12.75 8.25v7.5m6-7.5h-3V12m0 0v3.75m0-3.75H18M9.75 9.348c-1.03-1.464-2.698-1.464-3.728 0-1.03 1.465-1.03 3.84 0 5.304 1.03 1.464 2.699 1.464 3.728 0V12h-1.5M9 12h1.5" /></svg>
-                        </div>
-                        <span class="text-[10px] font-bold text-slate-300">GIF</span>
-                        <input type="hidden" id="has-gif" value="">
-                    </button>
-
-                    <button id="btn-add-voice" onclick="triggerFunAction('voice')" class="media-btn flex flex-col items-center justify-center p-3 rounded-xl bg-slate-800 border border-slate-700 hover:bg-slate-700 transition-all">
-                        <div class="w-8 h-8 rounded-full bg-amber-500/10 flex items-center justify-center mb-1 text-amber-400">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18.75a6 6 0 0 0 6-6v-1.5m-6 7.5a6 6 0 0 1-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 0 1-3-3V4.5a3 3 0 1 1 6 0v8.25a3 3 0 0 1-3 3Z" /></svg>
-                        </div>
-                        <span class="text-[10px] font-bold text-slate-300">Voice</span>
-                        <input type="hidden" id="has-voice" value="">
-                    </button>
-
-                    <button id="btn-add-attachment" onclick="triggerFunAction('attachment')" class="media-btn flex flex-col items-center justify-center p-3 rounded-xl bg-slate-800 border border-slate-700 hover:bg-slate-700 transition-all">
-                        <div class="w-8 h-8 rounded-full bg-cyan-500/10 flex items-center justify-center mb-1 text-cyan-400">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m18.375 12.739-7.693 7.693a4.5 4.5 0 0 1-6.364-6.364l10.94-10.94A3 3 0 1 1 19.5 7.372L8.552 18.32m.009-.01-.01.01m5.699-9.941-7.81 7.81a1.5 1.5 0 0 0 2.112 2.13" /></svg>
-                        </div>
-                        <span class="text-[10px] font-bold text-slate-300">File</span>
-                        <input type="hidden" id="has-attachment" value="">
-                    </button>
-                </div>
-                <input type="hidden" id="has-photo" value="">
-            </section>
-
-            <section class="space-y-4">
-                <div>
-                    <label class="text-xs text-slate-500 uppercase font-bold ml-1">Client</label>
-                    <input type="text" id="invoice-client-name" class="w-full p-4 rounded-xl bg-slate-800 border border-slate-700 text-white text-lg font-bold focus:border-lime-400 focus:ring-0 transition-all placeholder-slate-500" placeholder="Client Name or Email">
-                </div>
+            <div class="space-y-5 animate-fade-in">
                 
+                <div class="bg-slate-800/40 border border-slate-700 rounded-2xl p-1">
+                    <input type="text" id="req-title" onkeyup="RequestBuilder.updatePreview()" class="w-full bg-transparent border-b border-slate-700 text-white py-3 px-4 focus:bg-slate-800/50 focus:border-lime-400 focus:outline-none font-bold text-lg rounded-t-xl transition-colors" placeholder="What is this for?">
+                    
+                    <div class="flex items-center">
+                         <div class="flex-grow relative">
+                            <span class="absolute left-4 top-3.5 text-slate-500 font-mono text-lg">€</span>
+                            <input type="number" id="req-amount" onkeyup="RequestBuilder.updatePreview()" class="w-full bg-transparent text-white py-3 pl-9 pr-4 focus:bg-slate-800/50 focus:outline-none font-mono text-xl font-bold rounded-bl-xl transition-colors" placeholder="0.00">
+                         </div>
+                         
+                         <div class="h-8 w-[1px] bg-slate-700"></div>
+                         
+                         <input type="date" id="req-date" onchange="RequestBuilder.updatePreview()" class="bg-transparent text-slate-400 text-sm font-medium py-3 px-4 focus:outline-none rounded-br-xl cursor-pointer">
+                    </div>
+                </div>
+
                 <div>
-                    <label class="text-xs text-slate-500 uppercase font-bold ml-1 mb-2 block">Items</label>
-                    <div id="invoice-items-container" class="space-y-3">
-                        <div class="flex gap-3 invoice-item">
-                            <input type="text" class="invoice-item-desc block w-2/3 rounded-lg bg-slate-800 border border-slate-700 text-white p-3 focus:border-lime-400" placeholder="Description">
-                            <input type="number" class="invoice-item-amount block w-1/3 rounded-lg bg-slate-800 border border-slate-700 text-white p-3 font-mono focus:border-lime-400" placeholder="€">
-                        </div>
+                    <label class="text-[10px] text-slate-500 uppercase font-bold ml-1 mb-2 block">Context & Tools</label>
+                    <div class="grid grid-cols-4 gap-2">
+                        <button id="btn-add-receipt" onclick="RequestBuilder.toggleFeature('receipt')" class="feature-btn flex flex-col items-center justify-center p-3 rounded-xl bg-slate-800 border border-slate-700 hover:border-slate-500 transition-all active:scale-95">
+                            <div class="w-8 h-8 rounded-full bg-blue-500/10 text-blue-400 flex items-center justify-center mb-1">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 48.774 48.774 0 0 0-5.232 0 2.192 2.192 0 0 0-1.736 1.039l-.821 1.316Z" /></svg>
+                            </div>
+                            <span class="text-[10px] font-bold text-slate-400">Receipt</span>
+                        </button>
+
+                        <button id="btn-add-gif" onclick="RequestBuilder.toggleFeature('gif')" class="feature-btn flex flex-col items-center justify-center p-3 rounded-xl bg-slate-800 border border-slate-700 hover:border-slate-500 transition-all active:scale-95">
+                            <div class="w-8 h-8 rounded-full bg-pink-500/10 text-pink-400 flex items-center justify-center mb-1">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.182 15.182a4.5 4.5 0 0 1-6.364 0M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0ZM9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75 9.168 9 9.375 9s.375.336.375.75Zm-.375 0h.008v.015h-.008V9.75Zm5.625 0c0 .414-.168.75-.375.75s-.375-.336-.375-.75.168-.75.375-.75.375.336.375.75Zm-.375 0h.008v.015h-.008V9.75Z" /></svg>
+                            </div>
+                            <span class="text-[10px] font-bold text-slate-400">GIF</span>
+                        </button>
+
+                        <button id="btn-add-voice" onclick="RequestBuilder.toggleFeature('voice')" class="feature-btn flex flex-col items-center justify-center p-3 rounded-xl bg-slate-800 border border-slate-700 hover:border-slate-500 transition-all active:scale-95">
+                            <div class="w-8 h-8 rounded-full bg-amber-500/10 text-amber-400 flex items-center justify-center mb-1">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18.75a6 6 0 0 0 6-6v-1.5m-6 7.5a6 6 0 0 1-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 0 1-3-3V4.5a3 3 0 1 1 6 0v8.25a3 3 0 0 1-3 3Z" /></svg>
+                            </div>
+                            <span class="text-[10px] font-bold text-slate-400">Voice</span>
+                        </button>
+
+                        <button id="btn-add-nudge" onclick="RequestBuilder.toggleFeature('nudge')" class="feature-btn flex flex-col items-center justify-center p-3 rounded-xl bg-slate-800 border border-slate-700 hover:border-slate-500 transition-all active:scale-95">
+                            <div class="w-8 h-8 rounded-full bg-lime-500/10 text-lime-400 flex items-center justify-center mb-1">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.31 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" /></svg>
+                            </div>
+                            <span class="text-[10px] font-bold text-slate-400">Nudge</span>
+                        </button>
                     </div>
-                    <button onclick="addInvoiceItem()" class="mt-3 text-xs font-bold text-lime-400 hover:text-white flex items-center gap-1 transition-colors">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
-                        ADD ITEM
-                    </button>
                 </div>
 
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="text-xs text-slate-500 uppercase font-bold ml-1">Due Date</label>
-                        <input type="date" id="invoice-due-date" onchange="toggleRemindersVisibility()" class="w-full p-3 rounded-lg bg-slate-800 border border-slate-700 text-white text-sm focus:border-lime-400">
-                    </div>
-                    <div>
-                        <label class="text-xs text-slate-500 uppercase font-bold ml-1">VAT %</label>
-                        <input type="number" id="invoice-vat" class="w-full p-3 rounded-lg bg-slate-800 border border-slate-700 text-white text-sm focus:border-lime-400" placeholder="0">
-                    </div>
-                </div>
-            </section>
-
-            <section id="reminder-section-container" class="hidden transition-all duration-300">
-                <div class="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4">
+                <div id="nudge-settings-container" class="hidden bg-slate-800/50 border border-slate-700/50 rounded-xl p-4 animate-fade-in">
                     <div class="flex justify-between items-center mb-2">
-                        <h3 class="text-sm font-bold text-orange-400 flex items-center gap-2">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.31 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" /></svg>
-                            Automated Reminders
-                        </h3>
-                        <span class="text-[10px] bg-slate-700 text-slate-300 px-2 py-0.5 rounded">Active</span>
+                        <h3 class="text-xs font-bold text-lime-400 uppercase tracking-wider">Auto-Nudge Active</h3>
+                        <span class="text-[10px] bg-slate-700 text-slate-300 px-2 py-0.5 rounded">Smart Logic</span>
                     </div>
-                    <p class="text-xs text-slate-400 mb-4">We'll gently nudge them if they forget.</p>
+                    <p class="text-xs text-slate-400 mb-4">We'll only chase them if they forget. No awkward texts needed.</p>
                     
                     <div class="flex justify-between items-center px-2">
                         <div class="text-center opacity-50 hover:opacity-100 cursor-pointer">
                             <div class="w-8 h-8 rounded-full bg-slate-700 border border-slate-600 flex items-center justify-center text-xs font-bold mb-1">-3</div>
-                            <span class="text-[10px]">Days</span>
+                            <span class="text-[10px] text-slate-400">Reminder</span>
                         </div>
                         <div class="h-0.5 flex-grow bg-slate-700 mx-2"></div>
                         <div class="text-center">
-                            <div class="w-8 h-8 rounded-full bg-orange-500 border border-orange-400 text-black flex items-center justify-center text-xs font-bold mb-1 shadow-[0_0_10px_rgba(249,115,22,0.4)]">Due</div>
-                            <span class="text-[10px] text-orange-400">Date</span>
+                            <div class="w-10 h-10 rounded-full bg-orange-500 border-2 border-orange-400 text-black flex items-center justify-center text-xs font-bold mb-1 shadow-lg shadow-orange-500/20">DUE</div>
+                            <span class="text-[10px] text-orange-400 font-bold">Date</span>
                         </div>
                         <div class="h-0.5 flex-grow bg-slate-700 mx-2"></div>
                         <div class="text-center opacity-50 hover:opacity-100 cursor-pointer">
                             <div class="w-8 h-8 rounded-full bg-slate-700 border border-slate-600 flex items-center justify-center text-xs font-bold mb-1">+3</div>
-                            <span class="text-[10px]">Days</span>
+                            <span class="text-[10px] text-slate-400">Follow-up</span>
                         </div>
                     </div>
                 </div>
-            </section>
 
-            <section>
-                <div class="flex justify-between items-center mb-2">
-                    <label class="text-sm font-bold text-slate-400">Intro & Tone</label>
-                    <span class="text-[10px] text-blue-400 bg-blue-400/10 px-2 py-0.5 rounded">AI Assisted</span>
+                <div class="bg-slate-800/40 border border-slate-700 rounded-2xl p-4">
+                    <div class="flex justify-between items-center mb-3">
+                        <label class="text-[10px] text-slate-500 uppercase font-bold">Message Tone</label>
+                        <span class="text-[10px] text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded-full">AI Assist</span>
+                    </div>
+                    <div class="flex gap-2 mb-3 overflow-x-auto pb-1 no-scrollbar">
+                        <button class="tone-btn bg-slate-700 text-xs text-slate-300 px-4 py-2 rounded-full border border-transparent hover:border-blue-400 transition-all" onclick="RequestBuilder.setTone('casual')">✌️ Casual</button>
+                        <button class="tone-btn bg-slate-700 text-xs text-slate-300 px-4 py-2 rounded-full border border-transparent hover:border-blue-400 transition-all" onclick="RequestBuilder.setTone('polite')">😊 Polite</button>
+                        <button class="tone-btn bg-slate-700 text-xs text-slate-300 px-4 py-2 rounded-full border border-transparent hover:border-blue-400 transition-all" onclick="RequestBuilder.setTone('direct')">⚡ Direct</button>
+                    </div>
+                    <textarea id="req-note" onkeyup="RequestBuilder.updatePreview()" class="w-full bg-slate-900/50 border border-slate-600/50 rounded-xl p-3 text-sm text-white placeholder-slate-500 focus:border-blue-400 focus:outline-none resize-none" rows="2" placeholder="Add a message..."></textarea>
                 </div>
-                <div class="flex gap-2 mb-3 overflow-x-auto no-scrollbar pb-1">
-                    <button class="tone-chip bg-slate-800 border border-slate-700 text-xs text-slate-300 px-3 py-1.5 rounded-full hover:border-blue-400 hover:text-white transition-all" onclick="InvoiceController.setTone('friendly')">😊 Friendly</button>
-                    <button class="tone-chip bg-slate-800 border border-slate-700 text-xs text-slate-300 px-3 py-1.5 rounded-full hover:border-blue-400 hover:text-white transition-all" onclick="InvoiceController.setTone('formal')">👔 Formal</button>
-                    <button class="tone-chip bg-slate-800 border border-slate-700 text-xs text-slate-300 px-3 py-1.5 rounded-full hover:border-blue-400 hover:text-white transition-all" onclick="InvoiceController.setTone('urgent')">⚡ Urgent</button>
+
+                <div>
+                    <label class="text-[10px] text-slate-500 uppercase font-bold ml-1 mb-2 block">Theme</label>
+                    <div class="grid grid-cols-3 gap-3">
+                        <button onclick="RequestBuilder.setTheme('classic')" class="theme-btn h-14 bg-slate-700 rounded-xl border-2 border-slate-500 hover:opacity-80 transition-all relative overflow-hidden">
+                            <div class="absolute bottom-0 right-0 w-6 h-6 bg-slate-600 rounded-tl-lg"></div>
+                        </button>
+                        <button onclick="RequestBuilder.setTheme('neon')" class="theme-btn h-14 bg-black rounded-xl border-2 border-pink-500 shadow-[0_0_10px_rgba(236,72,153,0.3)] hover:opacity-80 transition-all relative overflow-hidden">
+                            <div class="absolute inset-0 bg-gradient-to-tr from-transparent to-pink-500/20"></div>
+                        </button>
+                        <button onclick="RequestBuilder.setTheme('minimal')" class="theme-btn h-14 bg-slate-200 rounded-xl border-2 border-white hover:opacity-80 transition-all relative overflow-hidden">
+                            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[8px] text-slate-400 font-mono tracking-widest">MINIMAL</div>
+                        </button>
+                    </div>
                 </div>
-                <textarea id="invoice-intro-text" class="w-full p-4 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 text-sm h-24 focus:border-blue-400 transition-all placeholder-slate-500" placeholder="Type a message or select a tone..."></textarea>
-            </section>
+            </div>
 
         </main>
-
-        <div class="fixed bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-slate-900 via-slate-900 to-transparent z-20">
-            <button onclick="InvoiceController.handleReview()" class="w-full btn-gradient-blue font-semibold py-4 rounded-xl shadow-lg text-lg flex items-center justify-center gap-2 transition-transform active:scale-95">
-                <span>Review Invoice</span>
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
-            </button>
-        </div>
     </div>
     
     <!-- 
@@ -1518,34 +1619,48 @@
     -->
 
     <!-- Hotkey Modal -->
-    <div id="hotkey-modal-backdrop" class="fixed inset-0 bg-black bg-opacity-70 z-30 hidden opacity-0" onclick="closeHotKeyModal()"></div>
-    <div id="hotkey-modal" class="fixed bottom-0 left-0 right-0 z-40 bg-slate-800 rounded-t-2xl shadow-2xl p-6 max-w-md mx-auto hidden">
-        <div class="w-12 h-1.5 bg-slate-600 rounded-full mx-auto mb-5"></div>
-        <h3 class="font-bold text-lg text-white mb-5">How would you like to respond?</h3>
-        <div class="space-y-3">
-            <button class="w-full text-left bg-slate-700 hover:bg-slate-600 border border-slate-600 p-4 rounded-lg transition-colors" onclick="triggerPayment()">
-                <p class="font-bold text-lime-400">Pay & feel the relief</p>
-                <p class="text-sm text-slate-400">"Goodbye pending, hello peace of mind."</p>
+    <div id="hotkey-modal-backdrop" class="fixed inset-0 bg-black bg-opacity-80 z-30 hidden opacity-0 backdrop-blur-sm" onclick="closeHotKeyModal()"></div>
+    <div id="hotkey-modal" class="fixed bottom-0 left-0 right-0 z-40 bg-slate-900 border-t border-slate-700 rounded-t-3xl shadow-2xl p-6 max-w-md mx-auto hidden pb-10">
+        <div class="w-12 h-1.5 bg-slate-700 rounded-full mx-auto mb-6"></div>
+        <h3 class="font-bold text-xl text-white mb-6 text-center">Quick React</h3>
+        
+        <div class="grid grid-cols-2 gap-4">
+            <button class="hotkey-btn group relative overflow-hidden bg-gradient-to-br from-lime-500/10 to-lime-500/5 border border-lime-500/30 hover:border-lime-400 p-4 rounded-2xl flex flex-col items-center justify-center gap-2 transition-all active:scale-95" onclick="triggerPayment()">
+                <div class="w-12 h-12 rounded-full bg-lime-500 text-slate-900 flex items-center justify-center mb-1 shadow-lg shadow-lime-500/20 group-hover:scale-110 transition-transform">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"></path></svg>
+                </div>
+                <span class="text-lime-400 font-bold text-sm">Pay Now</span>
+                <span class="text-lime-500/50 text-[10px] uppercase tracking-wider font-bold">Instant</span>
             </button>
-            <button class="w-full text-left bg-slate-700 hover:bg-slate-600 border border-slate-600 p-4 rounded-lg transition-colors" onclick="handlePromiseClick()" aria-label="Choose a payment promise date">
-                <p class="font-bold text-orange-400">Payment Promise</p>
-                <p class="text-sm text-slate-400">""I'll pay on [date]"."</p>
+
+            <button class="hotkey-btn group bg-slate-800 border border-slate-700 hover:border-blue-400 p-4 rounded-2xl flex flex-col items-center justify-center gap-2 transition-all active:scale-95" onclick="handlePromiseClick()">
+                <div class="w-12 h-12 rounded-full bg-slate-700 text-blue-400 border border-slate-600 flex items-center justify-center mb-1 group-hover:text-white group-hover:bg-blue-500 group-hover:border-blue-400 transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5"></path></svg>
+                </div>
+                <span class="text-slate-300 font-bold text-sm group-hover:text-white">Promise</span>
+                <span class="text-slate-500 text-[10px] group-hover:text-slate-400">Pick a date</span>
             </button>
-            <button class="w-full text-left bg-slate-700 hover:bg-slate-600 border border-slate-600 p-4 rounded-lg transition-colors" onclick="handleOneClickPromise('tomorrow')">
-                <p class="font-bold text-orange-400">Remind me tomorrow</p>
-                <p class="text-sm text-slate-400">"Future-me will totally handle this."</p>
+
+            <button class="hotkey-btn group bg-slate-800 border border-slate-700 hover:border-orange-400 p-4 rounded-2xl flex flex-col items-center justify-center gap-2 transition-all active:scale-95" onclick="handleOneClickPromise('tomorrow')">
+                <div class="w-12 h-12 rounded-full bg-slate-700 text-orange-400 border border-slate-600 flex items-center justify-center mb-1 group-hover:text-white group-hover:bg-orange-500 group-hover:border-orange-400 transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"></path></svg>
+                </div>
+                <span class="text-slate-300 font-bold text-sm group-hover:text-white">Snooze</span>
+                <span class="text-slate-500 text-[10px] group-hover:text-slate-400">+1 Day</span>
             </button>
-            <button class="w-full text-left bg-slate-700 hover:bg-slate-600 border border-slate-600 p-4 rounded-lg transition-colors" onclick="handleAlreadyPaid()">
-                <p class="font-bold text-orange-400">Already paid!</p>
-                <p class="text-sm text-slate-400">"I'm faster than your system."</p>
-            </button>
-            <button class="w-full text-left bg-slate-700 hover:bg-slate-600 border border-slate-600 p-4 rounded-lg transition-colors" onclick="handleDisputeClick()">
-                <p class="font-bold text-rose-500">Wait, what's this for?</p>
-                <p class="text-sm text-slate-400">"I think something doesn't add up."</p>
+
+            <button class="hotkey-btn group bg-slate-800 border border-slate-700 hover:border-purple-400 p-4 rounded-2xl flex flex-col items-center justify-center gap-2 transition-all active:scale-95" onclick="handleAlreadyPaid()">
+                <div class="w-12 h-12 rounded-full bg-slate-700 text-purple-400 border border-slate-600 flex items-center justify-center mb-1 group-hover:text-white group-hover:bg-purple-500 group-hover:border-purple-400 transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"></path></svg>
+                </div>
+                <span class="text-slate-300 font-bold text-sm group-hover:text-white">Paid!</span>
+                <span class="text-slate-500 text-[10px] group-hover:text-slate-400">Mark done</span>
             </button>
         </div>
-        <button class="w-full text-center text-sm font-semibold text-gray-400 mt-5" onclick="closeHotKeyModal()">
-            Cancel
+        
+        <button class="w-full text-center text-sm font-semibold text-rose-400/80 hover:text-rose-400 mt-6 flex items-center justify-center gap-1" onclick="handleDisputeClick()">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z"></path></svg>
+            Something wrong?
         </button>
     </div>
 

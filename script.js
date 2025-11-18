@@ -142,7 +142,13 @@ const Router = {
             case 'page-receive-dashboard': DashboardController.loadIncoming(); break;
             case 'page-send-dashboard': DashboardController.loadOutgoing(); break;
             case 'page-social-split':
-            case 'page-sme-invoice': RequestController.loadDetails(Store.currentRequest?.id); break;
+            case 'page-sme-invoice': 
+                RequestController.loadDetails(Store.currentRequest?.id);
+                // Initialize the chat if it's the split page
+                if (pageId === 'page-social-split') {
+                    setTimeout(() => ChatController.init(), 100); // Small delay to ensure DOM render
+                }
+                break;
             case 'page-review-split': SplitterController.renderReview(); break;
             case 'page-group-pot-dashboard': PotController.loadDetails(); break;
         }
@@ -173,6 +179,37 @@ const Router = {
 const DashboardController = {
     async loadHome() {
         document.querySelectorAll('.user-score-display').forEach(el => el.innerText = `${CONFIG.currentUser.score}%`);
+        
+        // 1. Add Banner Entrance Animation
+        const banners = document.querySelectorAll('.social-banner');
+        banners.forEach((el, index) => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(20px)';
+            setTimeout(() => {
+                el.style.transition = 'all 0.5s cubic-bezier(0.16, 1, 0.3, 1)';
+                el.style.opacity = '1';
+                el.style.transform = 'translateY(0)';
+            }, index * 150);
+        });
+
+        // 2. SETUP SCROLL TRIGGER for Top Buttons
+        const page = document.getElementById('page-home-dashboard');
+        const actions = document.getElementById('home-top-actions');
+        const headerText = document.getElementById('home-header-text'); // Optional: Fade text too
+
+        if (page && actions) {
+            page.onscroll = () => {
+                // Threshold: 20px of scroll
+                if (page.scrollTop > 20) {
+                    actions.classList.add('collapsed-actions');
+                    // Optional: Fade out the "Good Afternoon" text slightly to compact header
+                    if(headerText) headerText.style.opacity = '0.5';
+                } else {
+                    actions.classList.remove('collapsed-actions');
+                    if(headerText) headerText.style.opacity = '1';
+                }
+            };
+        }
     },
 
     async loadIncoming() {
@@ -298,6 +335,295 @@ const DashboardController = {
     }
 };
 
+/* --- CHAT CONTROLLER (Mock Data & Interactions) --- */
+
+const ChatController = {
+    feedContainer: null,
+
+    // The "Script" for the demo
+    mockData: [
+        { type: 'system', text: 'Split created by Sarah • Oct 24' },
+        { 
+            type: 'msg', 
+            sender: 'Sarah', 
+            avatar: 'https://i.pravatar.cc/150?u=sarah', 
+            text: "Here's the damage from last night! 🍣🍱", 
+            media: 'https://images.unsplash.com/photo-1579027989536-b7b1f875659b?auto=format&fit=crop&w=600&q=80'
+        },
+        { type: 'system', text: 'Sarah added "Sushi Platter" (€150.00)' },
+        { 
+            type: 'msg', 
+            sender: 'Mike', 
+            avatar: 'https://i.pravatar.cc/150?u=mike', 
+            text: "Oof. Worth it though.", 
+            reactions: ['🔥'] 
+        },
+        { type: 'system', text: 'Dana paid €187.50 (Instant)' },
+        { 
+            type: 'msg', 
+            sender: 'Tom', 
+            avatar: 'https://i.pravatar.cc/150?u=tom', 
+            text: "Look at you Dana that's the first time you pay on time! 😲", 
+            reactions: ['😂', '👏']
+        },
+        { 
+            type: 'msg', 
+            sender: 'Dana', 
+            avatar: 'https://i.pravatar.cc/150?u=dana', 
+            text: "New year new me 😉", 
+        },
+        { 
+            type: 'msg', 
+            sender: 'Jessica', 
+            avatar: 'https://i.pravatar.cc/150?u=jess', 
+            text: "I thought you just sold your company Tom, now you're going Dutch? 🤑", 
+        },
+        { 
+            type: 'msg', 
+            sender: 'David', 
+            avatar: 'https://i.pravatar.cc/150?u=david', 
+            text: "Guys, I didn't drink at all... can you discount my split please? 🥤", 
+        },
+        { 
+            type: 'msg', 
+            sender: 'Sarah', 
+            avatar: 'https://i.pravatar.cc/150?u=sarah', 
+            replyTo: "Guys, I didn't drink at all... can you discount my split please?",
+            text: "But you ate for 4, we should double it instead! 🍤🍤🍤🍤", 
+            media: 'https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbmZ5Z3V2aXg1aGp5a2d6NW9zNWhyZCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3o6vXI8UXFWXq7tbby/giphy.gif'
+        }
+    ],
+
+    init() {
+        this.feedContainer = document.getElementById('social-chat-feed');
+        if(!this.feedContainer) return;
+        
+        this.renderFeed();
+        // Scroll to bottom on load
+        this.scrollToBottom();
+    },
+
+    renderFeed() {
+        this.feedContainer.innerHTML = '';
+        
+        // Add Financial Context Card at Top
+        this.feedContainer.innerHTML += `
+            <div class="bg-slate-800/50 border border-slate-700 rounded-2xl p-4 mb-4">
+                <div class="flex justify-between items-center mb-3">
+                    <div class="flex flex-col">
+                        <span class="text-xs text-slate-400 uppercase font-bold">Your Share</span>
+                        <span class="text-2xl font-bold text-pink-400">€ 187,50</span>
+                    </div>
+                    <button class="btn-gradient-blue px-5 py-2 rounded-xl font-bold shadow-lg text-sm" onclick="openHotKeyModal()">
+                        Pay or React
+                    </button>
+                </div>
+                <div class="h-1.5 w-full bg-slate-700 rounded-full overflow-hidden">
+                    <div class="h-full bg-gradient-to-r from-lime-400 to-green-500 w-[65%]"></div>
+                </div>
+                <p class="text-[10px] text-slate-400 mt-2 text-right">5 of 8 settled</p>
+            </div>
+        `;
+
+        this.mockData.forEach(item => {
+            if(item.type === 'system') {
+                this.feedContainer.innerHTML += `<div class="chat-system">${item.text}</div>`;
+            } else {
+                this.renderMessage(item);
+            }
+        });
+    },
+
+    renderMessage(msg, isMe = false) {
+        const sideClass = isMe ? 'me' : 'them';
+        const nameHtml = isMe ? '' : `<span class="chat-name">${msg.sender}</span>`;
+        const avatarStyle = `background-image: url('${msg.avatar || 'https://placehold.co/100'}')`;
+        
+        // Reply Logic
+        let replyHtml = '';
+        if (msg.replyTo) {
+            replyHtml = `<div class="chat-reply-context">${msg.replyTo}</div>`;
+        }
+
+        // Media Logic
+        let mediaHtml = '';
+        if (msg.media) {
+            mediaHtml = `<div class="chat-media"><img src="${msg.media}" alt="media"></div>`;
+        }
+
+        // Reactions Logic
+        let reactionsHtml = '';
+        if (msg.reactions) {
+            reactionsHtml = `<div class="absolute -bottom-3 -right-2 bg-slate-800 border border-slate-700 rounded-full px-1.5 py-0.5 text-xs shadow-sm flex gap-1">${msg.reactions.join('')}</div>`;
+        }
+
+        const html = `
+            <div class="chat-row ${sideClass} animate-fade-in">
+                ${!isMe ? `<div class="chat-avatar" style="${avatarStyle}"></div>` : ''}
+                <div class="flex flex-col ${isMe ? 'items-end' : 'items-start'} max-w-full">
+                    ${nameHtml}
+                    <div class="chat-bubble">
+                        ${replyHtml}
+                        <p>${msg.text}</p>
+                        ${mediaHtml}
+                        ${reactionsHtml}
+                    </div>
+                </div>
+            </div>
+        `;
+        this.feedContainer.insertAdjacentHTML('beforeend', html);
+    },
+
+    sendMessage() {
+        const input = document.getElementById('chat-input');
+        const text = input.value.trim();
+        if (!text) return;
+
+        // Add "Me" Message
+        this.renderMessage({
+            sender: 'You',
+            text: text,
+            avatar: 'https://placehold.co/100x100/3b82f6/ffffff?text=KB' // Kevin B.
+        }, true);
+
+        input.value = '';
+        this.scrollToBottom();
+
+        // Mock Reply from Tom after 2 seconds
+        setTimeout(() => {
+             this.renderMessage({
+                sender: 'Tom',
+                text: "Typical Kevin... always has the last word 😂",
+                avatar: 'https://i.pravatar.cc/150?u=tom'
+            });
+            this.scrollToBottom();
+        }, 2000);
+    },
+
+    sendReaction(emoji) {
+        // Visual feedback only for demo
+        const lastMsg = this.feedContainer.lastElementChild;
+        if(lastMsg) {
+            // Just a quick toast or animation could go here
+        }
+    },
+
+    scrollToBottom() {
+        this.feedContainer.scrollTop = this.feedContainer.scrollHeight;
+    }
+};
+
+/* UPDATE Router.handlePageLoad in script.js to call Init */
+/*
+    case 'page-social-split':
+        RequestController.loadDetails(Store.currentRequest?.id);
+        ChatController.init(); // <--- ADD THIS
+        break;
+*/
+
+/* ADD THIS NEW CONTROLLER TO script.js */
+
+const RequestBuilder = {
+    currentTheme: 'classic',
+    features: { receipt: false, gif: false, voice: false, nudge: false },
+    
+    updatePreview() {
+        const title = document.getElementById('req-title').value || 'Bill Title';
+        const amount = document.getElementById('req-amount').value || '0.00';
+        const note = document.getElementById('req-note').value;
+        const dateInput = document.getElementById('req-date').value;
+        
+        // Update Text
+        document.getElementById('prev-title').innerText = title;
+        document.getElementById('prev-total').innerText = Utils.formatCurrency(amount);
+        
+        // Update Date (New Logic)
+        const dateEl = document.getElementById('prev-date');
+        if (dateInput) {
+            const d = new Date(dateInput);
+            // Makes date look like "Oct 24"
+            dateEl.innerText = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+            dateEl.classList.add('text-orange-400');
+            dateEl.classList.remove('text-slate-300');
+        } else {
+            dateEl.innerText = 'On Receipt';
+            dateEl.classList.remove('text-orange-400');
+            dateEl.classList.add('text-slate-300');
+        }
+
+        // Update Note Box
+        const noteBox = document.getElementById('prev-note-box');
+        const noteText = document.getElementById('prev-note-text');
+        
+        if (note) {
+            noteBox.classList.remove('hidden');
+            noteText.innerText = `"${note}"`;
+        } else {
+            noteBox.classList.add('hidden');
+        }
+    },
+
+    setTone(tone) {
+        const msgs = {
+            casual: "Hey! Just splitting this up. ✌️",
+            polite: "Hi! Here is the request for the recent bill. Thanks!",
+            direct: "Payment request attached. Please settle soon."
+        };
+        const box = document.getElementById('req-note');
+        box.value = msgs[tone];
+        
+        // Highlight button
+        document.querySelectorAll('.tone-btn').forEach(b => b.classList.remove('active'));
+        event.target.classList.add('active');
+        
+        this.updatePreview();
+    },
+
+    setTheme(theme) {
+        this.currentTheme = theme;
+        const card = document.getElementById('builder-preview-card');
+        // Reset
+        card.className = 'w-full max-w-[320px] bg-slate-800 rounded-2xl border border-slate-700 shadow-2xl overflow-hidden transition-all duration-500 group';
+        
+        // Apply Theme Class
+        card.classList.add(`prev-theme-${theme}`);
+    },
+
+    toggleFeature(feature) {
+        this.features[feature] = !this.features[feature];
+        const btn = document.getElementById(`btn-add-${feature}`);
+        const icon = document.getElementById(`icon-${feature}`);
+
+        // 1. Button Visual State (The Ring)
+        if (this.features[feature]) {
+            btn.classList.add('ring-2', 'ring-lime-400', 'bg-slate-700');
+            
+            // Specific color rings if desired (optional)
+            if(feature === 'receipt') btn.classList.add('ring-blue-400'); 
+            if(feature === 'gif') btn.classList.add('ring-pink-400');
+            if(feature === 'voice') btn.classList.add('ring-amber-400');
+        } else {
+            btn.classList.remove('ring-2', 'ring-lime-400', 'ring-blue-400', 'ring-pink-400', 'ring-amber-400', 'bg-slate-700');
+        }
+
+        // 2. Preview Card Icon State (Show small icon on card)
+        if (icon) {
+            if (this.features[feature]) icon.classList.remove('hidden');
+            else icon.classList.add('hidden');
+        }
+        
+        // 3. Special Logic for Nudge (Show/Hide the Timeline)
+        if (feature === 'nudge') {
+            const settings = document.getElementById('nudge-settings-container');
+            if (this.features.nudge) {
+                settings.classList.remove('hidden');
+            } else {
+                settings.classList.add('hidden');
+            }
+        }
+    }
+};
+
 const RequestController = {
     viewRequest(id, type) {
         if (!Store.isValidated) {
@@ -389,6 +715,12 @@ const InvoiceController = {
         
         const container = document.getElementById('invoice-items-container');
         if(container) container.innerHTML = this.getItemRowHTML();
+
+        document.getElementById('req-title').value = '';
+        document.getElementById('req-amount').value = '';
+        document.getElementById('req-note').value = '';
+        RequestBuilder.setTheme('classic');
+        RequestBuilder.updatePreview();
         
         Router.show('page-create-invoice');
     },
@@ -1054,6 +1386,8 @@ const ActiveSplitController = {
         };
     }
 };
+
+
 
 // ==========================================
 // 6. GLOBAL BINDINGS (Interface Layer)
