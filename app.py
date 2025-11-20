@@ -1,16 +1,3 @@
-# This is the new backend server for Maxi.
-# It includes your OCR logic and the new "Group Pot" API.
-#
-# To run this:
-# 1. Install Flask, Flask-SQLAlchemy, and Flask-CORS:
-#    pip install Flask Flask-SQLAlchemy Flask-CORS google-cloud-vision
-# 2. Set your Google credentials (if using OCR):
-#    export GOOGLE_APPLICATION_CREDENTIALS="/path/to/your/key.json"
-# 3. Run the app:
-#    python app.py
-#
-# Your frontend (index.html) will now be able to fetch data from this server.
-
 import base64
 import re
 import os
@@ -20,6 +7,7 @@ from flask_cors import CORS
 from google.cloud import vision
 from datetime import datetime, timedelta
 import uuid
+import networkx as nx  
 
 # --- App Setup ---
 app = Flask(__name__)
@@ -149,6 +137,69 @@ class Comment(db.Model):
     image_url = db.Column(db.String(200), nullable=True) # For photos/GIFs
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
+# --- SMART NETTING ALGORITHM (New Addition) ---
+def simplify_debts(transactions=None, input_balances=None):
+    """
+    Simplifies debts using a Greedy Min-Cost Flow logic.
+    
+    You can pass EITHER:
+    1. transactions: [{'payer': 'A', 'payee': 'B', 'amount': 10}, ...]
+    2. input_balances: {'A': -10, 'B': 10} (Negative = Oves, Positive = Owed)
+    """
+    balances = input_balances if input_balances else {}
+
+    # If raw transactions provided, calculate net positions first
+    if transactions:
+        for t in transactions:
+            payer = t['payer']
+            payee = t['payee']
+            amount = float(t['amount'])
+            balances[payer] = balances.get(payer, 0) - amount
+            balances[payee] = balances.get(payee, 0) + amount
+
+    # --- The Greedy Matching Algorithm ---
+    debtors = []
+    creditors = []
+    
+    for person, amount in balances.items():
+        amount = round(amount, 2)
+        # If amount is negative, they are a DEBTOR (they owe money)
+        if amount < -0.01:
+            debtors.append({'person': person, 'amount': amount})
+        # If amount is positive, they are a CREDITOR (they are owed money)
+        elif amount > 0.01:
+            creditors.append({'person': person, 'amount': amount})
+
+    # Sort to optimize (match biggest debts to biggest credits)
+    debtors.sort(key=lambda x: x['amount']) # Ascending (e.g. -100, -20)
+    creditors.sort(key=lambda x: x['amount'], reverse=True) # Descending (e.g. 100, 20)
+
+    simplified_transactions = []
+    d_idx = 0
+    c_idx = 0
+
+    while d_idx < len(debtors) and c_idx < len(creditors):
+        debtor = debtors[d_idx]
+        creditor = creditors[c_idx]
+
+        # The amount to settle is the minimum of |debt| vs credit
+        amount = min(abs(debtor['amount']), creditor['amount'])
+
+        simplified_transactions.append({
+            'from': debtor['person'],
+            'to': creditor['person'],
+            'amount': round(amount, 2)
+        })
+
+        # Adjust remaining balances
+        debtor['amount'] += amount
+        creditor['amount'] -= amount
+
+        # Check if settled (using small epsilon for float safety)
+        if abs(debtor['amount']) < 0.01: d_idx += 1
+        if creditor['amount'] < 0.01: c_idx += 1
+
+    return simplified_transactions
 
 # --- Helper Function to Create DB and Seed Data ---
 def create_db_and_seed():
@@ -270,74 +321,100 @@ def create_db_and_seed():
 
 def calculate_net_balances(request_id):
     """
-    PRD 3.2.2: Smart Settlement Engine
-    Calculates the net position for every participant based on APPROVED expenses.
-    Supports both EQUAL splits (default) and CUSTOM/FIXED amount splits.
+    PRD 3.2.2: Smart Settlement Engine.
+    Returns: dict {'total': float, 'plan': list}
     """
     req = Request.query.get(request_id)
     if not req:
-        return
+        return {'total': 0.0, 'plan': []}
 
-    # 1. Get all APPROVED items
+    # 1. Load Data
     items = RequestItem.query.filter_by(request_id=request_id, is_approved=True).all()
-    
-    # 2. Calculate Total Group Spend
-    total_spend = sum(item.amount for item in items)
-    req.total_amount = total_spend # Update total
-
-    # 3. Get Participants
     participants = RequestParticipant.query.filter_by(request_id=request_id).all()
     participant_count = len(participants)
     
+    # 2. Calculate Total Group Spend
+    total_spend = sum(item.amount for item in items)
+    req.total_amount = total_spend 
+    
     if participant_count == 0:
         db.session.commit()
-        return total_spend
+        return {'total': total_spend, 'plan': []}
 
-    # 4. Calculate Fallback Equal Share (used if fixed_split_amount is None)
-    # Note: In a more complex app, we might mix fixed + equal, but for this MVP,
-    # if fixed amounts exist, they override the equal logic per person.
-    equal_share = total_spend / participant_count
+    # 3. Calculate "Who Paid What"
+    paid_balances = {p.user_id: 0.0 for p in participants}
+    for item in items:
+        if item.paid_by_user_id:
+            paid_balances[item.paid_by_user_id] = paid_balances.get(item.paid_by_user_id, 0) + item.amount
 
-    # 5. Calculate Net Position for each participant
+    # 4. Calculate "Who Should Pay What" (Expected Share)
+    expected_balances = {p.user_id: 0.0 for p in participants}
+    
+    fixed_split_users = [p for p in participants if p.fixed_split_amount is not None]
+    equal_split_users = [p for p in participants if p.fixed_split_amount is None]
+    
+    total_fixed_amount = sum(p.fixed_split_amount for p in fixed_split_users)
+    remaining_for_equal = total_spend - total_fixed_amount
+    
+    for p in participants:
+        if p.fixed_split_amount is not None:
+            expected_balances[p.user_id] = p.fixed_split_amount
+        else:
+            if len(equal_split_users) > 0:
+                expected_balances[p.user_id] = remaining_for_equal / len(equal_split_users)
+            else:
+                expected_balances[p.user_id] = 0
+
+    # 5. Calculate Net Position & Update DB
+    net_positions = {}
     paid_count = 0
     
     for p in participants:
-        # Sum what THIS user paid
-        user_paid_total = sum(item.amount for item in items if item.paid_by_user_id == p.user_id)
+        paid = paid_balances.get(p.user_id, 0)
+        expected = expected_balances.get(p.user_id, 0)
+        net = paid - expected
         
-        # Determine what they SHOULD pay (Expected Share)
-        expected_share = 0
-        if p.fixed_split_amount is not None:
-            # Use the custom amount set during review
-            expected_share = p.fixed_split_amount
-        else:
-            # Fallback to equal split
-            expected_share = equal_share
+        p.net_share = net
+        net_positions[p.user_id] = net
 
-        # Net Share: Positive means they are OWED money. Negative means they OWE money.
-        # Example: Sarah paid 750, Share is 187.50. Net = +562.50
-        p.net_share = user_paid_total - expected_share
-        
-        # Update Status based on Net Share
-        # We use a small epsilon (0.01) for float comparison
         if p.status == 'Paid':
             paid_count += 1
-        elif p.net_share > 0.01:
+        elif net > 0.01:
             p.status = "Creditor"
-        elif p.net_share < -0.01:
-            # Only reset to Pending if they were not already Paid/Promised
-            if p.status not in ['Paid', 'Promised']:
+            paid_count += 1
+        elif net < -0.01:
+             if p.status not in ['Paid', 'Promised']:
                 p.status = 'Pending'
         else:
             p.status = 'Settled'
             paid_count += 1
-    
-    # 6. Update main request status
+
+    # 6. Run Smart Netting
+    settlement_plan_raw = simplify_debts(input_balances=net_positions)
+
     req.status = f"{paid_count}/{participant_count} Paid"
     req.subtitle = f"{participant_count} participants"
-
     db.session.commit()
-    return total_spend
+    
+    # 7. Map IDs to Names
+    final_plan = []
+    for tx in settlement_plan_raw:
+        sender = User.query.get(tx['from'])
+        receiver = User.query.get(tx['to'])
+        if sender and receiver:
+            final_plan.append({
+                'from': sender.name,
+                'to': receiver.name,
+                'amount': tx['amount'],
+                'from_id': tx['from'],
+                'to_id': tx['to']
+            })
+
+    # RETURN BOTH TOTAL AND PLAN
+    return {
+        'total': total_spend,
+        'plan': final_plan
+    }
 
 # --- API Endpoints: Group Pot (PRD 4.3) ---
 @app.route('/api/requests/<request_id>/expenses', methods=['POST'])
@@ -389,7 +466,6 @@ def approve_expense(item_id):
     if not item:
         return jsonify({'error': 'Item not found'}), 404
         
-    # Security check: Ensure CURRENT_USER is the Admin (Creator) of the request
     req = Request.query.get(item.request_id)
     if req.creator_id != CURRENT_USER_ID:
         return jsonify({'error': 'Only the Admin can approve expenses'}), 403
@@ -398,11 +474,13 @@ def approve_expense(item_id):
     db.session.commit()
     
     # Trigger Smart Settlement Engine
-    new_total = calculate_net_balances(req.id)
+    # Capture the DICTIONARY result
+    calculation_result = calculate_net_balances(req.id)
     
     return jsonify({
         'message': 'Expense approved and balances recalculated',
-        'new_total': new_total
+        'new_total': calculation_result['total'],        # Extracted Total
+        'settlement_plan': calculation_result['plan']    # Extracted Plan
     })
 
 @app.route('/api/pots', methods=['POST'])
